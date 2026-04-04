@@ -1,0 +1,62 @@
+<div class="container">
+
+<h1>Listopia</h1>
+
+<!-- FEATURED LISTS -->
+
+<h2 class="section-title">Featured lists</h2>
+
+<div class="list-block" *ngFor="let list of lists">
+
+<h3 class="list-title">
+{{list.title}}
+</h3>
+
+<div class="list-meta">
+Featuring {{list.books.length}} out of {{list.total}} books in this list
+</div>
+
+<div class="list-meta-small">
+{{list.total}} books • {{list.voters}} voters
+</div>
+
+
+<!-- BOOK ROW -->
+<div class="book-row">
+
+<div class="book-card" *ngFor="let book of list.books">
+
+<!-- CLICK IMAGE -->
+<div class="cover"
+     (click)="goToDetail(book)">
+</div>
+
+<!-- CLICK TITLE -->
+<div class="book-title clickable"
+     (click)="goToDetail(book)">
+{{book.title}}
+</div>
+
+<div class="author">
+{{book.author}}
+</div>
+
+<div class="rating">
+⭐ {{book.rating}}
+</div>
+
+<div class="votes">
+{{book.votes}}
+</div>
+
+</div>
+
+</div>
+
+<div class="more">
+More books in this list
+</div>
+
+</div>
+
+</div>

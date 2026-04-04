@@ -1,0 +1,14 @@
+# Angular
+front/node_modules/
+front/dist/
+
+# Spring Boot
+back/target/
+back/*.log
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
