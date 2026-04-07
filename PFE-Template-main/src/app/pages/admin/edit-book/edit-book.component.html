@@ -1,0 +1,36 @@
+<div class="form-container">
+
+  <h2>✏️ Edit Book</h2>
+
+  <form (ngSubmit)="updateBook()">
+
+    <!-- IMAGE -->
+    <div class="image-upload">
+      <img [src]="previewImage || book.pic || 'assets/default-book.png'" class="preview">
+
+      <input type="file" (change)="onFileSelected($event)">
+    </div>
+
+    <div class="form-grid">
+
+      <input [(ngModel)]="book.title" name="title" placeholder="Title">
+
+      <input [(ngModel)]="book.author" name="author" placeholder="Author">
+
+      <input [(ngModel)]="book.genre" name="genre" placeholder="Genre">
+
+      <input [(ngModel)]="book.year" name="year" placeholder="Year">
+
+      <input [(ngModel)]="book.langue" name="langue" placeholder="Language">
+
+      <input [(ngModel)]="book.total_pages" name="total_pages" placeholder="Pages">
+
+    </div>
+
+    <textarea [(ngModel)]="book.description" name="description"></textarea>
+
+    <button type="submit">💾 Update</button>
+
+  </form>
+
+</div>

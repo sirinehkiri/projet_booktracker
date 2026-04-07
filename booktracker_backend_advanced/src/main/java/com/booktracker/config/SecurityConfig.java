@@ -36,14 +36,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/editeur/**").hasRole("EDITEUR")
-                        .requestMatchers("/auteur/**").hasRole("AUTEUR")
+                        .requestMatchers("/books/**").permitAll()
+                        .requestMatchers("/upload/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 

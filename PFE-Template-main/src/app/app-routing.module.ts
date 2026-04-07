@@ -2,12 +2,22 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
+import { AddBookComponent } from './pages/admin/add-book/add-book.component';
+import { EditBookComponent } from './pages/admin/edit-book/edit-book.component';
 
 const routes: Routes = [
   {
     path: '',
     component: FullComponent,
     children: [
+      {
+        path:'admin/add-book',
+        component:AddBookComponent
+      },
+      {
+        path:'admin/edit-book/:id',
+        component:EditBookComponent
+      },
       {
         path: '',
         redirectTo: '/authentication/side-login',

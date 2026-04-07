@@ -17,8 +17,8 @@ import { AppInvoiceListComponent } from './invoice/invoice-list/invoice-list.com
 import { AppAddInvoiceComponent } from './invoice/add-invoice/add-invoice.component';
 import { AppInvoiceViewComponent } from './invoice/invoice-view/invoice-view.component';
 import { AppEditInvoiceComponent } from './invoice/edit-invoice/edit-invoice.component';
-import { AppBlogsComponent } from './blogs/blogs.component';
-import { AppBlogDetailsComponent } from './blogs/details/details.component';
+import { AppBlogsComponent } from '../blogs/blogs.component';
+import { AppBlogDetailsComponent } from '../blogs/details/details.component';
 
 export const AppsRoutes: Routes = [
   {

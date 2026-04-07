@@ -72,8 +72,8 @@ import { OkDialogComponent } from './invoice/edit-invoice/ok-dialog/ok-dialog.co
 import { AddedDialogComponent } from './invoice/add-invoice/added-dialog/added-dialog.component';
 
 // blog
-import { AppBlogsComponent } from './blogs/blogs.component';
-import { AppBlogDetailsComponent } from './blogs/details/details.component';
+import { AppBlogsComponent } from '../blogs/blogs.component';
+import { AppBlogDetailsComponent } from '../blogs/details/details.component';
 
 
 @NgModule({

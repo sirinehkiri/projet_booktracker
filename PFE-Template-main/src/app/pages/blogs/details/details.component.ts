@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BlogService } from '../blogService.service';
+import { BookService } from '../book.service';
 
 @Component({
   selector: 'app-book-details',
@@ -15,24 +15,25 @@ export class AppBlogDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    public blogService: BlogService
+    public bookService: BookService
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
 
-    if (this.blogService.blogPosts.length === 0) {
-      this.blogService.getBlog().subscribe((data: any) => {
-        this.blogService.blogPosts = data;
+   /* if (this.bookService.blogPosts.length === 0) {
+      this.bookService.getBlog().subscribe((data: any) => {
+        this.bookService.blogPosts = data;
         this.loadBook(id);
       });
     } else {
       this.loadBook(id);
     }
+      */ 
   }
 
-  loadBook(id: any) {
-  this.book = this.blogService.blogPosts.find(
+  /*loadBook(id: any) {
+  this.book = this.bookService.blogPosts.find(
     (b: any) => b.id == id
   );
 
@@ -43,6 +44,7 @@ export class AppBlogDetailsComponent implements OnInit {
     { user: 'Sara', rating: 4, text: 'Very useful 👌' }
   ];
 }
+  */
 
   addComment() {
     if (this.newComment.trim()) {

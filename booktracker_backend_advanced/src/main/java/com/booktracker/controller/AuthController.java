@@ -23,12 +23,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/test")
-    public String test(){
-        System.out.println("Controller working");
-        return "OK";
-    }
-
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         System.out.println("Username: " + request.getUsername());

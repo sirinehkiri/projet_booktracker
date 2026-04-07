@@ -25,12 +25,21 @@ import { FilterPipe } from './pipe/filter.pipe';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
+import { AddBookComponent } from './pages/admin/add-book/add-book.component';
+import { EditBookComponent } from './pages/admin/edit-book/edit-book.component';
+
 export function HttpLoaderFactory(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
 @NgModule({
-  declarations: [AppComponent, BlankComponent, FilterPipe],
+  declarations: [
+    AppComponent, 
+    BlankComponent, 
+    FilterPipe,
+    AddBookComponent,
+    EditBookComponent 
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

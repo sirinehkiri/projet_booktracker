@@ -112,3 +112,39 @@ color:#00635d;
 .clickable:hover{
 text-decoration:underline;
 }
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.add-btn{
+  background:#198754;
+  color:white;
+  border:none;
+  padding:10px 15px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+.book-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+}
+
+.book-card{
+  width:200px;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  text-align:center;
+}
+
+.cover img{
+  border-radius:8px;
+  height:180px;
+  object-fit:cover;
+}

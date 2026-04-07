@@ -21,6 +21,16 @@ public class Book {
   private String pic;
  @Column(nullable = false)
   private String langue;
+ @Column(nullable = false)
+ private int total_pages;
+
+ public int getTotal_pages() {
+  return total_pages;
+ }
+
+ public void setTotal_pages(int total_pages) {
+  this.total_pages = total_pages;
+ }
 
  public Book(Long id, String title, String author, String genre, int year, String description, String pic, String langue) {
   this.id = id;
