@@ -98,19 +98,9 @@ export const navItems: NavItem[] = [
         route: 'tables/mix-table',
       },
       {
-        displayName: 'Multi Header Footer',
-        iconName: 'point',
-        route: 'tables/multi-header-footer-table',
-      },
-      {
         displayName: 'Pagination Table',
         iconName: 'point',
         route: 'tables/pagination-table',
-      },
-      {
-        displayName: 'Row Context Table',
-        iconName: 'point',
-        route: 'tables/row-context-table',
       },
       {
         displayName: 'Selection Table',
@@ -126,11 +116,6 @@ export const navItems: NavItem[] = [
         displayName: 'Sticky Column',
         iconName: 'point',
         route: 'tables/sticky-column-table',
-      },
-      {
-        displayName: 'Sticky Header Footer',
-        iconName: 'point',
-        route: 'tables/sticky-header-footer-table',
       },
     ],
   },
