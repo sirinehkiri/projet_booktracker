@@ -43,11 +43,6 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'forms',
-        loadChildren: () =>
-          import('./pages/forms/forms.module').then((m) => m.FormModule),
-      },
-      {
         path: 'charts',
         loadChildren: () =>
           import('./pages/charts/charts.module').then((m) => m.ChartsModule),
