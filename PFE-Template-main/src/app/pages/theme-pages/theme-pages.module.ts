@@ -13,9 +13,7 @@ import { ThemePagesRoutes } from './theme-pages.routing';
 
 // theme pages
 import { AppAccountSettingComponent } from './account-setting/account-setting.component';
-import { AppFaqComponent } from './faq/faq.component';
 import { AppPricingComponent } from './pricing/pricing.component';
-import { AppTreeviewComponent } from './treeview/treeview.component';
 
 @NgModule({
   imports: [
@@ -29,9 +27,7 @@ import { AppTreeviewComponent } from './treeview/treeview.component';
   ],
   declarations: [
     AppAccountSettingComponent,
-    AppFaqComponent,
-    AppPricingComponent,
-    AppTreeviewComponent,
+    AppPricingComponent
   ],
 })
 export class ThemePagesModule {}

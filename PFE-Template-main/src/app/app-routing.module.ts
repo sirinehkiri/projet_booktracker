@@ -87,13 +87,6 @@ const routes: Routes = [
             (m) => m.AuthenticationModule
           ),
       },
-      {
-        path: 'landingpage',
-        loadChildren: () =>
-          import('./pages/theme-pages/landingpage/landingpage.module').then(
-            (m) => m.LandingPageModule
-          ),
-      },
     ],
   },
   {

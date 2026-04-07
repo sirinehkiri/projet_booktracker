@@ -20,8 +20,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FullComponent } from './layouts/full/full.component';
 import { BlankComponent } from './layouts/blank/blank.component';
 
-import { FilterPipe } from './pipe/filter.pipe';
-
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
@@ -36,7 +34,6 @@ export function HttpLoaderFactory(http: HttpClient): any {
   declarations: [
     AppComponent, 
     BlankComponent, 
-    FilterPipe,
     AddBookComponent,
     EditBookComponent 
   ],
