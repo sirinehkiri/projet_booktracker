@@ -3,11 +3,9 @@ import { Routes } from '@angular/router';
 import { AppChatComponent } from './chat/chat.component';
 import { AppNotesComponent } from './notes/notes.component';
 import { AppTodoComponent } from './todo/todo.component';
-import { AppPermissionComponent } from './permission/permission.component';
 import { AppEmailComponent } from './email/email.component';
 import { DetailComponent } from './email/detail/detail.component';
 import { AppTaskboardComponent } from './taskboard/taskboard.component';
-import { AppFullcalendarComponent } from './fullcalendar/fullcalendar.component';
 import { AppTicketlistComponent } from './ticketlist/ticketlist.component';
 import { AppContactComponent } from './contact/contact.component';
 import { AppCoursesComponent } from './courses/courses.component';
@@ -32,17 +30,6 @@ export const AppsRoutes: Routes = [
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard1' },
             { title: 'Chat' },
-          ],
-        },
-      },
-      {
-        path: 'calendar',
-        component: AppFullcalendarComponent,
-        data: {
-          title: 'Calendar',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Calendar' },
           ],
         },
       },
@@ -81,17 +68,6 @@ export const AppsRoutes: Routes = [
             },
           },
         ],
-      },
-      {
-        path: 'permission',
-        component: AppPermissionComponent,
-        data: {
-          title: 'Roll Base Access',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Roll Base Access' },
-          ],
-        },
       },
       {
         path: 'todo',

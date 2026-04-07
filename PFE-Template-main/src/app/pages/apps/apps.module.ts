@@ -29,8 +29,6 @@ import { AppCourseDetailComponent } from './courses/course-detail/course-detail.
 import { AppNotesComponent } from './notes/notes.component';
 //Todo
 import { AppTodoComponent } from './todo/todo.component';
-// Permission
-import { AppPermissionComponent } from './permission/permission.component';
 //Mailbox
 import {
   ListingComponent,
@@ -46,9 +44,6 @@ import { OkAppTaskComponent } from './taskboard/ok-task/ok-task.component';
 import { DeleteAppTaskComponent } from './taskboard/delete-task/delete-task.component';
 
 //Calendar
-import { AppFullcalendarComponent } from './fullcalendar/fullcalendar.component';
-import { CalendarDialogComponent } from './fullcalendar/fullcalendar.component';
-import { CalendarFormDialogComponent } from './fullcalendar/calendar-form-dialog/calendar-form-dialog.component';
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 
@@ -100,7 +95,6 @@ import { AppBlogDetailsComponent } from '../blogs/details/details.component';
   exports: [TablerIconsModule],
   declarations: [
     AppChatComponent,
-    AppPermissionComponent,
     AppNotesComponent,
     AppTodoComponent,
     AppTaskboardComponent,
@@ -111,9 +105,6 @@ import { AppBlogDetailsComponent } from '../blogs/details/details.component';
     ListingComponent,
     DetailComponent,
     AppEmailComponent,
-    AppFullcalendarComponent,
-    CalendarDialogComponent,
-    CalendarFormDialogComponent,
     AppTicketlistComponent,
     AppTicketDialogContentComponent,
     AppContactComponent,

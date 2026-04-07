@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { CourseService } from './course.service';
 import { course } from './course';
 import { MatDialog } from '@angular/material/dialog';
-import { AppDialogOverviewComponent } from '../../ui-components/dialog/dialog.component';
 
 @Component({
   selector: 'app-courses',
@@ -15,18 +14,6 @@ export class AppCoursesComponent {
 
   constructor(public dialog: MatDialog,private courseService: CourseService) {
     this.courseList = this.courseService.getCourse();
-  }
-
-  openDialog(
-    enterAnimationDuration: string,
-    exitAnimationDuration: string
-  ): void {
-    this.dialog.open(AppDialogOverviewComponent, {
-      width: '900px',
-      height:'400px',
-      enterAnimationDuration,
-      exitAnimationDuration,
-    });
   }
   
   
