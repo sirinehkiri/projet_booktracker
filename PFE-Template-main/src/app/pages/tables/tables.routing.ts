@@ -2,18 +2,11 @@ import { Routes } from '@angular/router';
 
 // tables
 import { AppBasicTableComponent } from './basic-table/basic-table.component';
-import { AppDynamicTableComponent } from './dynamic-table/dynamic-table.component';
-import { AppExpandTableComponent } from './expand-table/expand-table.component';
-import { AppFooterRowTableComponent } from './footer-row-table/footer-row-table.component';
-import { AppHttpTableComponent } from './http-table/http-table.component';
 import { AppMixTableComponent } from './mix-table/mix-table.component';
-import { AppMultiHeaderFooterTableComponent } from './multi-header-footer-table/multi-header-footer-table.component';
 import { AppPaginationTableComponent } from './pagination-table/pagination-table.component';
-import { AppRowContextTableComponent } from './row-context-table/row-context-table.component';
 import { AppSelectionTableComponent } from './selection-table/selection-table.component';
 import { AppSortableTableComponent } from './sortable-table/sortable-table.component';
 import { AppStickyColumnTableComponent } from './sticky-column-table/sticky-column-table.component';
-import { AppStickyHeaderFooterTableComponent } from './sticky-header-footer-table/sticky-header-footer-table.component';
 import { AppFilterableTableComponent } from './filterable-table/filterable-table.component';
 
 export const TablesRoutes: Routes = [
@@ -32,28 +25,6 @@ export const TablesRoutes: Routes = [
         },
       },
       {
-        path: 'dynamic-table',
-        component: AppDynamicTableComponent,
-        data: {
-          title: 'Dynamic Table',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Dynamic Table' },
-          ],
-        },
-      },
-      {
-        path: 'expand-table',
-        component: AppExpandTableComponent,
-        data: {
-          title: 'Expand Table',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Expand Table' },
-          ],
-        },
-      },
-      {
         path: 'filterable-table',
         component: AppFilterableTableComponent,
         data: {
@@ -61,28 +32,6 @@ export const TablesRoutes: Routes = [
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard1' },
             { title: 'Filterable Table' },
-          ],
-        },
-      },
-      {
-        path: 'footer-row-table',
-        component: AppFooterRowTableComponent,
-        data: {
-          title: 'Footer Row Table',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Footer Row Table' },
-          ],
-        },
-      },
-      {
-        path: 'http-table',
-        component: AppHttpTableComponent,
-        data: {
-          title: 'HTTP Table',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'HTTP Table' },
           ],
         },
       },
@@ -98,17 +47,6 @@ export const TablesRoutes: Routes = [
         },
       },
       {
-        path: 'multi-header-footer-table',
-        component: AppMultiHeaderFooterTableComponent,
-        data: {
-          title: 'Multi Header Footer Table',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Multi Header Footer Table' },
-          ],
-        },
-      },
-      {
         path: 'pagination-table',
         component: AppPaginationTableComponent,
         data: {
@@ -116,17 +54,6 @@ export const TablesRoutes: Routes = [
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard1' },
             { title: 'Pagination Table' },
-          ],
-        },
-      },
-      {
-        path: 'row-context-table',
-        component: AppRowContextTableComponent,
-        data: {
-          title: 'Row Context Table',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Row Context Table' },
           ],
         },
       },
@@ -160,17 +87,6 @@ export const TablesRoutes: Routes = [
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard1' },
             { title: 'Sticky Column Table' },
-          ],
-        },
-      },
-      {
-        path: 'sticky-header-footer-table',
-        component: AppStickyHeaderFooterTableComponent,
-        data: {
-          title: 'Sticky Header Footer Table',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Sticky Header Footer Table' },
           ],
         },
       },

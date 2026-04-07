@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 
 // ui
 import { AppPaginatorComponent } from './paginator/paginator.component';
-import { AppProgressSnipperComponent } from './progress-snipper/progress-snipper.component';
 import { AppProgressComponent } from './progress/progress.component';
 
 export const UiComponentsRoutes: Routes = [
@@ -28,17 +27,6 @@ export const UiComponentsRoutes: Routes = [
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard1' },
             { title: 'Progress' },
-          ],
-        },
-      },
-      {
-        path: 'progress-spinner',
-        component: AppProgressSnipperComponent,
-        data: {
-          title: 'Progress Spinner',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Progress Spinner' },
           ],
         },
       },

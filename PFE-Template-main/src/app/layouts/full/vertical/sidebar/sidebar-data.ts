@@ -88,29 +88,9 @@ export const navItems: NavItem[] = [
         route: 'tables/basic-table',
       },
       {
-        displayName: 'Dynamic Table',
-        iconName: 'point',
-        route: 'tables/dynamic-table',
-      },
-      {
-        displayName: 'Expand Table',
-        iconName: 'point',
-        route: 'tables/expand-table',
-      },
-      {
         displayName: 'Filterable Table',
         iconName: 'point',
         route: 'tables/filterable-table',
-      },
-      {
-        displayName: 'Footer Row Table',
-        iconName: 'point',
-        route: 'tables/footer-row-table',
-      },
-      {
-        displayName: 'HTTP Table',
-        iconName: 'point',
-        route: 'tables/http-table',
       },
       {
         displayName: 'Mix Table',
@@ -161,21 +141,6 @@ export const navItems: NavItem[] = [
   },
   {
     navCap: 'Chart',
-  },
-  {
-    displayName: 'Line',
-    iconName: 'chart-line',
-    route: '/charts/line',
-  },
-  {
-    displayName: 'Gredient',
-    iconName: 'chart-arcs',
-    route: '/charts/gredient',
-  },
-  {
-    displayName: 'Area',
-    iconName: 'chart-area',
-    route: '/charts/area',
   },
   {
     displayName: 'Doughnut & Pie',

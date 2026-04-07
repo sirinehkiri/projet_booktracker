@@ -13,7 +13,6 @@ import { UiComponentsRoutes } from './ui-components.routing';
 // ui components
 import { AppPaginatorComponent } from './paginator/paginator.component';
 import { AppProgressComponent } from './progress/progress.component';
-import { AppProgressSnipperComponent } from './progress-snipper/progress-snipper.component';
 import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
@@ -28,8 +27,7 @@ import { MatNativeDateModule } from '@angular/material/core';
   ],
   declarations: [
     AppPaginatorComponent,
-    AppProgressComponent,
-    AppProgressSnipperComponent
+    AppProgressComponent
   ],
 })
 export class UicomponentsModule {}
