@@ -20,44 +20,41 @@ export class AppBlogDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadBook(Number(id));
+  }
+}
 
-   /* if (this.bookService.blogPosts.length === 0) {
-      this.bookService.getBlog().subscribe((data: any) => {
-        this.bookService.blogPosts = data;
-        this.loadBook(id);
-      });
-    } else {
-      this.loadBook(id);
-    }
-      */ 
+  loadBook(id:number){
+    this.bookService.getBook(id).subscribe(data=>{
+      console.log("BOOKS:", data);
+      this.book = data;
+    });
   }
 
-  /*loadBook(id: any) {
-  this.book = this.bookService.blogPosts.find(
-    (b: any) => b.id == id
-  );
-
-  console.log('BOOK:', this.book);
-
-  this.comments = [
-    { user: 'Ali', rating: 5, text: 'Amazing book!' },
-    { user: 'Sara', rating: 4, text: 'Very useful 👌' }
-  ];
-}
-  */
 
   addComment() {
-    if (this.newComment.trim()) {
-      this.comments.push({
-        user: 'You',
-        rating: 5,
-        text: this.newComment
-      });
-      this.newComment = '';
+
+  if(!this.newComment.trim()) return;
+
+  const review = {
+    rating: 5,
+    comment: this.newComment
+  };
+
+  this.bookService.addReview(this.book.id,review).subscribe(res=>{
+
+    if(!this.book.reviews){
+      this.book.reviews=[];
     }
-  }
+
+    this.book.reviews.push(res);
+
+    this.newComment="";
+  });
+}
 
   getStars(rating: number) {
-    return [1,2,3,4,5];
-  }
+  return Array(rating);
+}
 }

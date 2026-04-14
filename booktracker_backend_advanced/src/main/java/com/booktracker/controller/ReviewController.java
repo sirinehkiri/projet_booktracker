@@ -1,16 +1,30 @@
-
 package com.booktracker.controller;
-import org.springframework.web.bind.annotation.*;
-import java.util.*;
+
+import com.booktracker.entity.Book;
 import com.booktracker.entity.Review;
+import com.booktracker.repository.BookRepository;
 import com.booktracker.repository.ReviewRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/reviews")
+@RequestMapping("/reviews")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ReviewController {
- private final ReviewRepository repo;
- public ReviewController(ReviewRepository repo){this.repo=repo;}
 
- @GetMapping
- public List<Review> getAll(){return repo.findAll();}
+ @Autowired
+ private ReviewRepository reviewRepository;
+
+ @Autowired
+ private BookRepository bookRepository;
+
+ @PostMapping("/{bookId}")
+ public Review addReview(@PathVariable Long bookId, @RequestBody Review review){
+
+  Book book = bookRepository.findById(bookId).orElseThrow();
+
+  review.setBook(book);
+
+  return reviewRepository.save(review);
+ }
 }

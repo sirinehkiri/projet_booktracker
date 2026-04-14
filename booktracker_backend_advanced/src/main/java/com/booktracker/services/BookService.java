@@ -46,6 +46,7 @@ public class BookService {
                     book.setDescription(updatedBook.getDescription());
                     book.setPic(updatedBook.getPic());
                     book.setLangue(updatedBook.getLangue());
+                    book.setTotal_pages(updatedBook.getTotal_pages());
 
                     return bookRepository.save(book);
 

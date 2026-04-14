@@ -1,7 +1,8 @@
 
 package com.booktracker.entity;
 import jakarta.persistence.*;
-import java.util.*;
+
+import java.util.List;
 
 @Entity
 public class Book {
@@ -23,6 +24,25 @@ public class Book {
   private String langue;
  @Column(nullable = false)
  private int total_pages;
+
+ @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+ private List<Review> reviews;
+
+ @Transient
+ private double averageRating;
+
+ public double getAverageRating() {
+  if(reviews == null || reviews.isEmpty()){
+   return 0;
+  }
+
+  double sum = 0;
+  for(Review r : reviews){
+   sum += r.getRating();
+  }
+
+  return sum / reviews.size();
+ }
 
  public int getTotal_pages() {
   return total_pages;

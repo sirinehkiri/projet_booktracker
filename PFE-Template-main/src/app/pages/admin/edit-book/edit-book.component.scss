@@ -60,9 +60,13 @@ button:hover{
 }
 
 .preview{
-  width:120px;
-  height:180px;
-  object-fit:cover;
-  border-radius:10px;
-  margin-bottom:10px;
+  width: 100%;          /* prend la largeur du container */
+  max-width: 140px;     /* limite max */
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto;       /* centrer */
 }
+
+img { max-width: 100%; height: auto; }

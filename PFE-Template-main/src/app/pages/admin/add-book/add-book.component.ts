@@ -21,13 +21,13 @@ export class AddBookComponent {
     private router:Router
   ){
 
-    this.step1=this.fb.group({
-      title:['',Validators.required],
-      author:['',Validators.required],
-      genre:[''],
-      year:[''],
-      langue:[''],
-      total_pages:['']
+    this.step1 = this.fb.group({
+      title: ['', Validators.required],
+      author: ['', Validators.required],
+      genre: ['', Validators.required],
+      year: ['', Validators.required],
+      langue: ['', Validators.required],
+      total_pages: ['', Validators.required]
     });
 
     this.step2=this.fb.group({
@@ -37,15 +37,25 @@ export class AddBookComponent {
   }
 
   onFileSelected(event: any) {
+
   const file = event.target.files[0];
+
   if (file) {
+
     const formData = new FormData();
     formData.append("file", file);
 
-    this.bookService.uploadImage(formData).subscribe((url:any)=>{
-  this.previewImage = url.url;
-   });
+    this.bookService.uploadImage(formData).subscribe((res:any)=>{
+
+      // CORRECT
+      this.previewImage = res.url;
+
+      console.log("IMAGE URL:", this.previewImage);
+
+    });
+
   }
+
 }
 
   addBook() {
@@ -63,7 +73,7 @@ export class AddBookComponent {
   this.bookService.addBook(bookData).subscribe({
     next: () => {
       alert("Book added!");
-      this.router.navigate(['/apps/blog']);
+      this.router.navigate(['/apps/blog/post']);
     },
     error: err => {
       console.error(err);

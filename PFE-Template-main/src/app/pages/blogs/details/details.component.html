@@ -3,7 +3,12 @@
   <!-- LEFT COLUMN -->
   <div class="left">
 
-    <img [src]="book.imgSrc" class="cover" />
+    <img 
+      [src]="book.pic" 
+      (error)="book.pic='assets/no-book.png'" 
+      alt="Book"
+      width="200"
+      height="300">
 
     <button class="btn">Want to Read</button>
 
@@ -13,9 +18,10 @@
     </div>
 
     <div class="info">
-      <p><strong>Author:</strong> {{ book.author }}</p>
-      <p><strong>Pages:</strong> {{ book.pages }}</p>
+      <p><strong>Genre:</strong> {{ book.genre }}</p>
+      <p><strong>Pages:</strong> {{ book.total_pages }}</p>
       <p><strong>Published:</strong> {{ book.year }}</p>
+      <p><strong>Langue:</strong> {{ book.langue }}</p>
     </div>
 
   </div>
@@ -28,12 +34,12 @@
 
     <!-- rating -->
     <div class="rating">
-      ⭐ {{ book.rating }} / 5
+      ⭐ ⭐ {{ book.averageRating | number:'1.1-1' }} / 5
     </div>
 
     <!-- genres -->
     <div class="genres">
-      <span *ngFor="let g of book.genres">{{ g }}</span>
+      <span>{{ book.genre }}</span>
     </div>
 
     <!-- description -->
@@ -44,12 +50,12 @@
     <!-- REVIEWS -->
     <h2>Reviews</h2>
 
-    <div class="review" *ngFor="let c of comments">
-      <strong>{{ c.user }}</strong>
+    <div class="review" *ngFor="let r of book.reviews">
+      <strong>{{ r.user?.name }}</strong>
       <span class="stars">
-        <span *ngFor="let s of getStars(c.rating)">★</span>
+        <span *ngFor="let s of getStars(r.rating)">★</span>
       </span>
-      <p>{{ c.text }}</p>
+      <p>{{ r.comment }}</p>
     </div>
 
     <!-- add review -->

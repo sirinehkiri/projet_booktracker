@@ -33,7 +33,7 @@ public class UploadController {
 
             // retourne l'URL de l'image
             Map<String, String> response = new HashMap<>();
-            response.put("url", "/uploads/" + filename);
+            response.put("url", "http://localhost:8081/uploads/" + filename);
             return ResponseEntity.ok(response);
 
         } catch (IOException e) {

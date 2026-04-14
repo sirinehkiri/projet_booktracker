@@ -57,6 +57,7 @@ public class BookController {
                                         Authentication authentication) {
 
   String username = authentication.getName();
+  System.out.println(book.getTotal_pages());
 
   return ResponseEntity.ok(bookService.updateBook(id, book, username));
  }

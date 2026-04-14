@@ -1,36 +1,89 @@
-<div class="form-container">
+<mat-card class="cardWithShadow theme-card">
 
-  <h2>✏️ Edit Book</h2>
+  <mat-card-header>
+    <mat-card-title>Edit Book</mat-card-title>
+  </mat-card-header>
 
-  <form (ngSubmit)="updateBook()">
+  <mat-card-content>
 
-    <!-- IMAGE -->
-    <div class="image-upload">
-      <img [src]="previewImage || book.pic || 'assets/default-book.png'" class="preview">
+    <form [formGroup]="form" (ngSubmit)="updateBook()">
 
-      <input type="file" (change)="onFileSelected($event)">
-    </div>
+      <div class="row">
 
-    <div class="form-grid">
+        <!-- LEFT -->
+        <div class="col-8">
 
-      <input [(ngModel)]="book.title" name="title" placeholder="Title">
+          <div class="row">
 
-      <input [(ngModel)]="book.author" name="author" placeholder="Author">
+            <div class="col-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput placeholder="Title" formControlName="title">
+              </mat-form-field>
+            </div>
 
-      <input [(ngModel)]="book.genre" name="genre" placeholder="Genre">
+            <div class="col-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput placeholder="Author" formControlName="author">
+              </mat-form-field>
+            </div>
 
-      <input [(ngModel)]="book.year" name="year" placeholder="Year">
+            <div class="col-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput placeholder="Genre" formControlName="genre">
+              </mat-form-field>
+            </div>
 
-      <input [(ngModel)]="book.langue" name="langue" placeholder="Language">
+            <div class="col-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput type="number" placeholder="Year" formControlName="year">
+              </mat-form-field>
+            </div>
 
-      <input [(ngModel)]="book.total_pages" name="total_pages" placeholder="Pages">
+            <div class="col-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput placeholder="Language" formControlName="langue">
+              </mat-form-field>
+            </div>
 
-    </div>
+            <div class="col-6">
+              <mat-form-field appearance="outline" class="w-100">
+                <input matInput type="number" placeholder="Pages" formControlName="total_pages">
+              </mat-form-field>
+            </div>
 
-    <textarea [(ngModel)]="book.description" name="description"></textarea>
+          </div>
 
-    <button type="submit">💾 Update</button>
+          <!-- DESCRIPTION -->
+          <mat-form-field appearance="outline" class="w-100">
+            <textarea matInput placeholder="Description" formControlName="description"></textarea>
+          </mat-form-field>
 
-  </form>
+        </div>
 
-</div>
+        <!-- RIGHT (IMAGES) -->
+        <div class="col-4 text-center">
+
+          <p>Current Image</p>
+          <img [src]="oldImage || 'assets/default-book.png'" class="preview" width="200"
+          height="300">
+          <p class="mt-3">New Image</p>
+          <img *ngIf="previewImage" [src]="previewImage" class="preview" width="200"
+          height="300">
+
+          <br><br>
+
+          <input type="file" (change)="onFileSelected($event)">
+
+        </div>
+
+      </div>
+
+      <button mat-flat-button color="primary" class="w-100 mt-3">
+        Update Book
+      </button>
+
+    </form>
+
+  </mat-card-content>
+
+</mat-card>

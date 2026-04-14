@@ -33,9 +33,8 @@ export class BookService {
   }
 
   uploadImage(data:any){
-    return this.http.post("http://localhost:8081/upload/image", data, {responseType:'text'});
-  }
-
+  return this.http.post<any>("http://localhost:8081/upload/image", data);
+}
   addBook(data:any){
     return this.http.post("http://localhost:8081/books", data,this.getHeaders());
   }
@@ -49,5 +48,9 @@ export class BookService {
   deleteBook(id:number){
     return this.http.delete(`${this.apiUrl}/${id}`,this.getHeaders());
   }
+
+  addReview(bookId:number,data:any){
+  return this.http.post(`http://localhost:8081/reviews/${bookId}`,data,this.getHeaders());
+}
 
 }

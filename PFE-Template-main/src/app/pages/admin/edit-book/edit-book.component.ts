@@ -1,75 +1,86 @@
-import { Component,OnInit } from '@angular/core';
-import { ActivatedRoute,Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BookService } from 'src/app/pages/blogs/book.service';
 
 @Component({
-  selector:'app-edit-book',
-  templateUrl:'./edit-book.component.html'
+  selector: 'app-edit-book',
+  templateUrl: './edit-book.component.html'
 })
+export class EditBookComponent implements OnInit {
 
-export class EditBookComponent implements OnInit{
+  form!: FormGroup;
+  id!: number;
 
-  book:any={}
-  id:any
+  oldImage: string = '';     // ancienne image
+  previewImage: string = ''; // nouvelle image (URL)
 
   constructor(
-    private route:ActivatedRoute,
-    private bookService:BookService,
-    private router:Router
-  ){}
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private bookService: BookService,
+    private router: Router
+  ) {}
 
-  ngOnInit(){
+  ngOnInit() {
 
-    this.id=this.route.snapshot.params['id'];
+    this.id = this.route.snapshot.params['id'];
 
-    this.bookService.getBook(this.id).subscribe(data=>{
-      this.book=data;
+    this.form = this.fb.group({
+      title: ['', Validators.required],
+      author: ['', Validators.required],
+      genre: ['', Validators.required],
+      year: ['', Validators.required],
+      langue: ['', Validators.required],
+      total_pages: ['', Validators.required],
+      description: ['']
+    });
+
+    this.bookService.getBook(this.id).subscribe((book:any) => {
+
+      this.form.patchValue(book);
+
+      this.oldImage = book.pic;       // ancienne
+      this.previewImage = '';         // pas encore changé
+
+    });
+  }
+
+  // upload image → récup URL
+  onFileSelected(event: any) {
+
+    const file = event.target.files[0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      this.bookService.uploadImage(formData).subscribe((res:any) => {
+
+        this.previewImage = res.url; // nouvelle image
+
+      });
+    }
+  }
+
+  updateBook() {
+
+    const bookData = {
+      ...this.form.value,
+      pic: this.previewImage || this.oldImage // ⚠️ important
+    };
+
+    this.bookService.updateBook(this.id, bookData).subscribe({
+      next: () => {
+        alert("Book updated!");
+        this.router.navigate(['/apps/blog/post']);
+      },
+      error: err => {
+        console.error(err);
+        alert("Error updating book!");
+      }
     });
 
   }
-
-  updateBook(){
-
-  const formData = new FormData();
-
-  formData.append('title', this.book.title);
-  formData.append('author', this.book.author);
-  formData.append('genre', this.book.genre);
-  formData.append('year', this.book.year);
-  formData.append('langue', this.book.langue);
-  formData.append('total_pages', this.book.total_pages);
-  formData.append('description', this.book.description);
-
-  if(this.selectedFile){
-    formData.append('image', this.selectedFile);
-  }
-
-  this.bookService.updateBook(this.id, formData).subscribe({
-    next: () => {
-      alert("Book updated !");
-      this.router.navigate(['/apps/blog']);
-    },
-    error: err => {
-      console.error(err);
-      alert("Erreur update !");
-    }
-  });
-
-}
-  previewImage: string | ArrayBuffer | null = null;
-selectedFile!: File;
-
-onFileSelected(event:any){
-  const file = event.target.files[0];
-  if(file){
-    this.selectedFile = file;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.previewImage = reader.result;
-    };
-    reader.readAsDataURL(file);
-  }
-}
 
 }
