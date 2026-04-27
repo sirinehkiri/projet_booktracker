@@ -51,7 +51,7 @@
     <h2>Reviews</h2>
 
     <div class="review" *ngFor="let r of book.reviews">
-      <strong>{{ r.user?.name }}</strong>
+      <strong>{{ r.user?.username }}</strong>
       <span class="stars">
         <span *ngFor="let s of getStars(r.rating)">★</span>
       </span>

@@ -1,5 +1,6 @@
 package com.booktracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,13 +15,13 @@ public class Review {
  private String comment;
 
  @ManyToOne
- @JoinColumn(name="user_id")
- private User user;
-
- @ManyToOne
- @JoinColumn(name="book_id")
+ @JoinColumn(name = "book_id")
+ @JsonBackReference
  private Book book;
 
+ @ManyToOne
+ @JoinColumn(name="user_id")
+ private User user;
  public Long getId() {
   return id;
  }

@@ -1,5 +1,6 @@
 package com.booktracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.*;
 
@@ -24,8 +25,9 @@ public class User {
 
  private boolean emailVerified = false;
 
- @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
- private List<Review> reviews = new ArrayList<>();
+ @OneToMany(mappedBy = "user")
+ @JsonIgnore
+ private List<Review> reviews;
 
  // ✅ Constructeur vide obligatoire
  public User() {}

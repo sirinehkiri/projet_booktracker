@@ -1,5 +1,7 @@
 
 package com.booktracker.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -25,8 +27,20 @@ public class Book {
  @Column(nullable = false)
  private int total_pages;
 
- @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+ @OneToMany(mappedBy = "book")
+ @JsonManagedReference
  private List<Review> reviews;
+ public List<Review> getReviews() {
+  return reviews;
+ }
+
+ public void setReviews(List<Review> reviews) {
+  this.reviews = reviews;
+ }
+
+ public void setAverageRating(double averageRating) {
+  this.averageRating = averageRating;
+ }
 
  @Transient
  private double averageRating;
