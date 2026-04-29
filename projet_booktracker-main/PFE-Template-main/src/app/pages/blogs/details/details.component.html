@@ -1,0 +1,69 @@
+<div *ngIf="book" class="container">
+
+  <!-- LEFT COLUMN -->
+  <div class="left">
+
+    <img 
+      [src]="book.pic" 
+      (error)="book.pic='assets/no-book.png'" 
+      alt="Book"
+      width="200"
+      height="300">
+
+    <button class="btn">Want to Read</button>
+
+    <div class="rating-box">
+      <h4>Rate this book</h4>
+      <span *ngFor="let s of [1,2,3,4,5]">★</span>
+    </div>
+
+    <div class="info">
+      <p><strong>Genre:</strong> {{ book.genre }}</p>
+      <p><strong>Pages:</strong> {{ book.total_pages }}</p>
+      <p><strong>Published:</strong> {{ book.year }}</p>
+      <p><strong>Langue:</strong> {{ book.langue }}</p>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right">
+
+    <h1>{{ book.title }}</h1>
+    <h3>by {{ book.author }}</h3>
+
+    <!-- rating -->
+    <div class="rating">
+      ⭐ ⭐ {{ book.averageRating | number:'1.1-1' }} / 5
+    </div>
+
+    <!-- genres -->
+    <div class="genres">
+      <span>{{ book.genre }}</span>
+    </div>
+
+    <!-- description -->
+    <p class="description">
+      {{ book.description }}
+    </p>
+
+    <!-- REVIEWS -->
+    <h2>Reviews</h2>
+
+    <div class="review" *ngFor="let r of book.reviews">
+      <strong>{{ r.user?.name }}</strong>
+      <span class="stars">
+        <span *ngFor="let s of getStars(r.rating)">★</span>
+      </span>
+      <p>{{ r.comment }}</p>
+    </div>
+
+    <!-- add review -->
+    <div class="add-review">
+      <textarea [(ngModel)]="newComment"></textarea>
+      <button (click)="addComment()">Post</button>
+    </div>
+
+  </div>
+
+</div>

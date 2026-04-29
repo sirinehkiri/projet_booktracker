@@ -1,0 +1,80 @@
+.container {
+  display: flex;
+  gap: 50px;
+  padding: 40px;
+}
+
+/* LEFT */
+.left {
+  width: 250px;
+}
+
+.cover {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.btn {
+  width: 100%;
+  padding: 10px;
+  background: #409d69;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+.rating-box {
+  margin-top: 20px;
+}
+
+.rating-box span {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* RIGHT */
+.right {
+  flex: 1;
+}
+
+.rating {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.genres span {
+  background: #eee;
+  padding: 5px 10px;
+  margin-right: 5px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.description {
+  margin-top: 20px;
+  line-height: 1.6;
+}
+
+/* REVIEWS */
+.review {
+  background: #f7f7f7;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+.stars {
+  color: gold;
+  margin-left: 10px;
+}
+
+.add-review textarea {
+  width: 100%;
+  height: 80px;
+  margin-top: 15px;
+}
+
+.add-review button {
+  margin-top: 10px;
+}

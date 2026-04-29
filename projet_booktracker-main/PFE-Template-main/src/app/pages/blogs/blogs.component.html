@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="header">
+    <h1>Listopia</h1>
+    <button class="add-btn" (click)="goToAdd()">+ Add Book</button>
+  </div>
+
+  <div class="book-row">
+    <div class="book-card" *ngFor="let book of books">
+      
+
+      <!-- IMAGE -->
+      <div class="cover clickable" (click)="goToDetail(book)">
+        <img [src]="book.pic" (error)="book.pic='assets/no-book.png'" alt="Book">
+      </div>
+
+      <!-- TITLE -->
+      <div class="book-title clickable" (click)="goToDetail(book)">
+        {{book.title}}
+      </div>
+
+      <div class="author">{{book.author}}</div>
+      <!--<div class="genre">{{book.genre}}</div>-->
+
+      <!--<div class="meta">
+        <span class="year">📅 {{book.year}}</span>
+        <span class="pages">📄 {{book.total_pages}} pages</span>
+        <span class="lang">🌍 {{book.langue}}</span>
+      </div>
+     -->
+
+
+      <!-- ACTION BUTTONS -->
+      <div class="actions">
+        <button (click)="editBook(book.id)">Edit</button>
+        <button (click)="deleteBook(book.id)">Delete</button>
+      </div>
+
+    </div>
+  </div>
+</div>
