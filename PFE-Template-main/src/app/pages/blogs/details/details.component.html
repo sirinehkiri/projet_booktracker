@@ -14,7 +14,10 @@
 
     <div class="rating-box">
       <h4>Rate this book</h4>
-      <span *ngFor="let s of [1,2,3,4,5]">★</span>
+
+      <button [routerLink]="['/review', book.id]">
+        Add Review
+      </button>
     </div>
 
     <div class="info">
@@ -34,9 +37,16 @@
 
     <!-- rating -->
     <div class="rating">
-      ⭐ ⭐ {{ book.averageRating | number:'1.1-1' }} / 5
-    </div>
 
+      <span class="stars">
+        <span class="material-icons" *ngFor="let s of getFullStars()">star</span>
+        <span class="material-icons" *ngIf="hasHalfStar()">star_half</span>
+        <span class="material-icons" *ngFor="let s of getEmptyStars()">star_border</span>
+      </span>
+
+      {{ book.averageRating | number:'1.1-1' }} / 5
+
+    </div>
     <!-- genres -->
     <div class="genres">
       <span>{{ book.genre }}</span>
@@ -56,14 +66,18 @@
         <span *ngFor="let s of getStars(r.rating)">★</span>
       </span>
       <p>{{ r.comment }}</p>
+      <button (click)="vote(r.id)">👍 Helpful</button>
     </div>
 
-    <!-- add review -->
-    <div class="add-review">
-      <textarea [(ngModel)]="newComment"></textarea>
-      <button (click)="addComment()">Post</button>
+    <h3>Quotes</h3>
+
+    <div *ngFor="let q of book?.quotes">
+      <strong>{{ q.user?.username }}</strong>
+      <p>{{ q.content }}</p>
     </div>
 
+    <textarea [(ngModel)]="newQuote"></textarea>
+    <button (click)="addQuote()">Add Quote</button>
   </div>
 
 </div>

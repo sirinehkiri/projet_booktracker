@@ -7,9 +7,12 @@ import com.booktracker.repository.BookRepository;
 import com.booktracker.repository.ReviewRepository;
 import com.booktracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.security.Principal;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/reviews")
@@ -26,17 +29,41 @@ public class ReviewController {
  private UserRepository userRepository;
 
  @PostMapping("/{bookId}")
- public Review addReview(@PathVariable Long bookId,
-                         @RequestBody Review review,
-                         Principal principal){
+ public Review addOrUpdateReview(@PathVariable Long bookId,
+                                 @RequestBody Review incoming,
+                                 @AuthenticationPrincipal User user) {
 
   Book book = bookRepository.findById(bookId).orElseThrow();
 
-  User user = userRepository.findByEmail(principal.getName()).orElseThrow();
+  Review existing = reviewRepository.findByUserAndBook(user, book);
 
-  review.setBook(book);
-  review.setUser(user);
+  if (existing != null) {
+   if (incoming.getRating() != null) {
+    existing.setRating(incoming.getRating());
+   }
 
-  return reviewRepository.save(review);
+   if (incoming.getComment() != null) {
+    existing.setComment(incoming.getComment());
+   }
+
+   return reviewRepository.save(existing);
+  }
+     return existing;
+ }
+
+
+ @GetMapping("/{bookId}/my")
+ public Review getMyReview(@PathVariable Long bookId,
+                           @AuthenticationPrincipal User user){
+
+  Book book = bookRepository.findById(bookId).orElseThrow();
+
+  Review review = reviewRepository.findByUserAndBook(user, book);
+
+  if (review == null) {
+   throw new RuntimeException("Review not found");
+  }
+
+  return review;
  }
 }

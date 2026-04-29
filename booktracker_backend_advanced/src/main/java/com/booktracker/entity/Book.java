@@ -30,6 +30,10 @@ public class Book {
  @OneToMany(mappedBy = "book")
  @JsonManagedReference
  private List<Review> reviews;
+
+ @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+ @JsonManagedReference
+ private List<Quote> quotes;
  public List<Review> getReviews() {
   return reviews;
  }
@@ -66,7 +70,7 @@ public class Book {
   this.total_pages = total_pages;
  }
 
- public Book(Long id, String title, String author, String genre, int year, String description, String pic, String langue) {
+ public Book(Long id, String title, String author, String genre, int year, String description, String pic, String langue, int total_pages) {
   this.id = id;
   this.title = title;
   this.author = author;
@@ -75,6 +79,7 @@ public class Book {
   this.description = description;
   this.pic = pic;
   this.langue = langue;
+  this.total_pages = total_pages;
  }
 
  public Book() {

@@ -49,8 +49,24 @@ export class BookService {
     return this.http.delete(`${this.apiUrl}/${id}`,this.getHeaders());
   }
 
+  addRating(bookId:number, data:any){
+  return this.http.post(`http://localhost:8081/reviews/${bookId}/rating`, data, this.getHeaders());
+}
+
   addReview(bookId:number,data:any){
-  return this.http.post(`http://localhost:8081/reviews/${bookId}`,data,this.getHeaders());
+    return this.http.post(`http://localhost:8081/reviews/${bookId}`, data, this.getHeaders());
+  }
+
+  addQuote(bookId:number,data:any){
+    return this.http.post(`http://localhost:8081/quotes/${bookId}`, data, this.getHeaders());
+  }
+
+  voteReview(reviewId:number){
+    return this.http.post(`http://localhost:8081/votes/${reviewId}`, {}, this.getHeaders());
+  }
+
+  getMyReview(bookId:number){
+  return this.http.get(`http://localhost:8081/reviews/${bookId}/my`, this.getHeaders());
 }
 
 }

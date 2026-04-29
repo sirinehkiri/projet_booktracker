@@ -8,4 +8,7 @@ export interface Book{
   pic:string
   langue:string
   total_pages:number
+  quotes?: string[];
+  likes?: number;
+  reviews?: any[];
 }

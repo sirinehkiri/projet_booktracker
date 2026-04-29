@@ -12,6 +12,10 @@ export class AppBlogDetailsComponent implements OnInit {
   book: any;
   comments: any[] = [];
   newComment = '';
+  newQuote: string = '';
+
+  selectedRating = 0;  
+  hoverRating = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,36 +29,105 @@ export class AppBlogDetailsComponent implements OnInit {
   }
 }
 
-  loadBook(id:number){
-    this.bookService.getBook(id).subscribe(data=>{
-      console.log("BOOKS:", data);
-      this.book = data;
-    });
-  }
+loadBook(id:number){
+  this.bookService.getBook(id).subscribe(data => {
+    console.log("BOOKS:", data);
 
+    this.book = data;
 
-  addComment() {
-
-  if(!this.newComment.trim()) return;
-
-  const review = {
-    rating: 5,
-    comment: this.newComment
-  };
-
-  this.bookService.addReview(this.book.id,review).subscribe(res=>{
-
-    if(!this.book.reviews){
-      this.book.reviews=[];
+    if (!this.book.quotes) {
+      this.book.quotes = [];
     }
 
-    this.book.reviews.push(res);
+    if (!this.book.reviews) {
+      this.book.reviews = [];
+    }
 
-    this.newComment="";
+    if (!this.book.likes) {
+      this.book.likes = 0;
+    }
   });
 }
 
+  getFullStars() {
+    return Array(Math.floor(this.book.averageRating));
+  }
+
+  hasHalfStar() {
+    return this.book.averageRating % 1 >= 0.5;
+  }
+
+  getEmptyStars() {
+    const full = Math.floor(this.book.averageRating);
+    const half = this.hasHalfStar() ? 1 : 0;
+    return Array(5 - full - half);
+  }
+
+  submitReview() {
+  const data = {
+    rating: this.selectedRating,
+    comment: this.newComment
+  };
+
+  this.bookService.addReview(this.book.id, data).subscribe(res => {
+    this.updateReviewInUI(res);
+  });
+}
+
+  calculateAverage() {
+  if (!this.book.reviews || this.book.reviews.length === 0) {
+    return 0;
+  }
+
+  let sum = 0;
+  this.book.reviews.forEach((r: any) => {
+    sum += r.rating;
+  });
+
+  return sum / this.book.reviews.length;
+}
+
+updateReviewInUI(updatedReview: any) {
+
+  if (!this.book.reviews) {
+    this.book.reviews = [];
+  }
+
+  const index = this.book.reviews.findIndex(
+    (r: any) => r.user?.id === updatedReview.user?.id
+  );
+
+  if (index !== -1) {
+    this.book.reviews[index] = updatedReview; // update
+  } else {
+    this.book.reviews.push(updatedReview); // add
+  }
+
+  this.book.averageRating = this.calculateAverage();
+}
+
   getStars(rating: number) {
-  return Array(rating);
+    return Array(rating);
+  }
+
+  addQuote() {
+    if (!this.newQuote?.trim()) return;
+
+    const quote = {
+      content: this.newQuote
+    };
+
+    this.bookService.addQuote(this.book.id, quote).subscribe((res: any) => {
+      if (!this.book.quotes) {
+        this.book.quotes = [];
+      }
+
+      this.book.quotes.push(res);
+      this.newQuote = '';
+    });
+  }
+
+vote(reviewId:number){
+  this.bookService.voteReview(reviewId).subscribe();
 }
 }

@@ -1,0 +1,19 @@
+<h2>Your Review</h2>
+
+<!-- étoiles -->
+<span *ngFor="let s of [1,2,3,4,5]"
+      (click)="selectedRating = s"
+        (mouseover)="hoverRating = s"
+        (mouseleave)="hoverRating = 0"
+      [class.active]="s <= selectedRating"
+      class="star">★</span>
+
+<p *ngIf="selectedRating">
+  Your rating: {{ selectedRating }}/5
+</p>
+
+<textarea [(ngModel)]="comment"
+          placeholder="Write your review...">
+</textarea>
+
+<button (click)="submit()">Save Review</button>

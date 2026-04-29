@@ -4,8 +4,13 @@ import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
 import { AddBookComponent } from './pages/admin/add-book/add-book.component';
 import { EditBookComponent } from './pages/admin/edit-book/edit-book.component';
+import { ReviewComponent } from './pages/blogs/review/review.component';
 
 const routes: Routes = [
+  {
+    path: 'review/:id',
+    component: ReviewComponent
+  },
   {
     path: '',
     component: FullComponent,

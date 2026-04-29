@@ -25,6 +25,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AddBookComponent } from './pages/admin/add-book/add-book.component';
 import { EditBookComponent } from './pages/admin/edit-book/edit-book.component';
+import { ReviewComponent } from './pages/blogs/review/review.component';
 
 export function HttpLoaderFactory(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -35,7 +36,8 @@ export function HttpLoaderFactory(http: HttpClient): any {
     AppComponent, 
     BlankComponent, 
     AddBookComponent,
-    EditBookComponent 
+    EditBookComponent,
+    ReviewComponent
   ],
   imports: [
     BrowserModule,

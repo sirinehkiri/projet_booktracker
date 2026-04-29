@@ -10,7 +10,7 @@ public class Review {
  @GeneratedValue(strategy = GenerationType.IDENTITY)
  private Long id;
 
- private int rating;
+ private Integer rating;
 
  private String comment;
 
@@ -30,7 +30,7 @@ public class Review {
   this.id = id;
  }
 
- public int getRating() {
+ public Integer getRating() {
   return rating;
  }
 
