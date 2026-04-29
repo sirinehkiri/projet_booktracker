@@ -65,27 +65,67 @@
     <!-- REVIEWS -->
     <h2>Reviews</h2>
 
-    <div class="review card" *ngFor="let r of book.reviews">
-      <div class="review-header">
-        <strong>{{ r.user?.username }}</strong>
+   <div class="review card" *ngFor="let r of book.reviews">
 
-        <span class="stars">
-          <span *ngFor="let s of getStars(r.rating)">★</span>
-        </span>
-      </div>
+  <!-- HEADER -->
+  <div class="review-header">
 
-      <p>{{ r.comment }}</p>
-       <div class="actions" *ngIf="r.user?.id === currentUserId">
+    <div class="user-info">
+      <strong class="username">
+        {{ r.user?.username }}
+      </strong>
 
-      <button [routerLink]="['/review', book.id]">✏️ Edit</button>
-      <button (click)="deleteReview(r.id)">🗑 Delete</button>
-
+      <span class="date">
+        {{ r.date | date:'mediumDate' }}
+      </span>
     </div>
 
-      <button class="btn small" (click)="vote(r.id)">
-        👍 Helpful
+    <div class="actions" *ngIf="r.user?.id === currentUserId">
+
+    <button class="icon-btn"
+              [routerLink]="['/review', book.id]"
+              title="Edit">
+        <i class="fa-solid fa-pen"></i>
       </button>
+
+      <button class="icon-btn danger"
+              (click)="deleteReview(r.id)"
+              title="Delete">
+        <i class="fa-regular fa-trash-can"></i>
+      </button>
+
     </div>
+
+  </div>
+
+  <!-- STARS -->
+  <div class="stars" aria-label="rating">
+    <ng-container *ngFor="let s of getStars(r.rating)">
+      <i class="fa-solid fa-star"></i>
+    </ng-container>
+  </div>
+
+  <!-- COMMENT -->
+  <p class="comment">
+    {{ r.comment }}
+  </p>
+
+  
+
+  <!-- INTERACTION -->
+  <div class="footer-actions">
+   <button class="btn small like-btn" (click)="vote(r.id)">
+
+    <i class="fa"
+      [ngClass]="r.liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"
+      [style.color]="r.liked ? 'rgb(249, 12, 12)' : 'inherit'">
+    </i>
+
+    <span>{{ r.liked ? 'Liked' : 'Like' }}</span>
+  </button>
+  </div>
+
+</div>
 
     <!-- QUOTES -->
     <h3>Quotes</h3>

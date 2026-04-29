@@ -61,10 +61,9 @@ export class BookService {
     return this.http.post(`http://localhost:8081/quotes/${bookId}`, data, this.getHeaders());
   }
 
-  voteReview(reviewId:number){
-    return this.http.post(`http://localhost:8081/votes/${reviewId}`, {}, this.getHeaders());
+  voteReview(reviewId: number) {
+    return this.http.post(`http://localhost:8081/votes/${reviewId}`,{},this.getHeaders());
   }
-
   getMyReview(bookId:number){
   return this.http.get(`http://localhost:8081/reviews/${bookId}/my`, this.getHeaders());
 }

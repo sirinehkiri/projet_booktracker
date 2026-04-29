@@ -21,6 +21,7 @@ public class ReviewVote {
     private int value; // 1 = helpful
 
     public void setUser(User user) {
+        this.user = user;
     }
 
     public Long getId() {

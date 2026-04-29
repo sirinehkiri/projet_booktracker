@@ -130,8 +130,16 @@ updateReviewInUI(updatedReview: any) {
     });
   }
 
-vote(reviewId:number){
-  this.bookService.voteReview(reviewId).subscribe();
+  vote(reviewId: number) {
+  this.bookService.voteReview(reviewId).subscribe((res: any) => {
+
+    const review = this.book.reviews.find((r: any) => r.id === reviewId);
+
+    if (review) {
+      review.liked = res.status === 'liked';
+    }
+
+  });
 }
 
 deleteReview(id: number) {

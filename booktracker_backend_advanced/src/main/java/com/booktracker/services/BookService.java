@@ -1,7 +1,11 @@
 package com.booktracker.services;
 
 import com.booktracker.entity.Book;
+import com.booktracker.entity.Review;
+import com.booktracker.entity.User;
 import com.booktracker.repository.BookRepository;
+import com.booktracker.repository.ReviewVoteRepository;
+import com.booktracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +14,14 @@ import java.util.List;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final UserRepository userRepository;
+    private final ReviewVoteRepository reviewVoteRepository;
 
-    public BookService(BookRepository bookRepository) {
+
+    public BookService(BookRepository bookRepository, UserRepository userRepository, ReviewVoteRepository reviewVoteRepository) {
         this.bookRepository = bookRepository;
+        this.userRepository = userRepository;
+        this.reviewVoteRepository = reviewVoteRepository;
     }
 
     // GET all books
@@ -23,10 +32,24 @@ public class BookService {
     // GET book by ID
     public Book getBookById(Long id, String username) {
 
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
-    }
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found: " + id));
 
+        if (username == null) {
+            throw new RuntimeException("Username is null (user not authenticated)");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+
+        List<Long> likedIds = reviewVoteRepository.findLikedReviewIds(user);
+
+        for (Review r : book.getReviews()) {
+            r.setLiked(likedIds.contains(r.getId()));
+        }
+
+        return book;
+    }
     // CREATE book
     public Book createBook(Book book, String username) {
 

@@ -20,6 +20,17 @@ public class Review {
 
  private LocalDate date;
 
+ @Transient
+ private boolean liked;
+
+ public boolean isLiked() {
+  return liked;
+ }
+
+ public void setLiked(boolean liked) {
+  this.liked = liked;
+ }
+
  public LocalDate getDate() {
   return date;
  }

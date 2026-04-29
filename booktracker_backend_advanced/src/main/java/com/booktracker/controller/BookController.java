@@ -1,6 +1,7 @@
 package com.booktracker.controller;
 
 import com.booktracker.entity.Book;
+import com.booktracker.entity.User;
 import com.booktracker.services.BookService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +33,8 @@ public class BookController {
  @GetMapping("/{id}")
  public ResponseEntity<Book> getBookById(@PathVariable Long id, Authentication authentication) {
 
-  String username = authentication.getName();
+  User user = (User) authentication.getPrincipal(); // 👈 correction
+  String username = user.getUsername();
 
   return ResponseEntity.ok(bookService.getBookById(id, username));
  }

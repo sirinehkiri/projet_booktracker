@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -23,15 +24,19 @@ public class ReviewVoteController {
     private ReviewRepository reviewRepository;
 
     @PostMapping("/{reviewId}")
-    public ReviewVote vote(@PathVariable Long reviewId,
-                           @AuthenticationPrincipal User user){
+    public Map<String, String> vote(@PathVariable Long reviewId,
+                       @AuthenticationPrincipal User user) {
 
-        Review review = reviewRepository.findById(reviewId).orElseThrow();
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow();
 
-        Optional<ReviewVote> existing = voteRepository.findByUserAndReview(user, review);
+        Optional<ReviewVote> existing =
+                voteRepository.findByUserAndReview(user, review);
 
-        if(existing.isPresent()){
-            return existing.get(); // déjà voté
+        // 🔥 TOGGLE (like/unlike)
+        if (existing.isPresent()) {
+            voteRepository.delete(existing.get());
+            return Map.of("status", "unliked");
         }
 
         ReviewVote vote = new ReviewVote();
@@ -39,6 +44,8 @@ public class ReviewVoteController {
         vote.setReview(review);
         vote.setValue(1);
 
-        return voteRepository.save(vote);
+        voteRepository.save(vote);
+
+        return Map.of("status", "liked");
     }
 }

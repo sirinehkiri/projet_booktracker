@@ -5,15 +5,13 @@ import com.booktracker.entity.Review;
 import com.booktracker.entity.User;
 import com.booktracker.repository.BookRepository;
 import com.booktracker.repository.ReviewRepository;
-import com.booktracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-
-import java.security.Principal;
 import java.time.LocalDate;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/reviews")
@@ -26,19 +24,21 @@ public class ReviewController {
  @Autowired
  private BookRepository bookRepository;
 
- @Autowired
- private UserRepository userRepository;
-
  @PostMapping("/{bookId}")
  public Review addOrUpdateReview(@PathVariable Long bookId,
                                  @RequestBody Review incoming,
                                  @AuthenticationPrincipal User user) {
 
-  Book book = bookRepository.findById(bookId).orElseThrow();
+  if (user == null) {
+   throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+  }
+
+  Book book = bookRepository.findById(bookId)
+          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found"));
 
   Review existing = reviewRepository.findByUserAndBook(user, book);
-
   if (existing != null) {
+
    if (incoming.getRating() != null) {
     existing.setRating(incoming.getRating());
    }
@@ -46,36 +46,45 @@ public class ReviewController {
    if (incoming.getComment() != null) {
     existing.setComment(incoming.getComment());
    }
+
    existing.setDate(LocalDate.now());
 
    return reviewRepository.save(existing);
   }
-     return existing;
+
+  Review newReview = new Review();
+  newReview.setUser(user);
+  newReview.setBook(book);
+  newReview.setRating(incoming.getRating());
+  newReview.setComment(incoming.getComment());
+  newReview.setDate(LocalDate.now());
+
+  return reviewRepository.save(newReview);
  }
 
 
  @GetMapping("/{bookId}/my")
  public Review getMyReview(@PathVariable Long bookId,
-                           @AuthenticationPrincipal User user){
+                           @AuthenticationPrincipal User user) {
 
-  Book book = bookRepository.findById(bookId).orElseThrow();
-
-  Review review = reviewRepository.findByUserAndBook(user, book);
-
-  if (review == null) {
-   throw new RuntimeException("Review not found");
+  if (user == null) {
+   throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
   }
 
-  return review;
+  Book book = bookRepository.findById(bookId)
+          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found"));
+
+  return reviewRepository.findByUserAndBook(user, book);
  }
 
  @DeleteMapping("/{id}")
  public void delete(@PathVariable Long id,
                     @AuthenticationPrincipal User user) {
-  System.out.println("suppp");
 
-  Review r = reviewRepository.findById(id).orElseThrow();
+  Review review = reviewRepository.findById(id)
+          .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Review not found"));
 
-  reviewRepository.delete(r);
+
+  reviewRepository.delete(review);
  }
 }
