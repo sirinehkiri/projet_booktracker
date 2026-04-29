@@ -3,6 +3,8 @@ package com.booktracker.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 public class Review {
 
@@ -22,6 +24,9 @@ public class Review {
  @ManyToOne
  @JoinColumn(name="user_id")
  private User user;
+
+ @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
+ private List<ReviewVote> votes;
  public Long getId() {
   return id;
  }

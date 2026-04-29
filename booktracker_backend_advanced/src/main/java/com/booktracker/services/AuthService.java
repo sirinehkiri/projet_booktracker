@@ -77,7 +77,8 @@ public class AuthService {
                     "message", "Connexion réussie",
                     "token", token,
                     "username", username,
-                    "roles", roles
+                    "roles", roles,
+                    "id",user.getId()
             ));
 
         } catch (Exception ex) {

@@ -1,7 +1,7 @@
 <div *ngIf="book" class="container">
 
-  <!-- LEFT COLUMN -->
-  <div class="left">
+  <!-- LEFT -->
+  <div class="left card">
 
     <img 
       [src]="book.pic" 
@@ -10,12 +10,12 @@
       width="200"
       height="300">
 
-    <button class="btn">Want to Read</button>
+    <button class="btn primary">Want to Read</button>
 
     <div class="rating-box">
       <h4>Rate this book</h4>
 
-      <button [routerLink]="['/review', book.id]">
+      <button class="btn secondary" [routerLink]="['/review', book.id]">
         Add Review
       </button>
     </div>
@@ -29,55 +29,77 @@
 
   </div>
 
-  <!-- RIGHT COLUMN -->
+  <!-- RIGHT -->
   <div class="right">
 
-    <h1>{{ book.title }}</h1>
-    <h3>by {{ book.author }}</h3>
+    <div class="card main-card">
 
-    <!-- rating -->
-    <div class="rating">
+      <h1>{{ book.title }}</h1>
+      <h3 class="author">by {{ book.author }}</h3>
 
-      <span class="stars">
-        <span class="material-icons" *ngFor="let s of getFullStars()">star</span>
-        <span class="material-icons" *ngIf="hasHalfStar()">star_half</span>
-        <span class="material-icons" *ngFor="let s of getEmptyStars()">star_border</span>
-      </span>
+      <!-- rating -->
+      <div class="rating">
 
-      {{ book.averageRating | number:'1.1-1' }} / 5
+        <span class="stars">
+          <span class="material-icons" *ngFor="let s of getFullStars()">star</span>
+          <span class="material-icons" *ngIf="hasHalfStar()">star_half</span>
+          <span class="material-icons" *ngFor="let s of getEmptyStars()">star_border</span>
+        </span>
+
+        <span class="rating-value">
+          {{ book.averageRating | number:'1.1-1' }} / 5
+        </span>
+
+      </div>
+
+      <div class="genres">
+        <span>{{ book.genre }}</span>
+      </div>
+
+      <p class="description">
+        {{ book.description }}
+      </p>
 
     </div>
-    <!-- genres -->
-    <div class="genres">
-      <span>{{ book.genre }}</span>
-    </div>
-
-    <!-- description -->
-    <p class="description">
-      {{ book.description }}
-    </p>
 
     <!-- REVIEWS -->
     <h2>Reviews</h2>
 
-    <div class="review" *ngFor="let r of book.reviews">
-      <strong>{{ r.user?.username }}</strong>
-      <span class="stars">
-        <span *ngFor="let s of getStars(r.rating)">★</span>
-      </span>
+    <div class="review card" *ngFor="let r of book.reviews">
+      <div class="review-header">
+        <strong>{{ r.user?.username }}</strong>
+
+        <span class="stars">
+          <span *ngFor="let s of getStars(r.rating)">★</span>
+        </span>
+      </div>
+
       <p>{{ r.comment }}</p>
-      <button (click)="vote(r.id)">👍 Helpful</button>
+       <div class="actions" *ngIf="r.user?.id === currentUserId">
+
+      <button [routerLink]="['/review', book.id]">✏️ Edit</button>
+      <button (click)="deleteReview(r.id)">🗑 Delete</button>
+
     </div>
 
+      <button class="btn small" (click)="vote(r.id)">
+        👍 Helpful
+      </button>
+    </div>
+
+    <!-- QUOTES -->
     <h3>Quotes</h3>
 
-    <div *ngFor="let q of book?.quotes">
+    <div class="quote card" *ngFor="let q of book?.quotes">
       <strong>{{ q.user?.username }}</strong>
-      <p>{{ q.content }}</p>
+      <p>"{{ q.content }}"</p>
     </div>
 
-    <textarea [(ngModel)]="newQuote"></textarea>
-    <button (click)="addQuote()">Add Quote</button>
+    <div class="add-quote card">
+      <textarea [(ngModel)]="newQuote" placeholder="Add a quote..."></textarea>
+      <button class="btn primary" (click)="addQuote()">Add Quote</button>
+    </div>
+
   </div>
 
 </div>

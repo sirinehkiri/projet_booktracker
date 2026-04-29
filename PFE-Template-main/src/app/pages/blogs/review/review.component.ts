@@ -14,7 +14,6 @@ export class ReviewComponent implements OnInit {
   selectedRating = 0;
   comment = ''; 
   hoverRating = 0;
-
   constructor(
     private route: ActivatedRoute,
     private bookService: BookService,

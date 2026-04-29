@@ -16,6 +16,7 @@ export class AppBlogDetailsComponent implements OnInit {
 
   selectedRating = 0;  
   hoverRating = 0;
+  currentUserId!: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,6 +28,8 @@ export class AppBlogDetailsComponent implements OnInit {
     if (id) {
       this.loadBook(Number(id));
   }
+    const user = JSON.parse(localStorage.getItem('user')!);
+    this.currentUserId = user.id;
 }
 
 loadBook(id:number){
@@ -129,5 +132,14 @@ updateReviewInUI(updatedReview: any) {
 
 vote(reviewId:number){
   this.bookService.voteReview(reviewId).subscribe();
+}
+
+deleteReview(id: number) {
+  console.log(id)
+  if (!confirm('Delete this review?')) return;
+
+  this.bookService.deleteReview(id).subscribe(() => {
+    this.book.reviews = this.book.reviews.filter((r: any) => r.id !== id);
+  });
 }
 }

@@ -66,4 +66,14 @@ public class ReviewController {
 
   return review;
  }
+
+ @DeleteMapping("/{id}")
+ public void delete(@PathVariable Long id,
+                    @AuthenticationPrincipal User user) {
+  System.out.println("suppp");
+
+  Review r = reviewRepository.findById(id).orElseThrow();
+
+  reviewRepository.delete(r);
+ }
 }

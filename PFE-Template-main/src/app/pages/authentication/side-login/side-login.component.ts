@@ -34,6 +34,8 @@ export class AppSideLoginComponent {
     alert(res.message || 'Connexion réussie');
 
     localStorage.setItem('token', res.token);
+    localStorage.setItem('user', JSON.stringify(res));
+
 
     this.router.navigate(['/apps/notes']);
   },

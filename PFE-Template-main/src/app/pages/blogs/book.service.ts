@@ -68,5 +68,8 @@ export class BookService {
   getMyReview(bookId:number){
   return this.http.get(`http://localhost:8081/reviews/${bookId}/my`, this.getHeaders());
 }
+  deleteReview(id: number) {
+  return this.http.delete(`http://localhost:8081/reviews/${id}`);
+}
 
 }

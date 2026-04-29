@@ -1,19 +1,35 @@
-<h2>Your Review</h2>
+<div class="review-card">
 
-<!-- étoiles -->
-<span *ngFor="let s of [1,2,3,4,5]"
-      (click)="selectedRating = s"
-        (mouseover)="hoverRating = s"
-        (mouseleave)="hoverRating = 0"
-      [class.active]="s <= selectedRating"
-      class="star">★</span>
+  <h2>Your Review</h2>
 
-<p *ngIf="selectedRating">
-  Your rating: {{ selectedRating }}/5
-</p>
+  <!-- STARS -->
+  <div class="stars-container">
+    <span *ngFor="let s of [1,2,3,4,5]"
+          (click)="selectedRating = s"
+          (mouseover)="hoverRating = s"
+          (mouseleave)="hoverRating = 0"
+          [class.active]="s <= (hoverRating || selectedRating)"
+          class="star">
+      ★
+    </span>
+  </div>
 
-<textarea [(ngModel)]="comment"
-          placeholder="Write your review...">
-</textarea>
+  <!-- TEXT FEEDBACK -->
+  <p class="rating-text" *ngIf="selectedRating">
+    {{ (selectedRating) }} ({{ selectedRating }}/5)
+  </p>
 
-<button (click)="submit()">Save Review</button>
+  <!-- TEXTAREA -->
+  <textarea [(ngModel)]="comment"
+            placeholder="Write your honest review..."
+            class="textarea">
+  </textarea>
+
+  <!-- BUTTON -->
+  <button (click)="submit()" 
+          [disabled]="!selectedRating || !comment"
+          class="btn-submit">
+    Save Review
+  </button>
+
+</div>
