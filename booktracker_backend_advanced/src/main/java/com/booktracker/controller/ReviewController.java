@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
@@ -45,6 +46,7 @@ public class ReviewController {
    if (incoming.getComment() != null) {
     existing.setComment(incoming.getComment());
    }
+   existing.setDate(LocalDate.now());
 
    return reviewRepository.save(existing);
   }

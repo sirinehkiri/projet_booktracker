@@ -3,6 +3,8 @@ package com.booktracker.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -15,6 +17,16 @@ public class Review {
  private Integer rating;
 
  private String comment;
+
+ private LocalDate date;
+
+ public LocalDate getDate() {
+  return date;
+ }
+
+ public void setDate(LocalDate date) {
+  this.date = date;
+ }
 
  @ManyToOne
  @JoinColumn(name = "book_id")
