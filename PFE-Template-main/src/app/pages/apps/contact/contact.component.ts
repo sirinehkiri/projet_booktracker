@@ -1,120 +1,165 @@
-import { Component, OnInit, Inject, Optional } from '@angular/core';
-import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
-import { Contact } from './contact';
-import { ContactService } from './contact.service';
-
-export interface ContactData {
-  closeResult: string;
-  contacts: Contact[];
-  searchText: any;
-  txtContactname: string;
-  txtContactPost: string;
-  txtContactadd: string;
-  txtContactno: string;
-  txtContactinstagram: string;
-  txtContactlinkedin: string;
-  txtContactfacebook: string;
-}
+import { Component, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { SocialService } from './social.service';
 
 @Component({
   templateUrl: './contact.component.html',
 })
 export class AppContactComponent implements OnInit {
-  closeResult = '';
-  contacts: Contact[] = [];
-
-  searchText: any;
-  txtContactname = '';
-  txtContactPost = '';
-  txtContactadd = '';
-  txtContactno = '';
-  txtContactinstagram = '';
-  txtContactlinkedin = '';
-  txtContactfacebook = '';
+  contacts: any[] = [];
+  allContacts: any[] = [];
+  requests: any[] = [];
+  sentRequests: any[] = [];
+  notifications: any[] = [];
 
   constructor(
     public dialog: MatDialog,
-    private contactService: ContactService
-  ) {
-    this.contacts = this.contactService.getContacts();
-    //console.log(this.contacts);
+    private socialService: SocialService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadContacts();
+    this.loadRequests();
+    this.loadSentRequests();
+    this.loadNotifications();
   }
 
-  openDialog(action: string, obj: any): void {
-    obj.action = action;
+  loadContacts(): void {
+    this.socialService.getContacts().subscribe({
+      next: (data: any[]) => {
+        this.contacts = data;
+        this.allContacts = data;
+      },
+      error: (err: any) => {
+        console.error('Erreur contacts', err);
+      }
+    });
+  }
+
+  loadRequests(): void {
+    this.socialService.getRequests().subscribe({
+      next: (data: any[]) => {
+        this.requests = data;
+      },
+      error: (err: any) => {
+        console.error('Erreur requests', err);
+      }
+    });
+  }
+
+  loadSentRequests(): void {
+    this.socialService.getSentRequests().subscribe({
+      next: (data: any[]) => {
+        this.sentRequests = data;
+      },
+      error: (err: any) => {
+        console.error('Erreur sent requests', err);
+      }
+    });
+  }
+
+  loadNotifications(): void {
+    this.socialService.getNotifications().subscribe({
+      next: (data: any[]) => {
+        this.notifications = data;
+      },
+      error: (err: any) => {
+        console.error('Erreur notifications', err);
+      }
+    });
+  }
+
+  openDialog(): void {
     const dialogRef = this.dialog.open(AppContactDialogContentComponent, {
-      data: obj,
+      width: '600px'
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result.event === 'Add') {
-        this.addContact(result.data);
+    dialogRef.afterClosed().subscribe((selectedUser: any) => {
+      if (selectedUser) {
+        this.followUser(selectedUser.id);
       }
     });
   }
 
   applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.contacts = this.filter(filterValue);
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+    this.contacts = this.allContacts.filter(
+      (x: any) => x.username?.toLowerCase().includes(filterValue)
+    );
   }
 
-  filter(v: string): Contact[] {
-    return this.contactService
-      .getContacts()
-      .filter(
-        (x) => x.contactname.toLowerCase().indexOf(v.toLowerCase()) !== -1
-      );
+  followUser(userId: number): void {
+    this.socialService.sendFollowRequest(userId).subscribe({
+      next: () => {
+        this.loadSentRequests();
+        this.loadNotifications();
+      },
+      error: (err: any) => {
+        console.error('Erreur follow', err);
+      }
+    });
   }
 
-  ngOnInit(): void {
-    // this.contacts = [];
+  acceptRequest(id: number): void {
+    this.socialService.acceptRequest(id).subscribe({
+      next: () => {
+        this.requests = this.requests.filter((req: any) => req.id !== id);
+        this.loadContacts();
+        this.loadNotifications();
+        this.loadSentRequests();
+      },
+      error: (err: any) => {
+        console.error('Erreur accept', err);
+      }
+    });
   }
 
-  // tslint:disable-next-line - Disables all
-  addContact(row_obj: ContactData): void {
-    this.contacts.unshift({
-      contactimg: 'assets/images/profile/user-1.jpg',
-      contactname: row_obj.txtContactname,
-      contactpost: row_obj.txtContactPost,
-      contactadd: row_obj.txtContactadd,
-      contactno: row_obj.txtContactno,
-      contactinstagram: row_obj.txtContactinstagram,
-      contactlinkedin: row_obj.txtContactlinkedin,
-      contactfacebook: row_obj.txtContactfacebook,
+  rejectRequest(id: number): void {
+    this.socialService.rejectRequest(id).subscribe({
+      next: () => {
+        this.requests = this.requests.filter((req: any) => req.id !== id);
+        this.loadNotifications();
+        this.loadSentRequests();
+      },
+      error: (err: any) => {
+        console.error('Erreur reject', err);
+      }
     });
   }
 }
 
 @Component({
-  // tslint:disable-next-line: component-selector
   selector: 'app-dialog-content',
   templateUrl: 'contact-dialog-content.html',
 })
-// tslint:disable-next-line: component-class-suffix
-export class AppContactDialogContentComponent {
-  action: string;
-  // tslint:disable-next-line - Disables all
-    local_data: any;
+export class AppContactDialogContentComponent implements OnInit {
+  users: any[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<AppContactDialogContentComponent>,
-    // @Optional() is used to prevent error if no data is passed
-    @Optional() @Inject(MAT_DIALOG_DATA) public data: ContactData
-  ) {
-    // console.log(data);
-    this.local_data = { ...data };
-    this.action = this.local_data.action;
+    private socialService: SocialService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadUsers();
   }
 
-  doAction(): void {
-    this.dialogRef.close({ event: this.action, data: this.local_data });
+  loadUsers(): void {
+    this.socialService.getUsers().subscribe({
+      next: (data: any[]) => {
+        this.users = data;
+      },
+      error: (err: any) => {
+        console.error('Erreur users', err);
+      }
+    });
+  }
+
+  selectUser(user: any): void {
+    this.dialogRef.close(user);
   }
 
   closeDialog(): void {
-    this.dialogRef.close({ event: 'Cancel' });
+    this.dialogRef.close();
   }
 }

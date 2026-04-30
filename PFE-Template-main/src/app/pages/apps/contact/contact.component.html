@@ -1,6 +1,6 @@
 <mat-card class="cardWithShadow">
   <mat-card-content>
-    <div class="row justify-content-between">
+    <div class="row justify-content-between align-items-center">
       <div class="col-sm-4">
         <mat-form-field appearance="outline" class="w-100 hide-hint">
           <input
@@ -14,10 +14,10 @@
           </mat-icon>
         </mat-form-field>
       </div>
-      <div
-        class="col-sm-8 text-end d-flex align-items-center justify-content-end"
-      >
-        <button mat-flat-button (click)="openDialog('Add', {})" color="primary">
+
+      <div class="col-sm-8 text-end d-flex align-items-center justify-content-end gap-2">
+        <button mat-flat-button color="primary" (click)="openDialog()">
+          <i-tabler name="user-plus" class="icon-18 m-r-4"></i-tabler>
           Add Contact
         </button>
       </div>
@@ -25,66 +25,125 @@
   </mat-card-content>
 </mat-card>
 
-<div class="row">
-  @for(contact of contacts; track contact.contactname) {
-  <div class="col-sm-6 col-lg-4">
-    <mat-card class="cardWithShadow">
-      <mat-card-content class="text-center p-24">
-        <img
-          src="{{ contact.contactimg }}"
-          class="rounded-circle border p-5"
-          width="100"
-        />
-        <h4 mat-card-title class="card-title m-t-16 m-b-0">
-          {{ contact.contactname }}
-        </h4>
-        <span class="f-s-12">{{ contact.contactpost }}</span>
-        <div class="m-t-20">
-          <button mat-flat-button class="m-r-8" color="primary">Chat</button>
-          <button mat-flat-button color="accent">Follow</button>
+<!-- TOP INFORMATIONS -->
+<div class="row m-t-24">
+  <!-- Pending Requests -->
+  <div class="col-lg-4">
+    <mat-card class="cardWithShadow h-100">
+      <mat-card-content class="p-24">
+        <div class="d-flex align-items-center m-b-20">
+          <i-tabler name="user-exclamation" class="icon-22 text-primary m-r-8"></i-tabler>
+          <h4 class="m-0">Pending Requests</h4>
         </div>
-        <div class="m-t-20">
-          <span class="f-s-14">
-            {{ contact.contactadd }}
-            <br />
-            <br />
-            Mo: {{ contact.contactno }}</span
-          >
+
+        <div *ngIf="requests.length === 0" class="text-muted">
+          No pending requests.
+        </div>
+
+        <div
+          *ngFor="let req of requests"
+          class="d-flex justify-content-between align-items-center p-12 border rounded m-b-12"
+        >
+          <div>
+            <div class="f-w-600">{{ req.sender.username }}</div>
+            <div class="text-muted f-s-13">wants to follow you</div>
+          </div>
+
+          <div class="d-flex gap-1">
+            <button mat-icon-button color="primary" (click)="acceptRequest(req.id)">
+              <i-tabler name="check" class="icon-18"></i-tabler>
+            </button>
+            <button mat-icon-button color="warn" (click)="rejectRequest(req.id)">
+              <i-tabler name="x" class="icon-18"></i-tabler>
+            </button>
+          </div>
         </div>
       </mat-card-content>
-      <mat-divider></mat-divider>
-      <div class="row">
-        <div class="col-4 p-y-12">
-          <a
-            href="#"
-            class="mat-subtitle-2 text-decoration-none f-s-14 f-w-500 d-flex justify-content-center align-items-center"
-          >
-            <i-tabler name="brand-instagram" class="icon-18 m-r-4"></i-tabler>
+    </mat-card>
+  </div>
 
-            {{ contact.contactinstagram }}
-          </a>
+  <!-- Sent Requests -->
+  <div class="col-lg-4">
+    <mat-card class="cardWithShadow h-100">
+      <mat-card-content class="p-24">
+        <div class="d-flex align-items-center m-b-20">
+          <i-tabler name="send" class="icon-22 text-info m-r-8"></i-tabler>
+          <h4 class="m-0">Sent Requests</h4>
         </div>
-        <div class="col-4 p-y-12">
-          <a
-            href="#"
-            class="mat-subtitle-2 text-decoration-none f-s-14 f-w-500 d-flex justify-content-center align-items-center"
-          >
-            <i-tabler name="brand-linkedin" class="icon-18 m-r-4"></i-tabler>
 
-            {{ contact.contactlinkedin }}
-          </a>
+        <div *ngIf="sentRequests.length === 0" class="text-muted">
+          No sent requests.
         </div>
-        <div class="col-4 p-y-12">
-          <a
-            href="#"
-            class="mat-subtitle-2 text-decoration-none f-s-14 f-w-500 d-flex justify-content-center align-items-center"
-          >
-            <i-tabler name="brand-facebook" class="icon-18 m-r-4"></i-tabler>
 
-            {{ contact.contactfacebook }}
-          </a>
+        <div
+          *ngFor="let req of sentRequests"
+          class="p-12 border rounded m-b-12"
+        >
+          <div class="f-w-600">{{ req.receiver.username }}</div>
+          <div class="text-muted f-s-13">
+            waiting for acceptance
+          </div>
         </div>
-      </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Notifications -->
+  <div class="col-lg-4">
+    <mat-card class="cardWithShadow h-100">
+      <mat-card-content class="p-24">
+        <div class="d-flex align-items-center m-b-20">
+          <i-tabler name="bell" class="icon-22 text-warning m-r-8"></i-tabler>
+          <h4 class="m-0">Notifications</h4>
+        </div>
+
+        <div *ngIf="notifications.length === 0" class="text-muted">
+          No notifications yet.
+        </div>
+
+        <div
+          *ngFor="let notif of notifications"
+          class="p-12 border rounded m-b-12"
+        >
+          <div class="f-w-500">{{ notif.message }}</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<!-- CONTACTS -->
+<div class="row m-t-24">
+  @for(contact of contacts; track contact.id) {
+  <div class="col-sm-6 col-lg-4">
+    <mat-card class="cardWithShadow h-100">
+      <mat-card-content class="text-center p-24">
+        <img
+          [src]="contact.image || 'assets/images/profile/user-1.jpg'"
+          class="rounded-circle border p-5"
+          width="100"
+          height="100"
+          style="object-fit: cover"
+        />
+
+        <h4 mat-card-title class="card-title m-t-16 m-b-8">
+          {{ contact.username }}
+        </h4>
+
+        <div class="d-flex justify-content-center align-items-center m-b-16 text-muted">
+          <i-tabler name="mail" class="icon-18 m-r-6"></i-tabler>
+          <span class="f-s-14">{{ contact.email }}</span>
+        </div>
+
+        <div class="m-t-20 d-flex justify-content-center gap-2 flex-wrap">
+          <button mat-flat-button class="m-r-8" color="primary">
+            <i-tabler name="message-circle" class="icon-18 m-r-4"></i-tabler>
+            Chat
+          </button>
+
+          
+        </div>
+      </mat-card-content>
     </mat-card>
   </div>
   }

@@ -1,94 +1,141 @@
-<h2 mat-dialog-title class="m-b-24">Add New Contact</h2>
-<mat-dialog-content class="mat-typography" style="max-width: 600px">
-  <form #userForm="ngForm">
-    <mat-form-field appearance="outline" class="w-100">
-      <input
-        type="text"
-        matInput
-        required
-        id="contactname"
-        name="name"
-        [(ngModel)]="local_data.txtContactname"
-        placeholder="Name here"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <input
-        type="text"
-        matInput
-        required
-        id="contactpost"
-        name="post"
-        [(ngModel)]="local_data.txtContactPost"
-        placeholder="Post here"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <input
-        type="text"
-        matInput
-        required
-        id="contactadd"
-        name="address"
-        [(ngModel)]="local_data.txtContactadd"
-        placeholder="Address here"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <input
-        type="text"
-        matInput
-        required
-        id="contactno"
-        name="contact"
-        [(ngModel)]="local_data.txtContactno"
-        placeholder="Number here"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <input
-        type="text"
-        matInput
-        required
-        id="contactinsta"
-        name="insta"
-        [(ngModel)]="local_data.txtContactinstagram"
-        placeholder="Instagram Follower here"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <input
-        type="text"
-        matInput
-        required
-        id="contactlinked"
-        name="linkedin"
-        [(ngModel)]="local_data.txtContactlinkedin"
-        placeholder="Linkedin Follower here"
-      />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="w-100">
-      <input
-        type="text"
-        matInput
-        required
-        id="contactfacebook"
-        name="facebook"
-        [(ngModel)]="local_data.txtContactfacebook"
-        placeholder="Facebook Follower here"
-      />
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
-<mat-divider></mat-divider>
-<mat-dialog-actions class="p-24">
-  <button mat-stroked-button color="warn" mat-dialog-close>Cancel</button>
-  <button
-    mat-flat-button
-    [mat-dialog-close]="true"
-    [disabled]="!userForm.form.valid" color="primary"
-    (click)="doAction();"
+<h2
+  mat-dialog-title
+  class="m-b-8 d-flex align-items-center"
+  style="font-size: 24px; font-weight: 700; color: #1c1e21;"
+>
+  <mat-icon
+    class="m-r-8"
+    style="
+      background: #e7f3ff;
+      color: #1877f2;
+      border-radius: 50%;
+      padding: 8px;
+      width: 40px;
+      height: 40px;
+      font-size: 24px;
+    "
   >
-    Add Contact
+    person_add
+  </mat-icon>
+  Ajouter un contact
+</h2>
+
+<div class="p-x-24 m-b-16" style="color: #65676b; font-size: 14px;">
+  Choisissez un utilisateur à ajouter à vos contacts.
+</div>
+
+<mat-dialog-content
+  class="mat-typography"
+  style="
+    max-width: 650px;
+    min-width: 520px;
+    max-height: 450px;
+    overflow-y: auto;
+    background: #f7f8fa;
+    padding: 12px;
+    border-radius: 12px;
+  "
+>
+  <div
+    *ngIf="users.length === 0"
+    class="text-center p-24"
+    style="color: #65676b;"
+  >
+    <mat-icon
+      style="
+        font-size: 42px;
+        width: 42px;
+        height: 42px;
+        color: #b0b3b8;
+      "
+    >
+      person_off
+    </mat-icon>
+    <p class="m-t-12 m-b-0">Aucun utilisateur disponible</p>
+  </div>
+
+  <div
+    *ngFor="let user of users"
+    class="d-flex justify-content-between align-items-center m-b-12"
+    style="
+      background: #ffffff;
+      border: 1px solid #e4e6eb;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    "
+  >
+    <div class="d-flex align-items-center">
+      <div
+        class="d-flex align-items-center justify-content-center"
+        style="
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #1877f2, #42a5f5);
+          color: white;
+          font-size: 18px;
+          font-weight: 700;
+          text-transform: uppercase;
+        "
+      >
+        {{ user.username?.charAt(0) }}
+      </div>
+
+      <div class="m-l-12">
+        <div style="font-size: 15px; font-weight: 700; color: #1c1e21;">
+          {{ user.username }}
+        </div>
+        <div
+          class="d-flex align-items-center m-t-4"
+          style="font-size: 13px; color: #65676b;"
+        >
+          <mat-icon
+            class="m-r-4"
+            style="font-size: 16px; width: 16px; height: 16px;"
+          >
+            mail
+          </mat-icon>
+          {{ user.email }}
+        </div>
+      </div>
+    </div>
+
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="selectUser(user)"
+      style="
+        border-radius: 999px;
+        padding: 0 18px;
+        font-weight: 600;
+        height: 40px;
+      "
+    >
+      <mat-icon class="m-r-4" style="font-size: 18px;">person_add</mat-icon>
+      Ajouter
+    </button>
+  </div>
+</mat-dialog-content>
+
+<mat-divider></mat-divider>
+
+<mat-dialog-actions
+  class="p-24 d-flex justify-content-end"
+  style="background: #ffffff;"
+>
+  <button
+    mat-stroked-button
+    color="warn"
+    (click)="closeDialog()"
+    style="
+      border-radius: 999px;
+      padding: 0 18px;
+      height: 40px;
+      font-weight: 600;
+    "
+  >
+    <mat-icon class="m-r-4" style="font-size: 18px;">close</mat-icon>
+    Annuler
   </button>
 </mat-dialog-actions>

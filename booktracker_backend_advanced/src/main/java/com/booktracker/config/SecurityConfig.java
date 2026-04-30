@@ -40,6 +40,8 @@ public class SecurityConfig {
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers("/upload/**").permitAll()
                         .requestMatchers("/reviews/**").permitAll()
+                        .requestMatchers("/api/social/**").authenticated()
+                        .requestMatchers("/api/chat/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

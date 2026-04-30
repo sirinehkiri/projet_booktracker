@@ -1,18 +1,126 @@
-.chat-list {
-  overflow: hidden;
-  box-sizing: border-box;
-  width: 100%;
-  margin-bottom: 1rem;
-  //padding: 0 2rem;
+.message-row {
   display: flex;
+  width: 100%;
+  margin-bottom: 12px;
+  align-items: flex-end;
+}
 
-  &.even {
-    -webkit-box-pack: end;
-    -ms-flex-pack: end;
-    -moz-justify-content: flex-end;
-    justify-content: flex-end;
-    text-align: right;
-  }
+.message-row.received {
+  justify-content: flex-start;
+}
+
+.message-row.sent {
+  justify-content: flex-end;
+}
+
+.message-avatar {
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.message-avatar.me-avatar {
+  margin-left: 8px;
+  margin-right: 0;
+}
+
+.avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.avatar-me {
+  background-color: #1877f2;
+  color: white;
+}
+
+.avatar-other {
+  background-color: #e4e6eb;
+  color: #1877f2;
+  margin-right: 8px;
+}
+
+.message-wrapper {
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-row.received .message-wrapper {
+  align-items: flex-start;
+}
+
+.message-row.sent .message-wrapper {
+  align-items: flex-end;
+}
+
+.message-sender {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #6c757d;
+  padding: 0 4px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.message-bubble {
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.received-bubble {
+  background-color: #e4e6eb;
+  color: #1c1e21;
+  border-bottom-left-radius: 4px;
+}
+
+.sent-bubble {
+  background-color: #1877f2;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.message-time {
+  font-size: 11px;
+  color: #8a8d91;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  margin-left: 8px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  color: #8a8d91;
+  vertical-align: middle;
+}
+
+.message-row:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  background-color: rgba(229, 57, 53, 0.1);
+  color: #e53935;
 }
 
 .chat-app {
