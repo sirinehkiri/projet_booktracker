@@ -138,3 +138,31 @@
     width: 100%;
   }
 }
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  width: 200px;
+  margin-top: 5px;
+  border-radius: 5px;
+}
+
+.dropdown-menu div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.dropdown-menu div:hover {
+  background-color: #f0f0f0;
+}

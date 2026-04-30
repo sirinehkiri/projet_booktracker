@@ -18,6 +18,10 @@ export class AppBlogDetailsComponent implements OnInit {
   hoverRating = 0;
   currentUserId!: number;
 
+  currentStatus: string = 'WANT_TO_READ';
+  
+  isOpen = false;
+
   constructor(
     private route: ActivatedRoute,
     public bookService: BookService
@@ -32,23 +36,21 @@ export class AppBlogDetailsComponent implements OnInit {
     this.currentUserId = user.id;
 }
 
-loadBook(id:number){
+loadBook(id: number) {
   this.bookService.getBook(id).subscribe(data => {
     console.log("BOOKS:", data);
 
     this.book = data;
 
-    if (!this.book.quotes) {
-      this.book.quotes = [];
-    }
+    this.book.quotes ??= [];
+    this.book.reviews ??= [];
+    this.book.likes ??= 0;
 
-    if (!this.book.reviews) {
-      this.book.reviews = [];
-    }
+    this.bookService.getUserStatus(this.book.id).subscribe(status => {
+      this.currentStatus = status;
+      console.log("STATUS:", status);
+    });
 
-    if (!this.book.likes) {
-      this.book.likes = 0;
-    }
   });
 }
 
@@ -149,5 +151,24 @@ deleteReview(id: number) {
   this.bookService.deleteReview(id).subscribe(() => {
     this.book.reviews = this.book.reviews.filter((r: any) => r.id !== id);
   });
+}
+toggleDropdown() {
+  this.isOpen = !this.isOpen;
+}
+setStatus(status: string) {
+  this.currentStatus = status;
+  this.isOpen = false;
+  this.bookService.setStatus(this.book.id, status)
+    .subscribe(() => {
+      console.log("Status updated");
+    });
+}
+getStatusLabel(status: string): string {
+  switch (status) {
+    case 'READ': return '✅ Read';
+    case 'READING': return '📖 Currently Reading';
+    case 'WANT_TO_READ': return '⭐ Want to Read';
+    default: return 'Select Status';
+  }
 }
 }

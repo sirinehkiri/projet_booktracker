@@ -70,5 +70,18 @@ export class BookService {
   deleteReview(id: number) {
   return this.http.delete(`http://localhost:8081/reviews/${id}`);
 }
+setStatus(bookId: number, status: string) {
+  return this.http.post(
+    `http://localhost:8081/api/userbooks/status?bookId=${bookId}&status=${status}`,
+    {},
+    this.getHeaders()
+  );
+}
+getUserStatus(bookId: number) {
+  return this.http.get<string>(
+    `http://localhost:8081/api/userbooks/status?bookId=${bookId}`,
+this.getHeaders()
+  );
+}
 
 }

@@ -9,8 +9,19 @@
       alt="Book"
       width="200"
       height="300">
+    <div class="dropdown">
 
-    <button class="btn primary">Want to Read</button>
+      <button (click)="toggleDropdown()">
+        {{ getStatusLabel(currentStatus) }} ▼
+      </button>
+
+      <div *ngIf="isOpen" class="dropdown-menu">
+        <div (click)="setStatus('READ')">✅ Read</div>
+        <div (click)="setStatus('READING')">📖 Currently Reading</div>
+        <div (click)="setStatus('WANT_TO_READ')">⭐ Want to Read</div>
+      </div>
+
+    </div>
 
     <div class="rating-box">
       <h4>Rate this book</h4>
