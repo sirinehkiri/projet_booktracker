@@ -40,4 +40,11 @@ public class UserBookController {
 
         return service.getStatus(user.getId(), bookId);
     }
+
+    @GetMapping("/book/{bookId}")
+    public UserBook getUserBookByBook(@PathVariable Long bookId,
+                                      @AuthenticationPrincipal User user) {
+
+        return service.getUserBook(user.getId(), bookId);
+    }
 }

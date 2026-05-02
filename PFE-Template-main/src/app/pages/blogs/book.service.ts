@@ -83,5 +83,12 @@ getUserStatus(bookId: number) {
 this.getHeaders()
   );
 }
+getUserBook(bookId: number) {
+  return this.http.get(`http://localhost:8081/api/userbooks/book/${bookId}`,this.getHeaders());
+}
+
+updateProgress(data: any) {
+  return this.http.post('http://localhost:8081/reading/progress', data,this.getHeaders());
+}
 
 }

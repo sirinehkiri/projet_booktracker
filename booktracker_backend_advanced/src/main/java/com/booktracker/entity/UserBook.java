@@ -1,6 +1,10 @@
 package com.booktracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -18,6 +22,11 @@ public class UserBook {
 
     @Enumerated(EnumType.STRING)
     private ReadingStatus status;
+
+    private int totalPages;
+    private int pagesRead;
+    @OneToMany(mappedBy = "userBook", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReadingProgress> readingProgressList = new ArrayList<>();
 
     public UserBook(Long id, User user, Book book, ReadingStatus status) {
         this.id = id;
@@ -60,5 +69,27 @@ public class UserBook {
 
     public void setStatus(ReadingStatus status) {
         this.status = status;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public int getPagesRead() {
+        return pagesRead;
+    }
+
+    public void setPagesRead(int pagesRead) {
+        this.pagesRead = pagesRead;
+    }
+    @JsonProperty("progress")
+    @Transient
+    public double getProgress() {
+        if (totalPages == 0) return 0;
+        return (pagesRead * 100.0) / totalPages;
     }
 }

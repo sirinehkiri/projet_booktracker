@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/reviews/**").permitAll()
                         .requestMatchers("/api/social/**").authenticated()
                         .requestMatchers("/api/chat/**").authenticated()
+                        .requestMatchers("/reading/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

@@ -37,6 +37,7 @@ public class UserBookService {
         ub.setUser(user);
         ub.setBook(book);
         ub.setStatus(status);
+        ub.setTotalPages(book.getTotal_pages());
 
         return repo.save(ub);
     }
@@ -51,5 +52,10 @@ public class UserBookService {
         return repo.findByUserIdAndBookId(userId, bookId)
                 .map(UserBook::getStatus)
                 .orElse(ReadingStatus.WANT_TO_READ);
+    }
+
+    public UserBook getUserBook(Long userId, Long bookId) {
+        return repo.findByUserIdAndBookId(userId, bookId)
+                .orElse(null);
     }
 }
