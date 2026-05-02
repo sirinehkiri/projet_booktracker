@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +23,9 @@ public class ChatService {
     private final UserRepository userRepository;
     private final FollowRequestRepository followRequestRepository;
 
+    // ============================================
+    // CONTACTS
+    // ============================================
     public List<ChatContactResponse> getMyChatContacts() {
         User currentUser = getCurrentUser();
 
@@ -38,7 +41,35 @@ public class ChatService {
                 .distinct()
                 .toList();
 
-        return acceptedContacts.stream()
+        List<Message> allMessages = messageRepository.findAll();
+        Set<User> chatPartners = allMessages.stream()
+                .filter(m -> m.getSender().getId().equals(currentUser.getId()) ||
+                        m.getReceiver().getId().equals(currentUser.getId()))
+                .map(m -> m.getSender().getId().equals(currentUser.getId())
+                        ? m.getReceiver()
+                        : m.getSender())
+                .distinct()
+                .collect(Collectors.toSet());
+
+        Set<Long> seenIds = new HashSet<>();
+        seenIds.add(currentUser.getId());
+        List<User> allContacts = new ArrayList<>();
+
+        for (User contact : acceptedContacts) {
+            if (!seenIds.contains(contact.getId())) {
+                seenIds.add(contact.getId());
+                allContacts.add(contact);
+            }
+        }
+
+        for (User contact : chatPartners) {
+            if (!seenIds.contains(contact.getId())) {
+                seenIds.add(contact.getId());
+                allContacts.add(contact);
+            }
+        }
+
+        return allContacts.stream()
                 .map(contact -> {
                     List<Message> conversation =
                             messageRepository.findBySenderAndReceiverOrSenderAndReceiverOrderBySentAtAsc(
@@ -66,19 +97,14 @@ public class ChatService {
                 .toList();
     }
 
-    // RENOMMÉ : getConversation devient getConversationMessages
-    // TRÈS IMPORTANT : Retire la logique de marquage comme lu d'ici !
-    public List<MessageResponse> getConversationMessages(Long otherUserId) { // Renommé userId en otherUserId
+    // ============================================
+    // CONVERSATION
+    // ============================================
+    public List<MessageResponse> getConversationMessages(Long userId) {
         User currentUser = getCurrentUser();
 
-        User otherUser = userRepository.findById(otherUserId) // otherUserId
+        User otherUser = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        // *** LA LOGIQUE SUIVANTE EST SUPPRIMÉE D'ICI ***
-        // List<Message> unreadMessages = messageRepository.findByReceiverAndSenderAndIsReadFalse(currentUser, otherUser);
-        // unreadMessages.forEach(message -> message.setRead(true));
-        // messageRepository.saveAll(unreadMessages);
-        // *** Elle est maintenant dans markMessagesAsReadForUser() ***
 
         List<Message> messages =
                 messageRepository.findBySenderAndReceiverOrSenderAndReceiverOrderBySentAtAsc(
@@ -98,6 +124,9 @@ public class ChatService {
                 .toList();
     }
 
+    // ============================================
+    // ENVOYER
+    // ============================================
     public MessageResponse sendMessage(MessageRequest request) {
         User sender = getCurrentUser();
 
@@ -111,21 +140,6 @@ public class ChatService {
 
         User receiver = userRepository.findById(request.getReceiverId())
                 .orElseThrow(() -> new RuntimeException("Receiver not found"));
-
-        boolean canChat = followRequestRepository.findAll().stream().anyMatch(req ->
-                "ACCEPTED".equals(req.getStatus()) &&
-                        (
-                                (req.getSender().getId().equals(sender.getId()) &&
-                                        req.getReceiver().getId().equals(receiver.getId()))
-                                        ||
-                                        (req.getSender().getId().equals(receiver.getId()) &&
-                                                req.getReceiver().getId().equals(sender.getId()))
-                        )
-        );
-
-        if (!canChat) {
-            throw new RuntimeException("You can chat only with accepted contacts");
-        }
 
         Message message = new Message();
         message.setSender(sender);
@@ -146,6 +160,9 @@ public class ChatService {
         );
     }
 
+    // ============================================
+    // MESSAGES NON LUS
+    // ============================================
     public List<MessageResponse> getUnreadMessages() {
         User currentUser = getCurrentUser();
 
@@ -165,11 +182,14 @@ public class ChatService {
                 .toList();
     }
 
-    // NOUVEAU : Méthode dédiée pour marquer les messages d'un utilisateur spécifique comme lus
+    // ============================================
+    // MARQUER COMME LU
+    // ============================================
     public void markMessagesAsReadForUser(Long otherUserId) {
         User currentUser = getCurrentUser();
+
         User otherUser = userRepository.findById(otherUserId)
-                .orElseThrow(() -> new RuntimeException("Other user not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<Message> unreadMessages =
                 messageRepository.findByReceiverAndSenderAndIsReadFalse(currentUser, otherUser);
@@ -178,19 +198,47 @@ public class ChatService {
         messageRepository.saveAll(unreadMessages);
     }
 
-    private User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
+    // ============================================
+    // SUPPRIMER
+    // ============================================
     public boolean deleteMessage(Long messageId) {
         User currentUser = getCurrentUser();
 
-        Message message = messageRepository.findByIdAndUser(messageId, currentUser);
+        Optional<Message> optionalMessage = messageRepository.findById(messageId);
 
-        if (message == null) {
+        if (optionalMessage.isEmpty()) {
+            return false;
+        }
+
+        Message message = optionalMessage.get();
+
+        if (!message.getSender().getId().equals(currentUser.getId()) &&
+                !message.getReceiver().getId().equals(currentUser.getId())) {
             return false;
         }
 
         messageRepository.delete(message);
         return true;
+    }
+
+    // ============================================
+    // GET USER INFO
+    // ============================================
+    public Map<String, Object> getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", user.getId());
+        response.put("username", user.getUsername());
+        response.put("email", user.getEmail());
+        return response;
+    }
+
+    // ============================================
+    // USER COURANT
+    // ============================================
+    private User getCurrentUser() {
+        return (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

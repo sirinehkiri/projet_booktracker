@@ -54,4 +54,9 @@ public class ChatController {
             return ResponseEntity.badRequest().body(Map.of("status", "Cannot delete this message"));
         }
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Long userId) {
+        return ResponseEntity.ok(chatService.getUserInfo(userId));
+    }
 }

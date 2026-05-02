@@ -8,16 +8,14 @@ import { BehaviorSubject, Observable, interval } from 'rxjs';
 export class ChatService {
   private apiUrl = 'http://localhost:8081/api/chat';
 
-  // Compteur de messages non lus
   private unreadCountSubject = new BehaviorSubject<number>(0);
   unreadCount$: Observable<number> = this.unreadCountSubject.asObservable();
 
-  // Liste des expéditeurs
   private unreadSendersSubject = new BehaviorSubject<any[]>([]);
   unreadSenders$: Observable<any[]> = this.unreadSendersSubject.asObservable();
 
-  // ID utilisateur courant
   private currentUserId: number | null = null;
+  private pollingStarted = false;
 
   constructor(private http: HttpClient) {
     const userId = localStorage.getItem('userId');
@@ -33,29 +31,25 @@ export class ChatService {
   }
 
   // ============================================
-  // DÉMARRER LE POLLING (appelé par le header)
+  // POLLING DES MESSAGES NON LUS
   // ============================================
   startUnreadPolling(): void {
-    // Vérifier immédiatement
+    if (this.pollingStarted) return;
+    this.pollingStarted = true;
+
     this.fetchUnreadCount();
 
-    // Puis toutes les 3 secondes
     interval(3000).subscribe(() => {
       this.fetchUnreadCount();
     });
   }
 
-  // ============================================
-  // RÉCUPÉRER LE NOMBRE DE MESSAGES NON LUS
-  // ============================================
   fetchUnreadCount(): void {
     this.http.get<any[]>(`${this.apiUrl}/unread`, { headers: this.getHeaders() })
       .subscribe({
         next: (data: any[]) => {
-          // Mettre à jour le compteur
           this.unreadCountSubject.next(data.length);
 
-          // Calculer les expéditeurs uniques
           const senderMap = new Map<number, any>();
           data.forEach((msg: any) => {
             let senderId: number | null = null;
@@ -101,7 +95,6 @@ export class ChatService {
     this.http.post(`${this.apiUrl}/markAsRead/${senderId}`, {}, { headers: this.getHeaders() })
       .subscribe({
         next: () => {
-          // Rafraîchir immédiatement le compteur
           this.fetchUnreadCount();
         },
         error: (err: any) => {
@@ -111,24 +104,44 @@ export class ChatService {
   }
 
   // ============================================
-  // MÉTHODES EXISTANTES
+  // DELETE MESSAGE
+  // ============================================
+  deleteMessage(messageId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete/${messageId}`, { headers: this.getHeaders() });
+  }
+
+  // ============================================
+  // GET USER INFO
+  // ============================================
+  getUserInfo(userId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/user/${userId}`, { headers: this.getHeaders() });
+  }
+
+  // ============================================
+  // GET CONTACTS
   // ============================================
   getContacts(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/contacts`, { headers: this.getHeaders() });
   }
 
+  // ============================================
+  // GET CONVERSATION
+  // ============================================
   getConversation(userId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/conversation/${userId}`, { headers: this.getHeaders() });
   }
 
+  // ============================================
+  // SEND MESSAGE
+  // ============================================
   sendMessage(receiverId: number, content: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/send`, { receiverId, content }, { headers: this.getHeaders() });
   }
 
+  // ============================================
+  // GET UNREAD MESSAGES
+  // ============================================
   getUnreadMessages(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/unread`, { headers: this.getHeaders() });
   }
-  deleteMessage(messageId: number): Observable<any> {
-  return this.http.delete(`${this.apiUrl}/delete/${messageId}`, { headers: this.getHeaders() });
-}
 }

@@ -65,7 +65,7 @@ export class AppChatComponent implements OnInit, OnDestroy {
       this.loadContacts();
       this.loadUnreadMessages();
 
-      if (this.selectedContact) {
+      if (this.selectedContact && this.selectedContact.id) {
         this.loadConversation(this.selectedContact.id);
       }
     });
@@ -141,13 +141,29 @@ export class AppChatComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ============================================
+  // OUVRIR CONVERSATION (amis ou non-amis)
+  // ============================================
   openConversation(userId: number): void {
     const found = this.contacts.find((c: any) => c.id === userId);
+
     if (found) {
       this.selectedContact = found;
-      this.loadConversation(userId);
-      this.chatService.markAsRead(userId);
+    } else {
+      this.selectedContact = { id: userId, username: 'Loading...', email: '' };
+
+      this.chatService.getUserInfo(userId).subscribe({
+        next: (user: any) => {
+          this.selectedContact = user;
+        },
+        error: (err: any) => {
+          console.error('Error loading user info', err);
+        }
+      });
     }
+
+    this.loadConversation(userId);
+    this.chatService.markAsRead(userId);
   }
 
   loadConversation(userId: number): void {

@@ -80,9 +80,7 @@
           class="p-12 border rounded m-b-12"
         >
           <div class="f-w-600">{{ req.receiver.username }}</div>
-          <div class="text-muted f-s-13">
-            waiting for acceptance
-          </div>
+          <div class="text-muted f-s-13">waiting for acceptance</div>
         </div>
       </mat-card-content>
     </mat-card>
@@ -136,12 +134,12 @@
         </div>
 
         <div class="m-t-20 d-flex justify-content-center gap-2 flex-wrap">
-          <button mat-flat-button class="m-r-8" color="primary">
+          <a mat-flat-button color="primary"
+             [routerLink]="['/apps/chat']"
+             [queryParams]="{userId: contact.id}">
             <i-tabler name="message-circle" class="icon-18 m-r-4"></i-tabler>
             Chat
-          </button>
-
-          
+          </a>
         </div>
       </mat-card-content>
     </mat-card>

@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SocialService } from './social.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { MaterialModule } from 'src/app/material.module';
+import { RouterModule } from '@angular/router';
+import { TablerIconsModule } from 'angular-tabler-icons';
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './contact.component.html',
@@ -31,7 +37,7 @@ export class AppContactComponent implements OnInit {
         this.allContacts = data;
       },
       error: (err: any) => {
-        console.error('Erreur contacts', err);
+        console.error('Error contacts', err);
       }
     });
   }
@@ -42,7 +48,7 @@ export class AppContactComponent implements OnInit {
         this.requests = data;
       },
       error: (err: any) => {
-        console.error('Erreur requests', err);
+        console.error('Error requests', err);
       }
     });
   }
@@ -53,7 +59,7 @@ export class AppContactComponent implements OnInit {
         this.sentRequests = data;
       },
       error: (err: any) => {
-        console.error('Erreur sent requests', err);
+        console.error('Error sent requests', err);
       }
     });
   }
@@ -64,7 +70,7 @@ export class AppContactComponent implements OnInit {
         this.notifications = data;
       },
       error: (err: any) => {
-        console.error('Erreur notifications', err);
+        console.error('Error notifications', err);
       }
     });
   }
@@ -95,7 +101,7 @@ export class AppContactComponent implements OnInit {
         this.loadNotifications();
       },
       error: (err: any) => {
-        console.error('Erreur follow', err);
+        console.error('Error follow', err);
       }
     });
   }
@@ -109,7 +115,7 @@ export class AppContactComponent implements OnInit {
         this.loadSentRequests();
       },
       error: (err: any) => {
-        console.error('Erreur accept', err);
+        console.error('Error accept', err);
       }
     });
   }
@@ -122,41 +128,69 @@ export class AppContactComponent implements OnInit {
         this.loadSentRequests();
       },
       error: (err: any) => {
-        console.error('Erreur reject', err);
+        console.error('Error reject', err);
       }
     });
   }
 }
-
 @Component({
   selector: 'app-dialog-content',
   templateUrl: 'contact-dialog-content.html',
 })
 export class AppContactDialogContentComponent implements OnInit {
   users: any[] = [];
+  searchText: string = '';
 
   constructor(
     public dialogRef: MatDialogRef<AppContactDialogContentComponent>,
-    private socialService: SocialService
+    private socialService: SocialService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
+  get filteredUsers(): any[] {
+    if (!this.searchText.trim()) {
+      return this.users;
+    }
+    return this.users.filter((u: any) =>
+      u.username.toLowerCase().includes(this.searchText.toLowerCase()) ||
+      u.email.toLowerCase().includes(this.searchText.toLowerCase())
+    );
+  }
+
   loadUsers(): void {
     this.socialService.getUsers().subscribe({
       next: (data: any[]) => {
-        this.users = data;
+        const currentUserId = +localStorage.getItem('userId')!;
+        this.users = data
+          .filter(u => u.id !== currentUserId)
+          .map(u => ({ ...u, requestSent: false }));
       },
       error: (err: any) => {
-        console.error('Erreur users', err);
+        console.error('Error users', err);
       }
     });
   }
 
-  selectUser(user: any): void {
-    this.dialogRef.close(user);
+  // Ouvrir le chat directement
+  messageUser(user: any): void {
+    this.dialogRef.close();
+    this.router.navigate(['/apps/chat'], { queryParams: { userId: user.id } });
+  }
+
+  // Envoyer demande d'amitié
+  addFriend(user: any): void {
+    this.socialService.sendFollowRequest(user.id).subscribe({
+      next: () => {
+        user.requestSent = true;
+      },
+      error: (err: any) => {
+        console.error('Error sending request', err);
+      }
+    });
   }
 
   closeDialog(): void {

@@ -17,11 +17,11 @@
   >
     person_add
   </mat-icon>
-  Ajouter un contact
+  Add Contact
 </h2>
 
 <div class="p-x-24 m-b-16" style="color: #65676b; font-size: 14px;">
-  Choisissez un utilisateur à ajouter à vos contacts.
+  Choose a user to start a conversation.
 </div>
 
 <mat-dialog-content
@@ -36,26 +36,29 @@
     border-radius: 12px;
   "
 >
+  <div style="margin-bottom: 12px;">
+    <mat-form-field appearance="outline" class="w-100">
+      <mat-label>Search users</mat-label>
+      <input matInput [(ngModel)]="searchText" placeholder="Type a name..." />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
   <div
-    *ngIf="users.length === 0"
+    *ngIf="filteredUsers.length === 0"
     class="text-center p-24"
     style="color: #65676b;"
   >
     <mat-icon
-      style="
-        font-size: 42px;
-        width: 42px;
-        height: 42px;
-        color: #b0b3b8;
-      "
+      style="font-size: 42px; width: 42px; height: 42px; color: #b0b3b8;"
     >
       person_off
     </mat-icon>
-    <p class="m-t-12 m-b-0">Aucun utilisateur disponible</p>
+    <p class="m-t-12 m-b-0">No users available</p>
   </div>
 
   <div
-    *ngFor="let user of users"
+    *ngFor="let user of filteredUsers"
     class="d-flex justify-content-between align-items-center m-b-12"
     style="
       background: #ffffff;
@@ -90,10 +93,7 @@
           class="d-flex align-items-center m-t-4"
           style="font-size: 13px; color: #65676b;"
         >
-          <mat-icon
-            class="m-r-4"
-            style="font-size: 16px; width: 16px; height: 16px;"
-          >
+          <mat-icon class="m-r-4" style="font-size: 16px; width: 16px; height: 16px;">
             mail
           </mat-icon>
           {{ user.email }}
@@ -101,20 +101,30 @@
       </div>
     </div>
 
-    <button
-      mat-flat-button
-      color="primary"
-      (click)="selectUser(user)"
-      style="
-        border-radius: 999px;
-        padding: 0 18px;
-        font-weight: 600;
-        height: 40px;
-      "
-    >
-      <mat-icon class="m-r-4" style="font-size: 18px;">person_add</mat-icon>
-      Ajouter
-    </button>
+           <div class="d-flex gap-1">
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="messageUser(user)"
+          style="border-radius: 999px; padding: 0 14px; font-weight: 600; height: 38px; font-size: 13px;"
+        >
+          <mat-icon class="m-r-4" style="font-size: 16px;">chat</mat-icon>
+          Message
+        </button>
+
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="addFriend(user)"
+          [disabled]="user.requestSent"
+          style="border-radius: 999px; padding: 0 14px; font-weight: 600; height: 38px; font-size: 13px;"
+        >
+          <mat-icon class="m-r-4" style="font-size: 16px;">
+            {{ user.requestSent ? 'check' : 'person_add' }}
+          </mat-icon>
+          {{ user.requestSent ? 'Sent' : 'Add Friend' }}
+        </button>
+      </div>
   </div>
 </mat-dialog-content>
 
@@ -128,14 +138,9 @@
     mat-stroked-button
     color="warn"
     (click)="closeDialog()"
-    style="
-      border-radius: 999px;
-      padding: 0 18px;
-      height: 40px;
-      font-weight: 600;
-    "
+    style="border-radius: 999px; padding: 0 18px; height: 40px; font-weight: 600;"
   >
     <mat-icon class="m-r-4" style="font-size: 18px;">close</mat-icon>
-    Annuler
+    Cancel
   </button>
 </mat-dialog-actions>
