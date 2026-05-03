@@ -10,8 +10,52 @@
       width="200"
       height="300">
 
-    <button class="btn primary">Want to Read</button>
+    <div class="status-box">
+      <button class="btn primary" (click)="openStatusModal()">
+        {{ getStatusLabel(currentStatus) }}
+      </button>
+    </div>
 
+    <!-- READING PROGRESS -->
+    <div *ngIf="currentStatus === 'READING'" class="progress-card">
+
+      <mat-card>
+
+        <mat-card-header>
+          <mat-card-title>
+            Reading Progress
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="b-t-1">
+
+          <div class="progress-info">
+            {{ totalReadPages }} / {{ book.total_pages }} pages
+          </div>
+
+          <mat-progress-bar
+            mode="determinate"
+            [value]="book.progress">
+          </mat-progress-bar>
+
+          <div>
+            {{ book.progress | number:'1.0-0' }}%
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+    </div>
+
+    <!-- EDIT ACTIVITY -->
+    <div *ngIf="currentStatus === 'READING'" class="edit-activity">
+      <button class="btn primary" (click)="openActivity()">
+        Edit my activity
+      </button>
+    </div>
+
+    <!-- RATING -->
     <div class="rating-box">
       <h4>Rate this book</h4>
 
@@ -20,11 +64,27 @@
       </button>
     </div>
 
+    <!-- INFO -->
     <div class="info">
-      <p><strong>Genre:</strong> {{ book.genre }}</p>
-      <p><strong>Pages:</strong> {{ book.total_pages }}</p>
-      <p><strong>Published:</strong> {{ book.year }}</p>
-      <p><strong>Langue:</strong> {{ book.langue }}</p>
+      <div class="info-item">
+        <span>Genre</span>
+        <strong>{{ book.genre }}</strong>
+      </div>
+
+      <div class="info-item">
+        <span>Pages</span>
+        <strong>{{ book.total_pages }}</strong>
+      </div>
+
+      <div class="info-item">
+        <span>Published</span>
+        <strong>{{ book.year }}</strong>
+      </div>
+
+      <div class="info-item">
+        <span>Language</span>
+        <strong>{{ book.langue }}</strong>
+      </div>
     </div>
 
   </div>
@@ -65,67 +125,65 @@
     <!-- REVIEWS -->
     <h2>Reviews</h2>
 
-   <div class="review card" *ngFor="let r of book.reviews">
+    <div class="review card" *ngFor="let r of book.reviews">
 
-  <!-- HEADER -->
-  <div class="review-header">
+      <!-- HEADER -->
+      <div class="review-header">
 
-    <div class="user-info">
-      <strong class="username">
-        {{ r.user?.username }}
-      </strong>
+        <div class="user-info">
+          <strong class="username">
+            {{ r.user?.username }}
+          </strong>
 
-      <span class="date">
-        {{ r.date | date:'mediumDate' }}
-      </span>
+          <span class="date">
+            {{ r.date | date:'mediumDate' }}
+          </span>
+        </div>
+
+        <div class="actions" *ngIf="r.user?.id === currentUserId">
+
+          <button class="icon-btn"
+                  [routerLink]="['/review', book.id]"
+                  title="Edit">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+
+          <button class="icon-btn danger"
+                  (click)="deleteReview(r.id)"
+                  title="Delete">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- STARS -->
+      <div class="stars" aria-label="rating">
+        <ng-container *ngFor="let s of getStars(r.rating)">
+          <i class="fa-solid fa-star"></i>
+        </ng-container>
+      </div>
+
+      <!-- COMMENT -->
+      <p class="comment">
+        {{ r.comment }}
+      </p>
+
+      <!-- INTERACTION -->
+      <div class="footer-actions">
+        <button class="btn small like-btn" (click)="vote(r.id)">
+
+          <i class="fa"
+             [ngClass]="r.liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"
+             [style.color]="r.liked ? 'rgb(249, 12, 12)' : 'inherit'">
+          </i>
+
+          <span>{{ r.liked ? 'Liked' : 'Like' }}</span>
+        </button>
+      </div>
+
     </div>
-
-    <div class="actions" *ngIf="r.user?.id === currentUserId">
-
-    <button class="icon-btn"
-              [routerLink]="['/review', book.id]"
-              title="Edit">
-        <i class="fa-solid fa-pen"></i>
-      </button>
-
-      <button class="icon-btn danger"
-              (click)="deleteReview(r.id)"
-              title="Delete">
-        <i class="fa-regular fa-trash-can"></i>
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- STARS -->
-  <div class="stars" aria-label="rating">
-    <ng-container *ngFor="let s of getStars(r.rating)">
-      <i class="fa-solid fa-star"></i>
-    </ng-container>
-  </div>
-
-  <!-- COMMENT -->
-  <p class="comment">
-    {{ r.comment }}
-  </p>
-
-  
-
-  <!-- INTERACTION -->
-  <div class="footer-actions">
-   <button class="btn small like-btn" (click)="vote(r.id)">
-
-    <i class="fa"
-      [ngClass]="r.liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart'"
-      [style.color]="r.liked ? 'rgb(249, 12, 12)' : 'inherit'">
-    </i>
-
-    <span>{{ r.liked ? 'Liked' : 'Like' }}</span>
-  </button>
-  </div>
-
-</div>
 
     <!-- QUOTES -->
     <h3>Quotes</h3>
@@ -138,6 +196,66 @@
     <div class="add-quote card">
       <textarea [(ngModel)]="newQuote" placeholder="Add a quote..."></textarea>
       <button class="btn primary" (click)="addQuote()">Add Quote</button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- STATUS MODAL -->
+<div *ngIf="showStatusModal" class="modal-backdrop" (click)="closeStatusModal()"></div>
+
+<div *ngIf="showStatusModal" class="modal">
+
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h3>Update Reading Status</h3>
+      <button class="close-btn" (click)="closeStatusModal()">✖</button>
+    </div>
+
+    <div class="modal-body">
+
+      <button class="status-btn" (click)="setStatus('READ')">Read</button>
+      <button class="status-btn" (click)="setStatus('READING')">Currently Reading</button>
+      <button class="status-btn" (click)="setStatus('WANT_TO_READ')">Want to Read</button>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- EDIT ACTIVITY MODAL -->
+<div *ngIf="showActivity" class="modal-backdrop" (click)="closeActivity()"></div>
+
+<div *ngIf="showActivity" class="modal">
+
+  <div class="modal-content" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h3>Update Reading Progress</h3>
+      <button class="close-btn" (click)="closeActivity()">✖</button>
+    </div>
+
+    <div class="modal-body">
+
+      <p class="book-title">{{ book.title }}</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Pages read today</mat-label>
+        <input matInput type="number" [(ngModel)]="pagesRead">
+      </mat-form-field>
+
+      <div class="progress-preview">
+        Current: {{ totalReadPages }} / {{ book.total_pages }}
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn secondary" (click)="closeActivity()">Cancel</button>
+      <button class="btn primary" (click)="updateProgress()">Save Progress</button>
     </div>
 
   </div>

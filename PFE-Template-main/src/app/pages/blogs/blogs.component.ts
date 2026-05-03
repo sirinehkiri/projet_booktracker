@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BookService } from './book.service';
+import { AuthService } from '../authentication/auth.service';
 import { Book } from './book.model';
 
 @Component({
@@ -15,7 +16,8 @@ export class AppBlogsComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private bookService: BookService
+    private bookService: BookService,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

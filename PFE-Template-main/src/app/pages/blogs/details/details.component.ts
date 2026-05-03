@@ -18,6 +18,15 @@ export class AppBlogDetailsComponent implements OnInit {
   hoverRating = 0;
   currentUserId!: number;
 
+  currentStatus: string = 'WANT_TO_READ';
+
+  showStatusModal = false;
+  
+  isOpen = false;
+  showActivity: boolean = false;
+  pagesRead: number = 0;
+  totalReadPages: number = 0;
+
   constructor(
     private route: ActivatedRoute,
     public bookService: BookService
@@ -30,27 +39,45 @@ export class AppBlogDetailsComponent implements OnInit {
   }
     const user = JSON.parse(localStorage.getItem('user')!);
     this.currentUserId = user.id;
-}
-
-loadBook(id:number){
-  this.bookService.getBook(id).subscribe(data => {
-    console.log("BOOKS:", data);
-
-    this.book = data;
-
-    if (!this.book.quotes) {
-      this.book.quotes = [];
-    }
-
-    if (!this.book.reviews) {
-      this.book.reviews = [];
-    }
-
-    if (!this.book.likes) {
-      this.book.likes = 0;
-    }
-  });
-}
+  }
+  loadBook(id: number) {
+    this.bookService.getBook(id).subscribe({
+      next: (data) => {
+        console.log("BOOKS:", data);
+        this.book = data;
+        this.book.quotes ??= [];
+        this.book.reviews ??= [];
+        this.book.likes ??= 0;
+        this.bookService.getUserStatus(this.book.id).subscribe({
+          next: (status) => {
+            this.currentStatus = status;
+            console.log("STATUS:", status);
+          },
+          error: (err) => {
+            console.error("Status error:", err);
+          }
+        });
+        this.bookService.getUserBook(this.book.id).subscribe({
+        next: (ub:any) => {
+          console.log("USERBOOK:", ub);
+          console.log("USERBOOK:", ub.progress);
+          if (ub) {
+            this.book.userBookId = ub.id;
+            this.totalReadPages = ub.pagesRead ?? 0; 
+            this.pagesRead = 0;
+            this.book.progress = ub.progress ?? 0;
+          }
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+      },
+      error: (err) => {
+        console.error("Book error:", err);
+      }
+    });
+  }
 
   getFullStars() {
     return Array(Math.floor(this.book.averageRating));
@@ -66,65 +93,29 @@ loadBook(id:number){
     return Array(5 - full - half);
   }
 
-  submitReview() {
-  const data = {
-    rating: this.selectedRating,
-    comment: this.newComment
-  };
-
-  this.bookService.addReview(this.book.id, data).subscribe(res => {
-    this.updateReviewInUI(res);
-  });
-}
-
   calculateAverage() {
   if (!this.book.reviews || this.book.reviews.length === 0) {
     return 0;
   }
-
   let sum = 0;
   this.book.reviews.forEach((r: any) => {
     sum += r.rating;
   });
-
   return sum / this.book.reviews.length;
 }
-
-updateReviewInUI(updatedReview: any) {
-
-  if (!this.book.reviews) {
-    this.book.reviews = [];
-  }
-
-  const index = this.book.reviews.findIndex(
-    (r: any) => r.user?.id === updatedReview.user?.id
-  );
-
-  if (index !== -1) {
-    this.book.reviews[index] = updatedReview; // update
-  } else {
-    this.book.reviews.push(updatedReview); // add
-  }
-
-  this.book.averageRating = this.calculateAverage();
-}
-
   getStars(rating: number) {
     return Array(rating);
   }
 
   addQuote() {
     if (!this.newQuote?.trim()) return;
-
     const quote = {
       content: this.newQuote
     };
-
     this.bookService.addQuote(this.book.id, quote).subscribe((res: any) => {
       if (!this.book.quotes) {
         this.book.quotes = [];
       }
-
       this.book.quotes.push(res);
       this.newQuote = '';
     });
@@ -132,22 +123,78 @@ updateReviewInUI(updatedReview: any) {
 
   vote(reviewId: number) {
   this.bookService.voteReview(reviewId).subscribe((res: any) => {
-
     const review = this.book.reviews.find((r: any) => r.id === reviewId);
-
     if (review) {
       review.liked = res.status === 'liked';
     }
-
   });
-}
+  }
 
-deleteReview(id: number) {
-  console.log(id)
-  if (!confirm('Delete this review?')) return;
+  deleteReview(id: number) {
+    console.log(id)
+    if (!confirm('Delete this review?')) return;
+    this.bookService.deleteReview(id).subscribe(() => {
+      this.book.reviews = this.book.reviews.filter((r: any) => r.id !== id);
+    });
+  }
 
-  this.bookService.deleteReview(id).subscribe(() => {
-    this.book.reviews = this.book.reviews.filter((r: any) => r.id !== id);
-  });
-}
+  openStatusModal() {
+  this.showStatusModal = true;
+  }
+
+  closeStatusModal() {
+    this.showStatusModal = false;
+  }
+
+  setStatus(status: string) {
+    this.currentStatus = status;
+    this.showStatusModal = false;
+    this.bookService.setStatus(this.book.id, status)
+      .subscribe(() => {
+        console.log("Status updated");
+      });
+    this.loadBook(this.book.id);
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'READ': return 'Read';
+      case 'READING': return 'Currently Reading';
+      case 'WANT_TO_READ': return 'Want to Read';
+      default: return 'Select Status';
+    }
+  }
+
+  openActivity() {
+    this.showActivity = true;
+  }
+
+  closeActivity() {
+    this.showActivity = false;
+  }
+
+  updateProgress() {
+    if (!this.book || !this.book.userBookId) {
+      console.error("UserBook introuvable");
+      return;
+    }
+    this.totalReadPages += this.pagesRead
+    if (this.totalReadPages > this.book.total_pages) {
+      this.totalReadPages = this.book.total_pages;
+    }
+    this.book.progress =(this.totalReadPages / this.book.total_pages) * 100;
+    const payload = {
+      userBookId: this.book.userBookId,
+      pagesRead: this.pagesRead
+    };
+    this.bookService.updateProgress(payload).subscribe({
+      next: (res) => {
+        console.log("Progress updated", res);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+    this.showActivity = false;
+  }
 }
