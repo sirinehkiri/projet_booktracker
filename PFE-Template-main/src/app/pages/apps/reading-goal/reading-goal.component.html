@@ -1,0 +1,218 @@
+<div class="row">
+  <div class="col-12">
+    <mat-card class="mat-card-top cardWithShadow position-relative">
+
+      <mat-sidenav-container
+        [ngClass]="{
+          'side-panel-opened': sidePanelOpened,
+          'side-panel-closed': !sidePanelOpened
+        }"
+        style="min-height: 80vh"
+      >
+
+        <!-- Sidebar -->
+        <mat-sidenav
+          #goalnav
+          class="app-left-sidebar"
+          [mode]="isOver() ? 'over' : 'side'"
+          [opened]="!isOver()"
+          (open)="sidePanelOpened = true"
+          (close)="sidePanelOpened = false"
+          position="start"
+        >
+          <mat-toolbar class="bg-white">
+            <p class="f-w-500 f-s-18 m-0 mat-subtitle-1">
+              Reading Goals
+            </p>
+          </mat-toolbar>
+
+          <mat-nav-list>
+
+            <mat-list-item
+              (click)="selectionlblClick('all')"
+              [class.bg-light-primary]="selectedCategory === 'all'"
+            >
+              <div class="d-flex align-items-center w-100">
+                <span class="mat-subtitle-2">All Goals</span>
+                <div class="m-l-auto">
+                  <span
+                    class="icon-27 bg-primary text-white rounded d-flex align-items-center justify-content-center"
+                  >
+                    {{ goals.length }}
+                  </span>
+                </div>
+              </div>
+            </mat-list-item>
+
+            <mat-list-item
+              (click)="selectionlblClick('active')"
+              [class.bg-light-primary]="selectedCategory === 'active'"
+            >
+              <div class="d-flex align-items-center w-100">
+                <span class="mat-subtitle-2">Active Goals</span>
+                <div class="m-l-auto">
+                  <span
+                    class="icon-27 bg-warning text-white rounded d-flex align-items-center justify-content-center"
+                  >
+                    {{ activeGoalsCount() }}
+                  </span>
+                </div>
+              </div>
+            </mat-list-item>
+
+            <mat-list-item
+              (click)="selectionlblClick('completed')"
+              [class.bg-light-primary]="selectedCategory === 'completed'"
+            >
+              <div class="d-flex align-items-center w-100">
+                <span class="mat-subtitle-2">Completed Goals</span>
+                <div class="m-l-auto">
+                  <span
+                    class="icon-27 bg-success text-white rounded d-flex align-items-center justify-content-center"
+                  >
+                    {{ completedGoalsCount() }}
+                  </span>
+                </div>
+              </div>
+            </mat-list-item>
+
+          </mat-nav-list>
+        </mat-sidenav>
+
+        <!-- Toolbar -->
+        <mat-toolbar class="bg-white">
+          <div class="d-flex align-items-center w-100">
+
+            <button
+              mat-icon-button
+              (click)="goalnav.toggle()"
+              class="ml-1 shadow-none"
+            >
+              <i-tabler name="align-left" class="icon-20"></i-tabler>
+            </button>
+
+            <div class="m-l-auto">
+              <span class="bg-primary text-white p-8 rounded f-s-14">
+                {{ activeGoalsCount() }} Active Goals
+              </span>
+            </div>
+
+          </div>
+        </mat-toolbar>
+
+        <mat-divider></mat-divider>
+
+        <!-- Form -->
+        <div class="p-16 bg-white">
+          <form [formGroup]="inputFg">
+
+            <div class="row justify-content-between align-items-center">
+
+              <!-- target pages -->
+              <div class="col-sm-4">
+                <mat-form-field appearance="outline" class="w-100">
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="targetPages"
+                    placeholder="Pages à lire"
+                  />
+                </mat-form-field>
+              </div>
+
+              <!-- goal period -->
+              <div class="col-sm-4">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-select formControlName="period">
+                    <mat-option value="DAILY">Daily</mat-option>
+                    <mat-option value="WEEKLY">Weekly</mat-option>
+                    <mat-option value="MONTHLY">Monthly</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <!-- button -->
+              <div class="col-sm-4">
+                <button
+                  mat-flat-button
+                  color="primary"
+                  class="w-100"
+                  (click)="createGoal()"
+                >
+                  Create Goal
+                </button>
+              </div>
+
+            </div>
+
+          </form>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <!-- Goals list -->
+        <mat-card-content class="p-x-0" style="min-height: 70vh">
+
+          @for(goal of copyGoals; track goal.id; let i = $index) {
+
+          <div class="todo-item p-y-12 p-x-8 b-b-1">
+
+            <div class="d-flex flex-column w-100">
+
+              <h4>
+                Goal: {{ goal.targetPages }} pages
+              </h4>
+
+              <p>
+                Period: {{ goal.period }}
+              </p>
+
+              <p>
+                Progress: {{ goal.currentPages }} / {{ goal.targetPages }}
+              </p>
+
+              <mat-progress-bar
+                mode="determinate"
+                [value]="getProgress(goal)"
+              >
+              </mat-progress-bar>
+
+              <p class="m-t-10">
+                Start: {{ goal.startDate | date }}
+              </p>
+
+              <p>
+                End: {{ goal.endDate | date }}
+              </p>
+
+              <div class="m-t-10 d-flex">
+
+                <button
+                  mat-icon-button
+                  (click)="editGoal(goal.id)"
+                >
+                  <i-tabler name="pencil"></i-tabler>
+                </button>
+
+                <button
+                  mat-icon-button
+                  (click)="deleteGoal(goal.id)"
+                >
+                  <i-tabler name="trash"></i-tabler>
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          }
+
+        </mat-card-content>
+
+      </mat-sidenav-container>
+
+    </mat-card>
+  </div>
+</div>

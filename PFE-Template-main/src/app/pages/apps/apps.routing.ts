@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AppChatComponent } from './chat/chat.component';
 import { AppNotesComponent } from './notes/notes.component';
-import { AppTodoComponent } from './todo/todo.component';
+import { ReadingGoalComponent } from './reading-goal/reading-goal.component';
 import { AppEmailComponent } from './email/email.component';
 import { DetailComponent } from './email/detail/detail.component';
 import { AppTaskboardComponent } from './taskboard/taskboard.component';
@@ -70,15 +70,8 @@ export const AppsRoutes: Routes = [
         ],
       },
       {
-        path: 'todo',
-        component: AppTodoComponent,
-        data: {
-          title: 'Todo App',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Todo App' },
-          ],
-        },
+        path: 'reading-goal',
+        component: ReadingGoalComponent
       },
       {
         path: 'taskboard',

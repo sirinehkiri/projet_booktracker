@@ -28,7 +28,7 @@ import { AppCourseDetailComponent } from './courses/course-detail/course-detail.
 //Notes
 import { AppNotesComponent } from './notes/notes.component';
 //Todo
-import { AppTodoComponent } from './todo/todo.component';
+import { ReadingGoalComponent } from './reading-goal/reading-goal.component';
 //Mailbox
 import {
   ListingComponent,
@@ -96,7 +96,7 @@ import { AppBlogDetailsComponent } from '../blogs/details/details.component';
   declarations: [
     AppChatComponent,
     AppNotesComponent,
-    AppTodoComponent,
+    ReadingGoalComponent,
     AppTaskboardComponent,
     TaskDialogComponent,
     OkAppTaskComponent,

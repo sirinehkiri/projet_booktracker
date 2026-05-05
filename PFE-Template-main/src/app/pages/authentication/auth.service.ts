@@ -14,11 +14,11 @@ export class AuthService {
   login(data: any) {
     return this.http.post(`${this.baseUrl}/login`, data);
   }
-  isAdmin(): boolean {
+isAdmin(): boolean {
   const token = localStorage.getItem('token');
   if (!token) return false;
 
   const payload = JSON.parse(atob(token.split('.')[1]));
-  return payload.role === 'ADMIN';
+  return payload.roles && payload.roles.includes('ROLE_ADMIN');
 }
 }

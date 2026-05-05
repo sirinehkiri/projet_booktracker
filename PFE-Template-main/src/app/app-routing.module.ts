@@ -5,6 +5,7 @@ import { FullComponent } from './layouts/full/full.component';
 import { AddBookComponent } from './pages/admin/add-book/add-book.component';
 import { EditBookComponent } from './pages/admin/edit-book/edit-book.component';
 import { ReviewComponent } from './pages/blogs/review/review.component';
+import { ReadingGoalComponent } from './pages/apps/reading-goal/reading-goal.component';
 
 const routes: Routes = [
   {

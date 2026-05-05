@@ -25,9 +25,9 @@ export const navItems: NavItem[] = [
     route: 'apps/tickets',
   },
   {
-    displayName: 'ToDo',
+    displayName: 'Goals',
     iconName: 'edit',
-    route: 'apps/todo',
+    route: 'apps/reading-goal',
   },
   {
     displayName: 'Taskboard',

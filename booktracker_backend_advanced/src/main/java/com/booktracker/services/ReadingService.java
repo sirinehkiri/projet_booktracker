@@ -25,9 +25,6 @@ public class ReadingService {
         System.out.println("ID reçu = " + req.getUserBookId());
         UserBook userBook = userBookRepository.findById(req.getUserBookId())
                 .orElseThrow();
-        if (userBook == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "UserBook not found");
-        }
 
         userBook.setPagesRead(userBook.getPagesRead() + req.getPagesRead());
         userBookRepository.save(userBook);
@@ -43,7 +40,7 @@ public class ReadingService {
     public void setGoal(GoalRequest req, User user) {
         ReadingGoal goal = new ReadingGoal();
         goal.setTargetPages(req.getTargetPages());
-        goal.setPeriod(PeriodType.valueOf(req.getPeriod()));
+        goal.setPeriod(GoalType.valueOf(req.getPeriod()));
         goal.setUser(user);
 
         goalRepository.save(goal);

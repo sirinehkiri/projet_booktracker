@@ -1,6 +1,6 @@
 package com.booktracker.entity;
 
-public enum PeriodType {
+public enum GoalType {
     DAILY,
     WEEKLY,
     MONTHLY

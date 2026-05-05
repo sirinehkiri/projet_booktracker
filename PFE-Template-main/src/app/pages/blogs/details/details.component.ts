@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BookService } from '../book.service';
+import { ReadingGoalService } from '../../apps/reading-goal/reading-goal.service'
 
 @Component({
   selector: 'app-book-details',
@@ -29,7 +30,8 @@ export class AppBlogDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    public bookService: BookService
+    public bookService: BookService,
+    private goalService: ReadingGoalService
   ) {}
 
   ngOnInit(): void {
@@ -173,28 +175,57 @@ export class AppBlogDetailsComponent implements OnInit {
     this.showActivity = false;
   }
 
-  updateProgress() {
-    if (!this.book || !this.book.userBookId) {
-      console.error("UserBook introuvable");
-      return;
-    }
-    this.totalReadPages += this.pagesRead
-    if (this.totalReadPages > this.book.total_pages) {
-      this.totalReadPages = this.book.total_pages;
-    }
-    this.book.progress =(this.totalReadPages / this.book.total_pages) * 100;
-    const payload = {
-      userBookId: this.book.userBookId,
-      pagesRead: this.pagesRead
-    };
-    this.bookService.updateProgress(payload).subscribe({
-      next: (res) => {
-        console.log("Progress updated", res);
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
-    this.showActivity = false;
+ updateProgress() {
+  if (!this.book || !this.book.userBookId) {
+    console.error("UserBook introuvable");
+    return;
   }
+
+  // 1. Update UI
+  this.totalReadPages += this.pagesRead;
+
+  if (this.totalReadPages > this.book.total_pages) {
+    this.totalReadPages = this.book.total_pages;
+  }
+
+  this.book.progress = (this.totalReadPages / this.book.total_pages) * 100;
+
+  const payload = {
+    userBookId: this.book.userBookId,
+    pagesRead: this.pagesRead
+  };
+
+  // 2. Update book progress
+  this.bookService.updateProgress(payload).subscribe({
+    next: () => {
+      console.log("Progress updated");
+
+      // 🔥 3. UPDATE GOALS AUSSI
+      this.updateReadingGoals(this.pagesRead);
+
+    },
+    error: (err) => console.error(err)
+  });
+
+  this.showActivity = false;
+}
+
+updateReadingGoals(pages: number) {
+  this.goalService.getGoals().subscribe((goals: any[]) => {
+
+    goals
+      .filter(g => !g.completed)
+      .forEach(goal => {
+
+        this.goalService.updateProgress(goal.id, pages).subscribe({
+          next: (res:any) => {
+            console.log("Goal updated", res);
+          },
+          error: (err) => console.error(err)
+        });
+
+      });
+
+  });
+}
 }
