@@ -34,6 +34,10 @@ public class Book {
  @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
  @JsonManagedReference
  private List<Quote> quotes;
+
+ @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+ @JsonIgnore
+ private List<UserBook> userBooks;
  public List<Review> getReviews() {
   return reviews;
  }
