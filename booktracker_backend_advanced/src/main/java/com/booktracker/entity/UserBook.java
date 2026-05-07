@@ -3,6 +3,7 @@ package com.booktracker.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +26,16 @@ public class UserBook {
 
     private int totalPages;
     private int pagesRead;
+    private LocalDate finishDate;
+
+    public LocalDate getFinishDate() {
+        return finishDate;
+    }
+
+    public void setFinishDate(LocalDate finishDate) {
+        this.finishDate = finishDate;
+    }
+
     @OneToMany(mappedBy = "userBook", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReadingProgress> readingProgressList = new ArrayList<>();
 

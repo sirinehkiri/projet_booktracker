@@ -1,9 +1,11 @@
 package com.booktracker.repository;
 
 import com.booktracker.entity.Book;
+import com.booktracker.entity.ReadingStatus;
 import com.booktracker.entity.User;
 import com.booktracker.entity.UserBook;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,4 +17,6 @@ public interface UserBookRepository extends JpaRepository<UserBook, Long> {
     List<UserBook> findByUser(User user);
 
     Optional<UserBook> findByUserIdAndBookId(Long userId, Long bookId);
+    @Query("SELECT COUNT(ub) FROM UserBook ub WHERE ub.user = :user AND ub.status = 'READ' AND YEAR(ub.finishDate) = :year")
+    int countBooksReadThisYear(User user, int year);
 }

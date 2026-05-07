@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { ReadingGoal } from './reading-goal';
 
 @Injectable({
   providedIn: 'root'
@@ -20,9 +21,8 @@ export class ReadingGoalService {
     }
 
   createGoal(goal:any){
-    return this.http.post(this.api, goal,this.getHeaders());
-  }
-
+  return this.http.post<ReadingGoal>(this.api, goal, this.getHeaders());
+}
   getGoals(){
     return this.http.get<any[]>(this.api,this.getHeaders());
   }
@@ -41,5 +41,13 @@ export class ReadingGoalService {
 
   updateGoal(id: number, goal: any) {
   return this.http.put(`${this.api}/${id}/progress`, goal, this.getHeaders());
+}
+
+updateAllGoals(pages: number) {
+  return this.http.put(
+    `${this.api}/progress/all?pages=${pages}`,
+    {},
+    this.getHeaders()
+  );
 }
 }

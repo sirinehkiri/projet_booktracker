@@ -106,44 +106,36 @@
         <div class="p-16 bg-white">
           <form [formGroup]="inputFg">
 
-            <div class="row justify-content-between align-items-center">
+            <div class="row">
 
-              <!-- target pages -->
-              <div class="col-sm-4">
-                <mat-form-field appearance="outline" class="w-100">
-                  <input
-                    matInput
-                    type="number"
-                    formControlName="targetPages"
-                    placeholder="Pages à lire"
-                  />
-                </mat-form-field>
-              </div>
+                <!-- target -->
+                <div class="col-md-3">
+                    <input matInput type="number" formControlName="targetValue" placeholder="Target">
+                </div>
 
-              <!-- goal period -->
-              <div class="col-sm-4">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-select formControlName="period">
+                <!-- metric -->
+                <div class="col-md-3">
+                    <mat-select formControlName="metric">
+                    <mat-option value="PAGES">Pages</mat-option>
+                    <mat-option value="BOOKS">Books</mat-option>
+                    </mat-select>
+                </div>
+
+                <!-- period -->
+                <div class="col-md-3">
+                    <mat-select formControlName="period">
                     <mat-option value="DAILY">Daily</mat-option>
                     <mat-option value="WEEKLY">Weekly</mat-option>
                     <mat-option value="MONTHLY">Monthly</mat-option>
-                  </mat-select>
-                </mat-form-field>
-              </div>
+                    <mat-option value="YEARLY">Yearly</mat-option>
+                    </mat-select>
+                </div>
 
-              <!-- button -->
-              <div class="col-sm-4">
-                <button
-                  mat-flat-button
-                  color="primary"
-                  class="w-100"
-                  (click)="createGoal()"
-                >
-                  Create Goal
-                </button>
-              </div>
+                <div class="col-md-3">
+                    <button (click)="createGoal()">Create</button>
+                </div>
 
-            </div>
+                </div>
 
           </form>
         </div>
@@ -160,22 +152,24 @@
             <div class="d-flex flex-column w-100">
 
               <h4>
-                Goal: {{ goal.targetPages }} pages
-              </h4>
+                Goal: {{ goal.targetValue }} {{ goal.metric }}
+                </h4>
 
-              <p>
-                Period: {{ goal.period }}
-              </p>
+                <p *ngIf="goal.metric === 'PAGES'">
+                Progress: {{ goal.currentValue }} / {{ goal.targetValue }}
+                </p>
 
-              <p>
-                Progress: {{ goal.currentPages }} / {{ goal.targetPages }}
-              </p>
+                <p *ngIf="goal.metric === 'BOOKS'">
+                {{ goal.currentValue }} / {{ goal.targetValue }}
+                </p>
 
-              <mat-progress-bar
-                mode="determinate"
-                [value]="getProgress(goal)"
-              >
-              </mat-progress-bar>
+                <mat-progress-bar
+                [value]="getProgress(goal)">
+                </mat-progress-bar>
+
+                <p>
+                {{ goal.lastNotification }}
+                </p>
 
               <p class="m-t-10">
                 Start: {{ goal.startDate | date }}

@@ -12,6 +12,7 @@ import com.booktracker.model.dto.ProgressRequest;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,10 +40,11 @@ public class ReadingService {
 
     public void setGoal(GoalRequest req, User user) {
         ReadingGoal goal = new ReadingGoal();
-        goal.setTargetPages(req.getTargetPages());
+        goal.setTargetValue(req.getTargetValue());
         goal.setPeriod(GoalType.valueOf(req.getPeriod()));
         goal.setUser(user);
 
         goalRepository.save(goal);
     }
+
 }
