@@ -211,21 +211,10 @@ export class AppBlogDetailsComponent implements OnInit {
 }
 
 updateReadingGoals(pages: number) {
-  this.goalService.getGoals().subscribe((goals: any[]) => {
 
-    goals
-      .filter(g => !g.completed)
-      .forEach(goal => {
-
-        this.goalService.updateProgress(goal.id, pages).subscribe({
-          next: (res:any) => {
-            console.log("Goal updated", res);
-          },
-          error: (err) => console.error(err)
-        });
-
-      });
-
-  });
+  this.goalService.updateAllGoals(this.pagesRead).subscribe({
+  next: () => console.log("All goals updated"),
+  error: (err) => console.error(err)
+});
 }
 }

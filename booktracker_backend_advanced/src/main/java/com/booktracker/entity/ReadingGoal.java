@@ -11,15 +11,18 @@ public class ReadingGoal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int targetPages;
-
-    private int currentPages;
+    private int currentValue;
+    private String lastNotification;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
     private boolean completed;
+
+    private int targetValue; // ex: 30 (livres ou pages)
+    @Enumerated(EnumType.STRING)
+    private GoalMetric metric; // PAGES ou BOOKS
 
     @Enumerated(EnumType.STRING)
     private GoalType period;
@@ -35,20 +38,40 @@ public class ReadingGoal {
         return id;
     }
 
-    public int getTargetPages() {
-        return targetPages;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setTargetPages(int targetPages) {
-        this.targetPages = targetPages;
+    public int getTargetValue() {
+        return targetValue;
     }
 
-    public int getCurrentPages() {
-        return currentPages;
+    public void setTargetValue(int targetValue) {
+        this.targetValue = targetValue;
     }
 
-    public void setCurrentPages(int currentPages) {
-        this.currentPages = currentPages;
+    public GoalMetric getMetric() {
+        return metric;
+    }
+
+    public void setMetric(GoalMetric metric) {
+        this.metric = metric;
+    }
+
+    public int getCurrentValue() {
+        return currentValue;
+    }
+
+    public void setCurrentValue(int currentValue) {
+        this.currentValue = currentValue;
+    }
+
+    public String getLastNotification() {
+        return lastNotification;
+    }
+
+    public void setLastNotification(String lastNotification) {
+        this.lastNotification = lastNotification;
     }
 
     public LocalDate getStartDate() {

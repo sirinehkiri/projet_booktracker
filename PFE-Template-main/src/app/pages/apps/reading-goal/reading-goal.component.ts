@@ -31,9 +31,10 @@ export class ReadingGoalComponent implements OnInit{
   ngOnInit(): void {
 
   this.inputFg = this.fb.group({
-    targetPages: [''],
-    period: ['DAILY']
-  });
+  targetValue: [''],
+  period: ['DAILY'],
+  metric: ['PAGES']
+});
 
   this.loadGoals();
 }
@@ -48,33 +49,11 @@ export class ReadingGoalComponent implements OnInit{
 
   createGoal(): void {
 
-  const targetPages = this.inputFg.get('targetPages')?.value;
-  const period = this.inputFg.get('period')?.value;
+  const goal = this.inputFg.value;
 
-  if (!targetPages || targetPages <= 0) {
-    return;
-  }
-
-  const goal = {
-    targetPages: targetPages,
-    period: period
-  };
-
-  this.goalService.createGoal(goal).subscribe({
-    next: (response: any) => {
-
-      this.goals.unshift(response);
-      this.copyGoals = [...this.goals];
-
-      this.inputFg.reset({
-        targetPages: '',
-        period: 'DAILY'
-      });
-    },
-
-    error: (err) => {
-      console.error(err);
-    }
+  this.goalService.createGoal(goal).subscribe(res => {
+    this.goals.unshift(res);
+    this.copyGoals = [...this.goals];
   });
 }
 
@@ -100,7 +79,7 @@ export class ReadingGoalComponent implements OnInit{
   if (goal) {
     this.goalService.updateProgress(id, 1).subscribe({
       next: (res: any) => {
-        goal.currentPages = res.currentPages;
+        goal.currentValue = res.currentValue;
         goal.completed = res.completed;
       },
       error: (err) => {
@@ -130,14 +109,16 @@ export class ReadingGoalComponent implements OnInit{
   completedGoalsCount(): number {
     return this.goals.filter(goal => goal.completed).length;
   }
-  getProgress(goal: ReadingGoal): number {
-  return goal.targetPages
-    ? (goal.currentPages / goal.targetPages) * 100
+getProgress(goal: any): number {
+
+  return goal.targetValue
+    ? (goal.currentValue / goal.targetValue) * 100
     : 0;
 }
 loadGoals(): void {
   this.goalService.getGoals().subscribe({
     next: (data: any) => {
+      console.log(data)
       this.goals = Array.isArray(data) ? data : [data];
       this.copyGoals = [...this.goals];
     },

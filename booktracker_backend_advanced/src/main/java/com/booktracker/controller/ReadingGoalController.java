@@ -54,4 +54,14 @@ public class ReadingGoalController {
         User user = (User) authentication.getPrincipal();
         return readingGoalService.updateProgress(id, pages, user);
     }
+    @PutMapping("/progress/all")
+    public void updateAllGoals(
+            @RequestParam int pages,
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        readingGoalService.updateAllGoals(user, pages);
+    }
+
+
 }

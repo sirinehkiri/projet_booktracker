@@ -1,15 +1,25 @@
 package com.booktracker.model.dto;
 
 public class GoalRequest {
-    private int targetPages;
+    private int targetValue;
     private String period;
 
-    public int getTargetPages() {
-        return targetPages;
+    public String getMetric() {
+        return metric;
     }
 
-    public void setTargetPages(int targetPages) {
-        this.targetPages = targetPages;
+    public void setMetric(String metric) {
+        this.metric = metric;
+    }
+
+    private String metric;
+
+    public int getTargetValue() {
+        return targetValue;
+    }
+
+    public void setTargetValue(int targetValue) {
+        this.targetValue = targetValue;
     }
 
     public String getPeriod() {

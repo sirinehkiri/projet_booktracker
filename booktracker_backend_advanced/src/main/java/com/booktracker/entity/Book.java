@@ -63,6 +63,16 @@ public class Book {
  )
  @JsonManagedReference
  private List<Quote> quotes;
+<<<<<<< HEAD
+=======
+
+ @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+ @JsonIgnore
+ private List<UserBook> userBooks;
+ public List<Review> getReviews() {
+  return reviews;
+ }
+>>>>>>> 19c1aec3bb7fa54a78838a09dcd580e9a579aa2f
 
  // =====================================================
  // TRANSIENT
