@@ -1,23 +1,278 @@
-<mat-card class="cardWithShadow">
-  <mat-card-content>
+<style>
+  /* =================================================== */
+  /* GENERAL & CARDS */
+  /* =================================================== */
+  .top-search-card {
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+  }
+
+  /* =================================================== */
+  /* TOP NAV BAR (HOVER DROPDOWNS) - FACEBOOK STYLE */
+  /* =================================================== */
+  .top-nav-card {
+    background-color: #5d87ff !important; /* اللون الأزرق متاع البار */
+    border-radius: 12px;
+    padding: 0 !important;
+    margin-bottom: 24px;
+    overflow: visible !important; /* ضرورية باش الـ Dropdown يخرج البرة */
+    position: relative;
+    z-index: 100;
+  }
+
+  .nav-menu-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    height: 56px;
+  }
+
+  .nav-item {
+    position: relative;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    height: 100%;
+    padding: 0 16px;
+    transition: background 0.2s;
+  }
+
+  .nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .nav-badge {
+    background-color: #ff4081; /* لون أحمر/وردي كيما الفايسبوك */
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+  }
+
+  /* =================================================== */
+  /* THE DROPDOWN BOX (HIDDEN BY DEFAULT) */
+  /* =================================================== */
+  .nav-dropdown {
+    position: absolute;
+    top: 130%; /* مهبطة شوية */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 360px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    color: #333; /* نرجعو لون التيكست كحل لداخل */
+    cursor: default;
+    border: 1px solid #e4e6eb;
+  }
+
+  /* المثلث الصغير الفوق (Arrow) */
+  .nav-dropdown::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-top: 1px solid #e4e6eb;
+    border-left: 1px solid #e4e6eb;
+  }
+
+  /* كي تحط الـ Souris تظهر البلاكة */
+  .nav-item:hover .nav-dropdown {
+    opacity: 1;
+    visibility: visible;
+    top: 100%; /* تطلع الفوق شوية Animation */
+  }
+
+  /* =================================================== */
+  /* SCROLL LIST & ITEMS (INSIDE DROPDOWN) */
+  /* =================================================== */
+  .dropdown-header {
+    padding: 16px;
+    border-bottom: 1px solid #e4e6eb;
+    font-weight: 700;
+    font-size: 16px;
+    color: #050505;
+  }
+
+  .scroll-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  .scroll-list::-webkit-scrollbar { width: 6px; }
+  .scroll-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 20px;
+  }
+
+  .request-item, .notification-item {
+    padding: 12px;
+    border-radius: 8px;
+    background: #ffffff;
+    margin-bottom: 4px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+  }
+
+  .request-item:hover, .notification-item:hover {
+    background: #f2f2f2; /* Hover رمادي خفيف كيما فايسبوك */
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+    color: #adb5bd;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* =================================================== */
+  /* AVATAR */
+  /* =================================================== */
+  .avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .avatar-primary { background: linear-gradient(135deg, #1877f2, #42a5f5); }
+  .avatar-info { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+
+  .notification-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #1877f2;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  /* =================================================== */
+  /* CONTACT CARDS (FACEBOOK STYLE DESIGN) - UNTOUCHED */
+  /* =================================================== */
+  .contact-card {
+    border-radius: 12px; 
+    border: 1px solid #e4e6eb; 
+    overflow: hidden;
+    padding: 0 !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+  }
+
+  .contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
+  }
+
+  .card-cover {
+    height: 90px;
+    background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+    width: 100%;
+  }
+
+  .contact-card-content {
+    padding: 0 16px 16px 16px;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+
+  .avatar-wrapper {
+    margin-top: -45px;
+    margin-bottom: 12px;
+  }
+
+  .contact-image {
+    object-fit: cover;
+    border: 4px solid #ffffff;
+    background-color: #fff;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px; 
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  .btn-fb-primary {
+    flex: 1;
+    border-radius: 6px !important;
+    background-color: #1877f2 !important; 
+    color: #fff !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    height: 36px !important;
+  }
+
+  .btn-fb-primary:hover { background-color: #166fe5 !important; }
+
+  .btn-fb-secondary {
+    min-width: 44px !important;
+    width: 44px !important;
+    height: 36px !important;
+    border-radius: 6px !important;
+    background-color: #e4e6eb !important; 
+    color: #050505 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-fb-secondary:hover { background-color: #d8dadf !important; }
+</style>
+
+<!-- ===================================================== -->
+<!-- SEARCH -->
+<!-- ===================================================== -->
+<mat-card class="top-search-card m-b-24">
+  <mat-card-content class="p-20">
     <div class="row justify-content-between align-items-center">
-      <div class="col-sm-4">
-        <mat-form-field appearance="outline" class="w-100 hide-hint">
-          <input
-            matInput
-            class="p-b-0"
-            placeholder="Search here..."
-            (keyup)="applyFilter($event)"
-          />
-          <mat-icon matSuffix>
+      <div class="col-sm-6 col-md-5">
+        <mat-form-field appearance="outline" class="w-100 hide-hint m-b-0">
+          <input matInput placeholder="Rechercher un contact..." (keyup)="applyFilter($event)" />
+          <mat-icon matSuffix class="text-muted">
             <i-tabler name="search" class="icon-20"></i-tabler>
           </mat-icon>
         </mat-form-field>
       </div>
 
-      <div class="col-sm-8 text-end d-flex align-items-center justify-content-end gap-2">
-        <button mat-flat-button color="primary" (click)="openDialog()">
-          <i-tabler name="user-plus" class="icon-18 m-r-4"></i-tabler>
+      <div class="col-sm-6 col-md-7 text-end d-flex align-items-center justify-content-end mt-3 mt-sm-0">
+        <button mat-flat-button color="primary" class="p-x-24" style="border-radius: 8px; height: 44px;" (click)="openDialog()">
+          <i-tabler name="user-plus" class="icon-20 m-r-8"></i-tabler>
           Add Contact
         </button>
       </div>
@@ -25,123 +280,132 @@
   </mat-card-content>
 </mat-card>
 
-<!-- TOP INFORMATIONS -->
-<div class="row m-t-24">
-  <!-- Pending Requests -->
-  <div class="col-lg-4">
-    <mat-card class="cardWithShadow h-100">
-      <mat-card-content class="p-24">
-        <div class="d-flex align-items-center m-b-20">
-          <i-tabler name="user-exclamation" class="icon-22 text-primary m-r-8"></i-tabler>
-          <h4 class="m-0">Pending Requests</h4>
-        </div>
+<!-- ===================================================== -->
+<!-- TOP NAV BAR (HOVER DROPDOWNS) -->
+<!-- ===================================================== -->
+<mat-card class="top-nav-card">
+  <div class="nav-menu-container">
+    
+    <!-- 1. PENDING REQUESTS -->
+    <div class="nav-item">
+      <i-tabler name="user-plus" class="icon-20"></i-tabler>
+      <span class="f-w-600 f-s-15">Received</span>
+      <span *ngIf="requests.length > 0" class="nav-badge">{{ requests.length }}</span>
 
-        <div *ngIf="requests.length === 0" class="text-muted">
-          No pending requests.
+      <!-- DROPDOWN CONTENT -->
+      <div class="nav-dropdown">
+        <div class="dropdown-header">Invitations reçues</div>
+        <div *ngIf="requests.length === 0" class="empty-state">
+          <i-tabler name="mood-smile" class="icon-40 m-b-8 opacity-50"></i-tabler>
+          No pending invitations
         </div>
-
-        <div
-          *ngFor="let req of requests"
-          class="d-flex justify-content-between align-items-center p-12 border rounded m-b-12"
-        >
-          <div>
-            <div class="f-w-600">{{ req.sender.username }}</div>
-            <div class="text-muted f-s-13">wants to follow you</div>
+        <div class="scroll-list" *ngIf="requests.length > 0">
+          <div *ngFor="let req of requests" class="request-item justify-content-between">
+            <div class="d-flex align-items-center">
+              <div class="avatar avatar-primary" style="width: 40px; height: 40px; font-size: 14px;">{{ req.sender.username?.charAt(0) | uppercase }}</div>
+              <div class="m-l-12">
+                <div class="f-w-600 text-dark f-s-14">{{ req.sender.username }}</div>
+                <div class="text-muted f-s-12">wants to follow you</div>
+              </div>
+            </div>
+            <div class="d-flex gap-1">
+              <button mat-mini-fab color="primary" style="transform: scale(0.8);" class="shadow-none" (click)="acceptRequest(req.id)">
+                <i-tabler name="check" class="icon-18"></i-tabler>
+              </button>
+              <button mat-mini-fab color="warn" style="transform: scale(0.8);" class="shadow-none bg-light-warn text-warn" (click)="rejectRequest(req.id)">
+                <i-tabler name="x" class="icon-18"></i-tabler>
+              </button>
+            </div>
           </div>
+        </div>
+      </div>
+    </div>
 
-          <div class="d-flex gap-1">
-            <button mat-icon-button color="primary" (click)="acceptRequest(req.id)">
-              <i-tabler name="check" class="icon-18"></i-tabler>
-            </button>
-            <button mat-icon-button color="warn" (click)="rejectRequest(req.id)">
-              <i-tabler name="x" class="icon-18"></i-tabler>
-            </button>
+    <!-- 2. SENT REQUESTS -->
+    <div class="nav-item">
+      <i-tabler name="send" class="icon-20"></i-tabler>
+      <span class="f-w-600 f-s-15">Requests sent</span>
+      <span *ngIf="sentRequests.length > 0" class="nav-badge">{{ sentRequests.length }}</span>
+
+      <!-- DROPDOWN CONTENT -->
+      <div class="nav-dropdown">
+        <div class="dropdown-header">Invitations envoyées</div>
+        <div *ngIf="sentRequests.length === 0" class="empty-state">
+          <i-tabler name="paperclip" class="icon-40 m-b-8 opacity-50"></i-tabler>
+          No sent requests
+        </div>
+        <div class="scroll-list" *ngIf="sentRequests.length > 0">
+          <div *ngFor="let req of sentRequests" class="request-item">
+            <div class="avatar avatar-info" style="width: 40px; height: 40px; font-size: 14px;">{{ req.receiver.username?.charAt(0) | uppercase }}</div>
+            <div class="m-l-12">
+              <div class="f-w-600 text-dark f-s-14">{{ req.receiver.username }}</div>
+              <div class="text-muted f-s-12">Awaiting response</div>
+            </div>
           </div>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
+
+    <!-- 3. NOTIFICATIONS -->
+    <div class="nav-item">
+      <i-tabler name="bell" class="icon-20"></i-tabler>
+      <span class="f-w-600 f-s-15">Notifications</span>
+      <span *ngIf="notifications.length > 0" class="nav-badge">{{ notifications.length }}</span>
+
+      <!-- DROPDOWN CONTENT -->
+      <div class="nav-dropdown">
+        <div class="dropdown-header">Vos notifications</div>
+        <div *ngIf="notifications.length === 0" class="empty-state">
+          <i-tabler name="bell-off" class="icon-40 m-b-8 opacity-50"></i-tabler>
+          No new notifications
+        </div>
+        <div class="scroll-list" *ngIf="notifications.length > 0">
+          <div *ngFor="let notif of notifications.slice().reverse()" class="notification-item">
+            <div class="notification-dot"></div>
+            <div class="f-s-14 text-dark lh-sm flex-1">{{ notif.message }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
+</mat-card>
 
-  <!-- Sent Requests -->
-  <div class="col-lg-4">
-    <mat-card class="cardWithShadow h-100">
-      <mat-card-content class="p-24">
-        <div class="d-flex align-items-center m-b-20">
-          <i-tabler name="send" class="icon-22 text-info m-r-8"></i-tabler>
-          <h4 class="m-0">Sent Requests</h4>
-        </div>
-
-        <div *ngIf="sentRequests.length === 0" class="text-muted">
-          No sent requests.
-        </div>
-
-        <div
-          *ngFor="let req of sentRequests"
-          class="p-12 border rounded m-b-12"
-        >
-          <div class="f-w-600">{{ req.receiver.username }}</div>
-          <div class="text-muted f-s-13">waiting for acceptance</div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
-  <!-- Notifications -->
-  <div class="col-lg-4">
-    <mat-card class="cardWithShadow h-100">
-      <mat-card-content class="p-24">
-        <div class="d-flex align-items-center m-b-20">
-          <i-tabler name="bell" class="icon-22 text-warning m-r-8"></i-tabler>
-          <h4 class="m-0">Notifications</h4>
-        </div>
-
-        <div *ngIf="notifications.length === 0" class="text-muted">
-          No notifications yet.
-        </div>
-
-        <div
-          *ngFor="let notif of notifications"
-          class="p-12 border rounded m-b-12"
-        >
-          <div class="f-w-500">{{ notif.message }}</div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-</div>
-
-<!-- CONTACTS -->
-<div class="row m-t-24">
+<!-- ===================================================== -->
+<!-- CONTACTS (FACEBOOK STYLE PROFILE CARDS) - UNTOUCHED -->
+<!-- ===================================================== -->
+<div class="row">
   @for(contact of contacts; track contact.id) {
-  <div class="col-sm-6 col-lg-4">
-    <mat-card class="cardWithShadow h-100">
-      <mat-card-content class="text-center p-24">
-        <img
-          [src]="contact.image || 'assets/images/profile/user-1.jpg'"
-          class="rounded-circle border p-5"
-          width="100"
-          height="100"
-          style="object-fit: cover"
-        />
+  <div class="col-sm-6 col-md-4 col-lg-3 m-b-24">
+    <mat-card class="contact-card h-100">
+      
+      <!-- Cover Header -->
+      <div class="card-cover"></div>
 
-        <h4 mat-card-title class="card-title m-t-16 m-b-8">
-          {{ contact.username }}
-        </h4>
-
-        <div class="d-flex justify-content-center align-items-center m-b-16 text-muted">
-          <i-tabler name="mail" class="icon-18 m-r-6"></i-tabler>
-          <span class="f-s-14">{{ contact.email }}</span>
+      <div class="contact-card-content">
+        <!-- Avatar -->
+        <div class="avatar-wrapper">
+          <img [src]="contact.image || 'assets/images/profile/user-1.jpg'" class="rounded-circle contact-image" width="84" height="84" />
         </div>
 
-        <div class="m-t-20 d-flex justify-content-center gap-2 flex-wrap">
-          <a mat-flat-button color="primary"
-             [routerLink]="['/apps/chat']"
-             [queryParams]="{userId: contact.id}">
-            <i-tabler name="message-circle" class="icon-18 m-r-4"></i-tabler>
-            Chat
+        <h4 class="f-w-600 f-s-16 m-b-4 text-dark">{{ contact.username }}</h4>
+        
+        <div class="d-flex align-items-center justify-content-center text-muted w-100">
+          <span class="f-s-13 text-truncate">{{ contact.email }}</span>
+        </div>
+
+        <!-- FACEBOOK STYLE ACTION BUTTONS -->
+        <div class="action-buttons mt-auto">
+          <a mat-flat-button class="btn-fb-primary" [routerLink]="['/profil', contact.id]">
+            View Profile
+          </a>
+
+          <a mat-flat-button class="btn-fb-secondary" [routerLink]="['/apps/chat']" [queryParams]="{ userId: contact.id }" title="Message">
+            <i-tabler name="message-circle" class="icon-18"></i-tabler>
           </a>
         </div>
-      </mat-card-content>
+
+      </div>
     </mat-card>
   </div>
   }

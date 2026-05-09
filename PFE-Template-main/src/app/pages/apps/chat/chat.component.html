@@ -5,7 +5,9 @@
       'side-panel-closed': !sidePanelOpened
     }"
   >
-    <!-- sidebar -->
+    <!-- ================================================ -->
+    <!-- SIDEBAR -->
+    <!-- ================================================ -->
     <mat-sidenav
       #chatnav
       [mode]="isOver() ? 'over' : 'side'"
@@ -13,160 +15,834 @@
       (open)="sidePanelOpened = true"
       (close)="sidePanelOpened = false"
     >
-      <ng-scrollbar class="position-relative" style="height: 100%">
-        <div class="p-24">
-          <h4 class="mat-subtitle-1 f-s-18 f-w-600 m-b-0">Messages</h4>
+      <ng-scrollbar
+        class="position-relative"
+        style="height: 100%"
+      >
+
+        <!-- HEADER -->
+        <div
+          class="
+            p-24
+            d-flex
+            align-items-center
+            justify-content-between
+          "
+        >
+          <h4 class="mat-subtitle-1 f-s-18 f-w-600 m-b-0">
+            Messages
+          </h4>
+
+          <div
+            class="d-flex align-items-center"
+            style="gap: 4px;"
+          >
+
+            <!-- JOIN GROUP BTN -->
+            <button
+              mat-icon-button
+              color="accent"
+              (click)="openJoinPanel()"
+              matTooltip="Join a group"
+            >
+              <mat-icon>group</mat-icon>
+            </button>
+
+            <!-- CREATE GROUP BTN -->
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="showCreateGroupForm = !showCreateGroupForm"
+              matTooltip="Create a group"
+            >
+              <mat-icon>group_add</mat-icon>
+            </button>
+
+          </div>
         </div>
 
+        <!-- SEARCH -->
         <div class="p-x-24">
           <mat-form-field appearance="outline" class="w-100">
-            <input matInput placeholder="Search Contacts" [(ngModel)]="searchText" />
+            <input
+              matInput
+              placeholder="Search chats..."
+              [(ngModel)]="searchText"
+            />
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
         </div>
 
-        <mat-nav-list class="chat-listing">
-          @for(contact of filteredContacts; track contact.id) {
-          <mat-list-item
-            role="listitem"
-            (click)="onSelect(contact)"
-            [class.bg-light-primary]="contact === selectedContact"
-            lines="2"
-          >
-            <div
-              class="d-flex align-items-center justify-content-between w-100 p-x-16 p-b-4 h-100"
-              matListItemTitle
+        <!-- CREATE GROUP FORM -->
+        <div
+          *ngIf="showCreateGroupForm"
+          class="p-x-24 p-b-16"
+        >
+          <div class="group-create-box">
+
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
             >
-              <div class="d-flex align-items-center">
-                <div
-                  class="rounded-circle d-flex align-items-center justify-content-center bg-light-primary text-primary f-w-600"
-                  style="width: 42px; height: 42px;"
-                >
-                  {{ contact.username?.charAt(0) | uppercase }}
-                </div>
+              <mat-label>Group name</mat-label>
+              <input
+                matInput
+                [(ngModel)]="newGroupName"
+                placeholder="Enter group name"
+              />
+            </mat-form-field>
 
-                <div class="m-l-16">
-                  <h3 class="f-w-600 mat-subtitle-1 f-s-16 lh-sm m-b-4">
-                    {{ contact.username }}
-                  </h3>
-                  <p class="f-s-13 m-b-0 text-muted">
-                    <strong *ngIf="contact.lastSenderName">{{ contact.lastSenderName }}:</strong>
-                    {{ contact.lastMessage }}
-                  </p>
-                </div>
-              </div>
-
-              <span
-                *ngIf="getUnreadCount(contact.id) > 0"
-                class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                style="width: 22px; height: 22px; font-size: 11px;"
-              >
-                {{ getUnreadCount(contact.id) }}
-              </span>
+            <div class="m-b-12 f-w-600">
+              Select Members
             </div>
-          </mat-list-item>
+
+            <div class="members-box">
+              @for(contact of contacts; track contact.id) {
+                <mat-checkbox
+                  [checked]="selectedMemberIds.includes(contact.id)"
+                  (change)="toggleMember(contact.id, $event.checked)"
+                >
+                  {{ contact.username }}
+                </mat-checkbox>
+              }
+            </div>
+
+            <button
+              mat-raised-button
+              color="primary"
+              class="w-100 m-t-12"
+              (click)="createGroup()"
+              [disabled]="!newGroupName.trim()"
+            >
+              Create Group
+            </button>
+
+          </div>
+        </div>
+
+        <mat-nav-list class="chat-listing">
+
+          <!-- ========================================== -->
+          <!-- PRIVATE CHATS -->
+          <!-- ========================================== -->
+
+          <div class="p-x-24 p-y-8">
+            <h5 class="m-0">Direct Messages</h5>
+          </div>
+
+          @for(
+            contact of filteredContacts;
+            track contact.id
+          ) {
+            <mat-list-item
+              role="listitem"
+              (click)="onSelect(contact)"
+              [class.bg-light-primary]="
+                selectedChat?.type === 'private' &&
+                selectedChat?.data?.id === contact.id
+              "
+              lines="2"
+            >
+              <div
+                class="
+                  d-flex
+                  align-items-center
+                  justify-content-between
+                  w-100
+                  p-x-16
+                  p-b-4
+                  h-100
+                "
+                matListItemTitle
+              >
+                <div class="d-flex align-items-center">
+
+                  <!-- AVATAR -->
+                  <div
+                    class="
+                      rounded-circle
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      bg-light-primary
+                      text-primary
+                      f-w-600
+                    "
+                    style="width: 42px; height: 42px;"
+                  >
+                    {{ contact.username?.charAt(0) | uppercase }}
+                  </div>
+
+                  <!-- INFO -->
+                  <div class="m-l-16">
+                    <h3
+                      class="
+                        f-w-600
+                        mat-subtitle-1
+                        f-s-16
+                        lh-sm
+                        m-b-4
+                      "
+                    >
+                      {{ contact.username }}
+                    </h3>
+
+                    <div class="chat-preview">
+                      <span
+                        class="preview-sender"
+                        *ngIf="contact.lastSenderName"
+                      >
+                        {{ contact.lastSenderName }}:
+                      </span>
+                      <span class="preview-message">
+                        {{ contact.lastMessage }}
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- UNREAD BADGE -->
+                <span
+                  *ngIf="getUnreadCount(contact.id) > 0"
+                  class="
+                    bg-primary
+                    text-white
+                    rounded-circle
+                    d-flex
+                    align-items-center
+                    justify-content-center
+                  "
+                  style="
+                    width: 22px;
+                    height: 22px;
+                    font-size: 11px;
+                  "
+                >
+                  {{ getUnreadCount(contact.id) }}
+                </span>
+
+              </div>
+            </mat-list-item>
           }
+
+          <mat-divider class="m-y-12"></mat-divider>
+
+          <!-- ========================================== -->
+          <!-- GROUPS -->
+          <!-- ========================================== -->
+
+          <div class="p-x-24 p-y-8">
+            <h5 class="m-0">Groups</h5>
+          </div>
+
+          @for(group of filteredGroups; track group.id) {
+
+            <mat-list-item
+              role="listitem"
+              (click)="onSelectGroup(group)"
+              [class.bg-light-primary]="
+                selectedChat?.type === 'group' &&
+                selectedChat?.data?.id === group.id
+              "
+              lines="2"
+            >
+              <div
+                class="
+                  d-flex
+                  align-items-center
+                  justify-content-between
+                  w-100
+                  p-x-16
+                  p-b-4
+                  h-100
+                "
+                matListItemTitle
+              >
+
+                <!-- LEFT -->
+                <div class="d-flex align-items-center">
+
+                  <!-- GROUP AVATAR -->
+                  <div
+                    class="
+                      rounded-circle
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      bg-purple
+                      text-white
+                      f-w-600
+                    "
+                    style="width: 42px; height: 42px;"
+                  >
+                    {{ group.name?.charAt(0) | uppercase }}
+                  </div>
+
+                  <!-- GROUP INFO -->
+                  <div class="m-l-16 group-info">
+
+                    <h3
+                      class="
+                        f-w-600
+                        mat-subtitle-1
+                        f-s-16
+                        lh-sm
+                        m-b-4
+                      "
+                    >
+                      {{ group.name }}
+                    </h3>
+
+                    <!-- MEMBERS AVATARS -->
+                    <div class="group-members-list">
+                      @for(
+                        member of group.members?.slice(0, 4);
+                        track member.id
+                      ) {
+                        <div
+                          class="member-mini-avatar"
+                          [matTooltip]="member.username"
+                          [ngStyle]="{
+                            'background': getMemberColor(
+                              member.username
+                            )
+                          }"
+                        >
+                          {{ member.username?.charAt(0) | uppercase }}
+                        </div>
+                      }
+
+                      <span
+                        class="more-members"
+                        *ngIf="group.members?.length > 4"
+                      >
+                        +{{ group.members.length - 4 }}
+                      </span>
+                    </div>
+
+                    <!-- LAST MESSAGE -->
+                    <div class="chat-preview">
+                      <span
+                        class="preview-sender"
+                        *ngIf="group.lastSenderName"
+                      >
+                        {{ group.lastSenderName }}:
+                      </span>
+                      <span class="preview-message">
+                        {{ group.lastMessage }}
+                      </span>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- RIGHT -->
+                <div
+                  class="d-flex align-items-center"
+                  style="gap: 6px;"
+                >
+
+                  <!-- UNREAD BADGE -->
+                  <span
+                    *ngIf="group.unreadCount > 0"
+                    class="
+                      bg-primary
+                      text-white
+                      rounded-circle
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                    "
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      font-size: 11px;
+                    "
+                  >
+                    {{ group.unreadCount }}
+                  </span>
+
+                  <!-- LEAVE BTN -->
+                  <button
+                    *ngIf="!isGroupAdmin(group)"
+                    mat-icon-button
+                    class="leave-group-btn"
+                    matTooltip="Leave group"
+                    (click)="confirmLeaveGroup($event, group)"
+                  >
+                    <mat-icon
+                      style="
+                        font-size: 18px;
+                        width: 18px;
+                        height: 18px;
+                        color: #e53935;
+                      "
+                    >
+                      exit_to_app
+                    </mat-icon>
+                  </button>
+
+                </div>
+
+              </div>
+            </mat-list-item>
+
+          }
+
         </mat-nav-list>
       </ng-scrollbar>
     </mat-sidenav>
 
-    <!-- header -->
-    <mat-toolbar
-      class="no-shadow chat-right-panel bg-white d-flex align-items-center p-y-8 b-b-1"
-    >
-      <button (click)="chatnav.toggle()" class="m-r-10" mat-icon-button>
-        <mat-icon>short_text</mat-icon>
-      </button>
+    <!-- ================================================ -->
+    <!-- RIGHT PANEL -->
+    <!-- ================================================ -->
 
-      <div class="d-flex align-items-center" *ngIf="selectedContact">
-        <div
-          class="rounded-circle d-flex align-items-center justify-content-center bg-light-primary text-primary f-w-600"
-          style="width: 40px; height: 40px;"
-        >
-          {{ selectedContact?.username?.charAt(0) | uppercase }}
-        </div>
+    <div class="w-100">
 
-        <div class="mat-subtitle-1 f-s-16 f-w-600 m-b-0 m-l-16">
-          {{ selectedContact.username }}
-        </div>
-      </div>
-    </mat-toolbar>
-
-    <!-- messages -->
-    <ng-scrollbar style="height: calc(100vh - 390px)" class="position-relative" #scrollContainer>
-      <mat-card-content class="chat-middle-box p-24">
-        @for(c of conversation; track c.id) {
-
-          @if(isMine(c)) {
-          <div class="message-row sent">
-            <div class="message-wrapper">
-              <div class="message-sender text-right">You</div>
-              <div class="message-bubble sent-bubble">
-                {{ c.content }}
-              </div>
-              <div class="message-time text-right">
-                {{ c.sentAt | date:'short' }}
-                <button class="delete-btn" (click)="deleteMessage(c.id)" title="Delete">
-                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">close</mat-icon>
-                </button>
-              </div>
-            </div>
-            <div class="message-avatar me-avatar">
-              <div class="avatar-circle avatar-me">
-                {{ currentUsername?.charAt(0) | uppercase }}
-              </div>
-            </div>
-          </div>
-          }
-
-          @if(!isMine(c)) {
-          <div class="message-row received">
-            <div class="message-avatar">
-              <div class="avatar-circle avatar-other">
-                {{ getSenderName(c)?.charAt(0) | uppercase }}
-              </div>
-            </div>
-            <div class="message-wrapper">
-              <div class="message-sender">{{ getSenderName(c) }}</div>
-              <div class="message-bubble received-bubble">
-                {{ c.content }}
-              </div>
-              <div class="message-time">
-                {{ c.sentAt | date:'short' }}
-                <button class="delete-btn" (click)="deleteMessage(c.id)" title="Delete">
-                  <mat-icon style="font-size: 14px; width: 14px; height: 14px;">close</mat-icon>
-                </button>
-              </div>
-            </div>
-          </div>
-          }
-
-        }
-      </mat-card-content>
-    </ng-scrollbar>
-
-    <!-- input -->
-    <mat-divider></mat-divider>
-    <div class="p-t-20 p-l-30 p-r-30">
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Message</mat-label>
-        <input
-          matInput
-          placeholder="Send message"
-          [(ngModel)]="msg"
-          #myInput
-          (keyup.enter)="OnAddMsg()"
-        />
+      <!-- TOOLBAR -->
+      <mat-toolbar
+        class="
+          no-shadow
+          chat-right-panel
+          bg-white
+          d-flex
+          align-items-center
+          p-y-8
+          b-b-1
+        "
+      >
         <button
+          (click)="chatnav.toggle()"
+          class="m-r-10"
           mat-icon-button
-          matSuffix
-          color="primary"
-          (click)="OnAddMsg()"
-          [disabled]="!msg"
         >
-          <mat-icon>send</mat-icon>
+          <mat-icon>short_text</mat-icon>
         </button>
-      </mat-form-field>
+
+        <div
+          class="d-flex align-items-center"
+          *ngIf="selectedChat"
+        >
+          <div
+            class="
+              rounded-circle
+              d-flex
+              align-items-center
+              justify-content-center
+              bg-light-primary
+              text-primary
+              f-w-600
+            "
+            style="width: 40px; height: 40px;"
+          >
+            {{ getSelectedTitle()?.charAt(0) | uppercase }}
+          </div>
+
+          <div class="m-l-16">
+
+            <div
+              class="mat-subtitle-1 f-s-16 f-w-600 m-b-0"
+            >
+              {{ getSelectedTitle() }}
+            </div>
+
+            <!-- MEMBERS TRIGGER -->
+            <div
+              class="group-members-trigger"
+              *ngIf="selectedChat?.type === 'group'"
+              [matMenuTriggerFor]="membersMenu"
+            >
+              <mat-icon class="group-icon">group</mat-icon>
+              <span>
+                {{ selectedChat?.data?.membersCount }} members
+              </span>
+            </div>
+
+            <!-- MEMBERS MENU -->
+            <mat-menu
+              #membersMenu="matMenu"
+              class="members-menu"
+            >
+
+              <div class="members-menu-header">
+                Group Members
+              </div>
+
+              <div
+                *ngIf="!selectedChat?.data?.members?.length"
+                class="members-empty"
+              >
+                No members found
+              </div>
+
+              @for(
+                member of selectedChat?.data?.members || [];
+                track member.id
+              ) {
+                <div class="member-item">
+                  <div class="member-avatar">
+                    {{ member.username?.charAt(0) | uppercase }}
+                  </div>
+                  <div class="member-info">
+                    <div class="member-name">
+                      {{ member.username }}
+                    </div>
+                    <div class="member-email">
+                      {{ member.email }}
+                    </div>
+                  </div>
+                </div>
+              }
+
+            </mat-menu>
+
+          </div>
+        </div>
+      </mat-toolbar>
+
+      <!-- MESSAGES -->
+      <ng-scrollbar
+        style="height: calc(100vh - 390px)"
+        class="position-relative"
+        #scrollContainer
+      >
+        <mat-card-content class="chat-middle-box p-24">
+
+          <!-- EMPTY STATE -->
+          <div
+            *ngIf="!selectedChat"
+            class="empty-chat-state"
+          >
+            <mat-icon class="empty-chat-icon">
+              chat_bubble_outline
+            </mat-icon>
+            <h3 class="empty-chat-title">
+              No Conversation Selected
+            </h3>
+            <p class="empty-chat-subtitle">
+              Select a contact or group from the left
+              to start chatting
+            </p>
+          </div>
+
+          @for(c of conversation; track c.id) {
+
+            @if(isMine(c)) {
+              <div class="message-row sent">
+                <div class="message-wrapper">
+                  <div class="message-sender text-right">
+                    You
+                  </div>
+                  <div class="message-bubble sent-bubble">
+                    {{ c.content }}
+                  </div>
+                  <div class="message-time text-right">
+                    {{ c.sentAt | date:'shortTime' }}
+                    <button
+                      class="delete-btn"
+                      (click)="deleteMessage(c.id)"
+                      matTooltip="Delete message"
+                    >
+                      <mat-icon
+                        style="
+                          font-size: 14px;
+                          width: 14px;
+                          height: 14px;
+                        "
+                      >
+                        close
+                      </mat-icon>
+                    </button>
+                  </div>
+                </div>
+                <div class="message-avatar me-avatar">
+                  <div class="avatar-circle avatar-me">
+                    {{ currentUsername?.charAt(0) | uppercase }}
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if(!isMine(c)) {
+              <div class="message-row received">
+                <div class="message-avatar">
+                  <div class="avatar-circle avatar-other">
+                    {{ getSenderName(c)?.charAt(0) | uppercase }}
+                  </div>
+                </div>
+                <div class="message-wrapper">
+                  <div class="message-sender">
+                    {{ getSenderName(c) }}
+                  </div>
+                  <div class="message-bubble received-bubble">
+                    {{ c.content }}
+                  </div>
+                  <div class="message-time">
+                    {{ c.sentAt | date:'shortTime' }}
+                    <button
+                      class="delete-btn"
+                      (click)="deleteMessage(c.id)"
+                      matTooltip="Delete message"
+                    >
+                      <mat-icon
+                        style="
+                          font-size: 14px;
+                          width: 14px;
+                          height: 14px;
+                        "
+                      >
+                        close
+                      </mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
+
+          }
+
+        </mat-card-content>
+      </ng-scrollbar>
+
+      <!-- INPUT -->
+      <mat-divider></mat-divider>
+      <div class="p-t-20 p-l-30 p-r-30 p-b-20">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>
+            {{
+              selectedChat?.type === 'group'
+                ? 'Message the group'
+                : 'Send a message'
+            }}
+          </mat-label>
+          <input
+            matInput
+            #myInput
+            [placeholder]="
+              selectedChat?.type === 'group'
+                ? 'Type a group message...'
+                : 'Type a message...'
+            "
+            [(ngModel)]="msg"
+            (keyup.enter)="OnAddMsg()"
+            [disabled]="!selectedChat"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            color="primary"
+            (click)="OnAddMsg()"
+            [disabled]="!msg.trim() || !selectedChat"
+            matTooltip="Send message"
+          >
+            <mat-icon>send</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
     </div>
   </mat-sidenav-container>
 </mat-card>
+
+<!-- ================================================ -->
+<!-- LEAVE GROUP CONFIRM DIALOG -->
+<!-- ================================================ -->
+
+<div
+  class="leave-overlay"
+  *ngIf="showLeaveConfirm"
+  (click)="cancelLeave()"
+>
+  <div
+    class="leave-dialog"
+    (click)="$event.stopPropagation()"
+  >
+
+    <div class="leave-icon">🚪</div>
+
+    <h3 class="leave-title">
+      Leave Group?
+    </h3>
+
+    <p class="leave-message">
+      Are you sure you want to leave
+      <strong>{{ leaveGroupTarget?.name }}</strong>?
+      You will no longer receive messages from this group.
+    </p>
+
+    <div class="leave-actions">
+
+      <button
+        mat-stroked-button
+        (click)="cancelLeave()"
+      >
+        Cancel
+      </button>
+
+      <button
+        mat-raised-button
+        color="warn"
+        (click)="leaveGroup()"
+      >
+        Leave Group
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ================================================ -->
+<!-- JOIN GROUP PANEL -->
+<!-- ================================================ -->
+
+<div
+  class="join-overlay"
+  *ngIf="showJoinGroupPanel"
+  (click)="closeJoinPanel()"
+>
+  <div
+    class="join-panel"
+    (click)="$event.stopPropagation()"
+  >
+
+    <!-- HEADER -->
+    <div class="join-panel-header">
+
+      <div class="join-panel-title">
+        <mat-icon>group</mat-icon>
+        <span>Join a Group</span>
+      </div>
+
+      <button
+        mat-icon-button
+        (click)="closeJoinPanel()"
+        matTooltip="Close"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+
+    </div>
+
+    <!-- SEARCH -->
+    <div class="join-search">
+      <mat-form-field
+        appearance="outline"
+        class="w-100"
+      >
+        <input
+          matInput
+          placeholder="Search available groups..."
+          [(ngModel)]="joinSearchText"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div
+      *ngIf="filteredAvailableGroups.length === 0"
+      class="join-empty"
+    >
+      <mat-icon>search_off</mat-icon>
+      <p>No groups available to join</p>
+    </div>
+
+    <!-- GROUPS LIST -->
+    <div class="join-groups-list">
+
+      @for(
+        group of filteredAvailableGroups;
+        track group.id
+      ) {
+        <div class="join-group-item">
+
+          <!-- LEFT -->
+          <div class="d-flex align-items-center">
+
+            <!-- AVATAR -->
+            <div
+              class="join-group-avatar"
+              [ngStyle]="{
+                'background': getMemberColor(group.name)
+              }"
+            >
+              {{ group.name?.charAt(0) | uppercase }}
+            </div>
+
+            <!-- INFO -->
+            <div class="join-group-info">
+
+              <div class="join-group-name">
+                {{ group.name }}
+              </div>
+
+              <div class="join-group-meta">
+                <mat-icon
+                  style="
+                    font-size: 14px;
+                    width: 14px;
+                    height: 14px;
+                  "
+                >
+                  people
+                </mat-icon>
+                <span>
+                  {{ group.membersCount }}
+                  {{ group.membersCount === 1 ? 'member' : 'members' }}
+                </span>
+                <span class="join-admin">
+                  · Created by {{ group.createdByUsername }}
+                </span>
+              </div>
+
+              <!-- MEMBERS PREVIEW -->
+              <div class="join-members-preview">
+                @for(
+                  member of group.members?.slice(0, 5);
+                  track member.id
+                ) {
+                  <div
+                    class="join-mini-avatar"
+                    [matTooltip]="member.username"
+                    [ngStyle]="{
+                      'background': getMemberColor(
+                        member.username
+                      )
+                    }"
+                  >
+                    {{ member.username?.charAt(0) | uppercase }}
+                  </div>
+                }
+
+                <span
+                  *ngIf="group.members?.length > 5"
+                  class="join-more"
+                >
+                  +{{ group.members.length - 5 }} more
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- JOIN BTN -->
+          <button
+            mat-raised-button
+            color="primary"
+            class="join-btn"
+            (click)="rejoinGroup(group)"
+            matTooltip="Join this group"
+          >
+            <mat-icon>login</mat-icon>
+            Join
+          </button>
+
+        </div>
+      }
+
+    </div>
+
+  </div>
+</div>

@@ -11,4 +11,5 @@ export interface Book{
   quotes?: string[];
   likes?: number;
   reviews?: any[];
+   averageRating?: number;
 }

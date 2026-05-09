@@ -1,4 +1,12 @@
-import { Component, Output, EventEmitter, Input, ViewEncapsulation, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Output,
+  EventEmitter,
+  Input,
+  ViewEncapsulation,
+  OnInit,
+  OnDestroy
+} from '@angular/core';
 import { CoreService } from 'src/app/services/core.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
@@ -29,13 +37,28 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   @Input() showToggle = true;
   @Input() toggleChecked = false;
-  @Output() toggleMobileNav = new EventEmitter<void>();
-  @Output() toggleMobileFilterNav = new EventEmitter<void>();
-  @Output() toggleCollapsed = new EventEmitter<void>();
+
+  @Output() toggleMobileNav =
+    new EventEmitter<void>();
+
+  @Output() toggleMobileFilterNav =
+    new EventEmitter<void>();
+
+  @Output() toggleCollapsed =
+    new EventEmitter<void>();
+
+  // =====================================================
+  // NOTIFICATIONS
+  // =====================================================
 
   unreadChatMessagesCount: number = 0;
   unreadSenders: any[] = [];
+
   private subs: Subscription = new Subscription();
+
+  // =====================================================
+  // LANGUAGES
+  // =====================================================
 
   public selectedLanguage: any = {
     language: 'English',
@@ -45,10 +68,55 @@ export class HeaderComponent implements OnInit, OnDestroy {
   };
 
   public languages: any[] = [
-    { language: 'English', code: 'en', type: 'US', icon: '/assets/images/flag/icon-flag-en.svg' },
-    { language: 'Español', code: 'es', icon: '/assets/images/flag/icon-flag-es.svg' },
-    { language: 'Français', code: 'fr', icon: '/assets/images/flag/icon-flag-fr.svg' },
-    { language: 'German', code: 'de', icon: '/assets/images/flag/icon-flag-de.svg' },
+    {
+      language: 'English',
+      code: 'en',
+      type: 'US',
+      icon: '/assets/images/flag/icon-flag-en.svg'
+    },
+    {
+      language: 'Español',
+      code: 'es',
+      icon: '/assets/images/flag/icon-flag-es.svg'
+    },
+    {
+      language: 'Français',
+      code: 'fr',
+      icon: '/assets/images/flag/icon-flag-fr.svg'
+    },
+    {
+      language: 'German',
+      code: 'de',
+      icon: '/assets/images/flag/icon-flag-de.svg'
+    },
+  ];
+
+  // =====================================================
+  // PROFILE MENU
+  // =====================================================
+
+  profiledd: any[] = [
+    {
+      id: 1,
+      img: '/assets/images/svgs/icon-account.svg',
+      title: 'My Profile',
+      subtitle: 'Account Settings',
+      link: '/'
+    },
+    {
+      id: 2,
+      img: '/assets/images/svgs/icon-inbox.svg',
+      title: 'My Inbox',
+      subtitle: 'Messages & Email',
+      link: '/apps/email/inbox'
+    },
+    {
+      id: 3,
+      img: '/assets/images/svgs/icon-tasks.svg',
+      title: 'My Tasks',
+      subtitle: 'To-do and Daily Tasks',
+      link: '/apps/taskboard'
+    },
   ];
 
   constructor(
@@ -60,22 +128,31 @@ export class HeaderComponent implements OnInit, OnDestroy {
     translate.setDefaultLang('en');
   }
 
+  // =====================================================
+  // LIFECYCLE
+  // =====================================================
+
   ngOnInit(): void {
-    // Démarrer le polling des notifications
+
+    // Start polling
     this.chatService.startUnreadPolling();
 
-    // S'abonner au compteur
+    // Subscribe unread count
     this.subs.add(
-      this.chatService.unreadCount$.subscribe((count: number) => {
-        this.unreadChatMessagesCount = count;
-      })
+      this.chatService.unreadCount$.subscribe(
+        (count: number) => {
+          this.unreadChatMessagesCount = count;
+        }
+      )
     );
 
-    // S'abonner aux expéditeurs
+    // Subscribe unread senders
     this.subs.add(
-      this.chatService.unreadSenders$.subscribe((senders: any[]) => {
-        this.unreadSenders = senders;
-      })
+      this.chatService.unreadSenders$.subscribe(
+        (senders: any[]) => {
+          this.unreadSenders = senders;
+        }
+      )
     );
   }
 
@@ -83,16 +160,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
 
-  openDialog() {}
+  // =====================================================
+  // METHODS
+  // =====================================================
+
+  openDialog(): void {}
 
   changeLanguage(lang: any): void {
     this.translate.use(lang.code);
     this.selectedLanguage = lang;
   }
-
-  profiledd: any[] = [
-    { id: 1, img: '/assets/images/svgs/icon-account.svg', title: 'My Profile', subtitle: 'Account Settings', link: '/' },
-    { id: 2, img: '/assets/images/svgs/icon-inbox.svg', title: 'My Inbox', subtitle: 'Messages & Email', link: '/apps/email/inbox' },
-    { id: 3, img: '/assets/images/svgs/icon-tasks.svg', title: 'My Tasks', subtitle: 'To-do and Daily Tasks', link: '/apps/taskboard' },
-  ];
 }

@@ -70,6 +70,8 @@ import { AddedDialogComponent } from './invoice/add-invoice/added-dialog/added-d
 import { AppBlogsComponent } from '../blogs/blogs.component';
 import { AppBlogDetailsComponent } from '../blogs/details/details.component';
 
+//profile
+import { ProfileComponent } from './profil/profile.component';
 
 @NgModule({
   imports: [
@@ -91,6 +93,7 @@ import { AppBlogDetailsComponent } from '../blogs/details/details.component';
     }),
     MatNativeDateModule,
     NgScrollbarModule,
+    ProfileComponent, 
   ],
   exports: [TablerIconsModule],
   declarations: [
@@ -122,6 +125,7 @@ import { AppBlogDetailsComponent } from '../blogs/details/details.component';
     OkDialogComponent,
     AppBlogsComponent,
     AppBlogDetailsComponent,
+    
   ],
   providers: [DatePipe],
 })

@@ -6,7 +6,7 @@ import { AddBookComponent } from './pages/admin/add-book/add-book.component';
 import { EditBookComponent } from './pages/admin/edit-book/edit-book.component';
 import { ReviewComponent } from './pages/blogs/review/review.component';
 import { ReadingGoalComponent } from './pages/apps/reading-goal/reading-goal.component';
-
+import { ProfileComponent } from './pages/apps/profil/profile.component';
 const routes: Routes = [
   {
     path: 'review/:id',
@@ -73,12 +73,17 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/datatable/datatable.module').then((m) => m.DatatableModule),
       },
+       { path: 'profil/:id', 
+  component: ProfileComponent
+
+       },
       {
         path: 'theme-pages',
         loadChildren: () =>
           import('./pages/theme-pages/theme-pages.module').then(
             (m) => m.ThemePagesModule
           ),
+          
       },
     ],
   },

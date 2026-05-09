@@ -1,0 +1,287 @@
+@if (isLoading) {
+  <div
+    class="
+      d-flex
+      justify-content-center
+      align-items-center
+    "
+    style="height: 60vh;"
+  >
+    <mat-spinner></mat-spinner>
+  </div>
+}
+
+@if (!isLoading && profile) {
+  <div class="row">
+
+    <!-- ================================================ -->
+    <!-- HEADER -->
+    <!-- ================================================ -->
+
+    <div class="col-12 m-b-24">
+      <mat-card class="cardWithShadow profile-header-card">
+        <mat-card-content
+          class="
+            p-30
+            d-flex
+            align-items-center
+            gap-4
+            flex-wrap
+          "
+        >
+
+          <!-- AVATAR -->
+          <div
+            class="
+              avatar-large
+              bg-primary
+              text-white
+              d-flex
+              align-items-center
+              justify-content-center
+            "
+          >
+            {{ profile.username?.charAt(0) | uppercase }}
+          </div>
+
+          <div class="flex-1">
+
+            <h2 class="f-w-600 m-b-4">
+              {{ profile.username }}
+            </h2>
+
+            <p
+              class="
+                text-muted
+                d-flex
+                align-items-center
+                m-b-16
+              "
+            >
+              <i-tabler
+                name="mail"
+                class="icon-16 m-r-4"
+              ></i-tabler>
+              {{ profile.email }}
+            </p>
+
+            <!-- ✅ STATS -->
+            <div class="d-flex gap-4 stats-container">
+
+              <!-- FRIEND FLOWS -->
+              <div class="stat-box">
+                <span class="stat-number">
+                  {{ profile.followingCount || 0 }}
+                </span>
+                <span class="stat-label">
+                  🫂💖 Friend Flows
+                </span>
+              </div>
+
+              <!-- BOOKS READ -->
+              <div class="stat-box">
+                <span
+                  class="stat-number text-primary"
+                >
+                  {{ profile.readBooksCount || 0 }}
+                </span>
+                <span class="stat-label">
+                  ✨📖 Books Read
+                </span>
+              </div>
+
+              <!-- ✅ CONTACTS COUNT -->
+              <div class="stat-box">
+                <span
+                  class="stat-number text-success"
+                >
+                  {{ profile.followersCount || 0 }}
+                </span>
+                <span class="stat-label">
+                  👥 Followers
+                </span>
+              </div>
+
+            </div>
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- ================================================ -->
+    <!-- TABS -->
+    <!-- ================================================ -->
+
+    <div class="col-12">
+      <mat-card class="cardWithShadow">
+        <mat-tab-group
+          mat-stretch-tabs="false"
+          mat-align-tabs="start"
+          class="custom-tabs"
+        >
+
+          <!-- ============================================ -->
+          <!-- TAB 1: LIVRES LUS -->
+          <!-- ============================================ -->
+
+          <mat-tab
+            label="📘✨ Completed Reads
+              ({{profile.readBooks?.length || 0}})"
+          >
+            <div class="p-24">
+              <div class="row">
+
+                @for (
+                  book of profile.readBooks;
+                  track book.id
+                ) {
+                  <div
+                    class="
+                      col-sm-6
+                      col-md-4
+                      col-lg-3
+                      m-b-24
+                    "
+                  >
+                    <mat-card class="book-card h-100">
+                      <img
+                        mat-card-image
+                        [src]="book.pic ||
+                          'assets/images/default-book.png'"
+                        alt="book cover"
+                        class="book-cover"
+                      />
+                      <mat-card-content class="p-16">
+                        <h4
+                          class="
+                            f-w-600
+                            m-b-4
+                            text-truncate
+                          "
+                          [title]="book.title"
+                        >
+                          {{ book.title }}
+                        </h4>
+                        <p
+                          class="text-muted f-s-12 m-b-0"
+                        >
+                          {{ book.author }}
+                        </p>
+                      </mat-card-content>
+                    </mat-card>
+                  </div>
+                }
+
+                @if (profile.readBooks?.length === 0) {
+                  <p
+                    class="
+                      text-muted
+                      text-center
+                      w-100
+                      p-y-24
+                    "
+                  >
+                    📚✨ No books read yet.
+                  </p>
+                }
+
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- ============================================ -->
+          <!-- TAB 2: CRITIQUES -->
+          <!-- ============================================ -->
+
+          <mat-tab
+            label="🌟📣 Feedback & Reviews
+              ({{profile.reviews?.length || 0}})"
+          >
+            <div class="p-24">
+
+              @for (
+                review of profile.reviews;
+                track review.id
+              ) {
+                <mat-card
+                  class="review-card m-b-16 bg-light"
+                >
+                  <mat-card-content
+                    class="p-16 d-flex gap-3"
+                  >
+                    <img
+                      [src]="review.bookPic ||
+                        'assets/images/default-book.png'"
+                      class="review-book-img rounded"
+                      width="60"
+                      height="90"
+                    />
+                    <div>
+                      <h4 class="f-w-600 m-b-4">
+                        {{ review.bookTitle }}
+                      </h4>
+                      <div
+                        class="
+                          d-flex
+                          align-items-center
+                          m-b-8
+                        "
+                      >
+                        <span
+                          class="
+                            badge
+                            bg-warning
+                            text-dark
+                            d-flex
+                            align-items-center
+                            gap-1
+                          "
+                        >
+                          <i-tabler
+                            name="star-filled"
+                            class="icon-14"
+                          ></i-tabler>
+                          {{ review.rating }} / 5
+                        </span>
+                        <span
+                          class="text-muted f-s-12 m-l-12"
+                        >
+                          {{ review.date | date:'mediumDate' }}
+                        </span>
+                      </div>
+                      <p class="m-b-0 text-dark">
+                        {{ review.comment }}
+                      </p>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+              }
+
+              @if (profile.reviews?.length === 0) {
+                <p
+                  class="
+                    text-muted
+                    text-center
+                    w-100
+                    p-y-24
+                  "
+                >
+                  📝✨ No reviews published yet.
+                </p>
+              }
+
+            </div>
+          </mat-tab>
+
+          <!-- ============================================ -->
+          <!-- ✅ TAB 3: FOR YOU RECOMMENDATIONS -->
+          <!-- ============================================ -->
+
+          
+        </mat-tab-group>
+      </mat-card>
+    </div>
+
+  </div>
+}

@@ -12,83 +12,296 @@ export class BookService {
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders(){
+  private getHeaders() {
     const token = localStorage.getItem("token");
-
     return {
       headers: new HttpHeaders({
-        Authorization:`Bearer ${token}`
+        Authorization: `Bearer ${token}`
       })
     };
   }
 
-  // GET
-  getBooks(): Observable<Book[]>{
-    return this.http.get<Book[]>(this.apiUrl,this.getHeaders());
+  // =====================================================
+  // GET ALL BOOKS
+  // =====================================================
+
+  getBooks(): Observable<Book[]> {
+    return this.http.get<Book[]>(
+      this.apiUrl,
+      this.getHeaders()
+    );
   }
 
-  // GET ONE
-  getBook(id:number): Observable<Book>{
-    return this.http.get<Book>(`${this.apiUrl}/${id}`,this.getHeaders());
+  // =====================================================
+  // GET ONE BOOK
+  // =====================================================
+
+  getBook(id: number): Observable<Book> {
+    return this.http.get<Book>(
+      `${this.apiUrl}/${id}`,
+      this.getHeaders()
+    );
   }
 
-  uploadImage(data:any){
-  return this.http.post<any>("http://localhost:8081/upload/image", data);
-}
-  addBook(data:any){
-    return this.http.post("http://localhost:8081/books", data,this.getHeaders());
+  // =====================================================
+  // UPLOAD IMAGE
+  // =====================================================
+
+  uploadImage(data: any) {
+    return this.http.post<any>(
+      "http://localhost:8081/upload/image",
+      data
+    );
   }
 
+  // =====================================================
+  // ADD BOOK
+  // =====================================================
+
+  addBook(data: any) {
+    return this.http.post(
+      "http://localhost:8081/books",
+      data,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
   // UPDATE BOOK
-  updateBook(id:number, book:any){
-  return this.http.put(`${this.apiUrl}/${id}`, book, this.getHeaders());
-}
+  // =====================================================
 
-  // DELETE
-  deleteBook(id:number){
-    return this.http.delete(`${this.apiUrl}/${id}`,this.getHeaders());
+  updateBook(id: number, book: any) {
+    return this.http.put(
+      `${this.apiUrl}/${id}`,
+      book,
+      this.getHeaders()
+    );
   }
 
-  addRating(bookId:number, data:any){
-  return this.http.post(`http://localhost:8081/reviews/${bookId}/rating`, data, this.getHeaders());
-}
+  // =====================================================
+  // DELETE BOOK
+  // =====================================================
 
-  addReview(bookId:number,data:any){
-    return this.http.post(`http://localhost:8081/reviews/${bookId}`, data, this.getHeaders());
+  deleteBook(id: number) {
+    return this.http.delete(
+      `${this.apiUrl}/${id}`,
+      this.getHeaders()
+    );
   }
 
-  addQuote(bookId:number,data:any){
-    return this.http.post(`http://localhost:8081/quotes/${bookId}`, data, this.getHeaders());
+  // =====================================================
+  // ADD RATING
+  // =====================================================
+
+  addRating(bookId: number, data: any) {
+    return this.http.post(
+      `http://localhost:8081/reviews/${bookId}/rating`,
+      data,
+      this.getHeaders()
+    );
   }
+
+  // =====================================================
+  // ADD REVIEW
+  // =====================================================
+
+  addReview(bookId: number, data: any) {
+    return this.http.post(
+      `http://localhost:8081/reviews/${bookId}`,
+      data,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // ADD QUOTE
+  // =====================================================
+
+  addQuote(bookId: number, data: any) {
+    return this.http.post(
+      `http://localhost:8081/quotes/${bookId}`,
+      data,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // VOTE REVIEW
+  // =====================================================
 
   voteReview(reviewId: number) {
-    return this.http.post(`http://localhost:8081/votes/${reviewId}`,{},this.getHeaders());
+    return this.http.post(
+      `http://localhost:8081/votes/${reviewId}`,
+      {},
+      this.getHeaders()
+    );
   }
-  getMyReview(bookId:number){
-  return this.http.get(`http://localhost:8081/reviews/${bookId}/my`, this.getHeaders());
-}
+
+  // =====================================================
+  // GET MY REVIEW
+  // =====================================================
+
+  getMyReview(bookId: number) {
+    return this.http.get(
+      `http://localhost:8081/reviews/${bookId}/my`,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // DELETE REVIEW
+  // =====================================================
+
   deleteReview(id: number) {
-  return this.http.delete(`http://localhost:8081/reviews/${id}`);
-}
-setStatus(bookId: number, status: string) {
-  return this.http.post(
-    `http://localhost:8081/api/userbooks/status?bookId=${bookId}&status=${status}`,
-    {},
-    this.getHeaders()
-  );
-}
-getUserStatus(bookId: number) {
-  return this.http.get<string>(
-    `http://localhost:8081/api/userbooks/status?bookId=${bookId}`,
-this.getHeaders()
-  );
-}
-getUserBook(bookId: number) {
-  return this.http.get(`http://localhost:8081/api/userbooks/book/${bookId}`,this.getHeaders());
-}
+    return this.http.delete(
+      `http://localhost:8081/reviews/${id}`
+    );
+  }
 
-updateProgress(data: any) {
-  return this.http.post('http://localhost:8081/reading/progress', data,this.getHeaders());
-}
+  // =====================================================
+  // SET STATUS
+  // =====================================================
 
+  setStatus(bookId: number, status: string) {
+    return this.http.post(
+      `http://localhost:8081/api/userbooks/status?bookId=${bookId}&status=${status}`,
+      {},
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // GET USER STATUS
+  // =====================================================
+
+  getUserStatus(bookId: number) {
+    return this.http.get<string>(
+      `http://localhost:8081/api/userbooks/status?bookId=${bookId}`,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // GET USER BOOK
+  // =====================================================
+
+  getUserBook(bookId: number) {
+    return this.http.get(
+      `http://localhost:8081/api/userbooks/book/${bookId}`,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // UPDATE PROGRESS
+  // =====================================================
+
+  updateProgress(data: any) {
+    return this.http.post(
+      'http://localhost:8081/reading/progress',
+      data,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // SEARCH
+  // =====================================================
+
+  searchBooks(keyword: string): Observable<Book[]> {
+    return this.http.get<Book[]>(
+      `${this.apiUrl}/search`,
+      {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }),
+        params: { keyword }
+      }
+    );
+  }
+
+  // =====================================================
+  // ADVANCED SEARCH
+  // =====================================================
+
+  advancedSearch(filters: {
+    title?: string;
+    author?: string;
+    genre?: string;
+    year?: number;
+  }): Observable<Book[]> {
+
+    let params: any = {};
+
+    if (filters.title)  params.title  = filters.title;
+    if (filters.author) params.author = filters.author;
+    if (filters.genre)  params.genre  = filters.genre;
+    if (filters.year)   params.year   = filters.year;
+
+    return this.http.get<Book[]>(
+      `${this.apiUrl}/search/advanced`,
+      {
+        headers: new HttpHeaders({
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }),
+        params
+      }
+    );
+  }
+
+  // =====================================================
+  // TRENDING
+  // =====================================================
+
+  getTrendingBooks(): Observable<Book[]> {
+    return this.http.get<Book[]>(
+      `${this.apiUrl}/trending`,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // RECENTLY ADDED
+  // =====================================================
+
+  getRecentlyAdded(): Observable<Book[]> {
+    return this.http.get<Book[]>(
+      `${this.apiUrl}/recent`,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // BY GENRE
+  // =====================================================
+
+  getBooksByGenre(genre: string): Observable<Book[]> {
+    return this.http.get<Book[]>(
+      `${this.apiUrl}/genre/${genre}`,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // ALL GENRES
+  // =====================================================
+
+  getAllGenres(): Observable<string[]> {
+    return this.http.get<string[]>(
+      `${this.apiUrl}/genres`,
+      this.getHeaders()
+    );
+  }
+
+  // =====================================================
+  // RECOMMENDATIONS
+  // =====================================================
+
+  getRecommendations(): Observable<Book[]> {
+    return this.http.get<Book[]>(
+      `${this.apiUrl}/recommendations`,
+      this.getHeaders()
+    );
+  }
+  
 }

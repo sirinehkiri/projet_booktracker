@@ -1,31 +1,447 @@
 <div class="container">
+
+  <!-- ================================================ -->
+  <!-- HEADER -->
+  <!-- ================================================ -->
+
   <div class="header">
     <h1>Listopia</h1>
-    <button class="add-btn" (click)="goToAdd()" *ngIf="authService.isAdmin()">+ Add Book</button>
+    <button
+      class="add-btn"
+      (click)="goToAdd()"
+      *ngIf="authService.isAdmin()"
+    >
+      + Add Book
+    </button>
   </div>
 
-  <div class="book-row">
-    <div class="book-card" *ngFor="let book of books">
-      
+  <!-- ================================================ -->
+  <!-- SEARCH SECTION -->
+  <!-- ================================================ -->
 
-      <!-- IMAGE -->
-      <div class="cover clickable" (click)="goToDetail(book)">
-        <img [src]="book.pic" (error)="book.pic='assets/no-book.png'" alt="Book">
+  <div class="search-section">
+
+    <div class="search-bar">
+
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search by title, author, genre or keywords..."
+        [(ngModel)]="keyword"
+        (keyup.enter)="onSearch()"
+      />
+
+      <button
+        class="search-btn"
+        (click)="onSearch()"
+      >
+        🔍 Search
+      </button>
+
+      <button
+        class="advanced-btn"
+        (click)="showAdvanced = !showAdvanced"
+      >
+        ⚙️ {{ showAdvanced ? 'Simple' : 'Advanced' }}
+      </button>
+
+      <button
+        class="reset-btn"
+        *ngIf="searched"
+        (click)="resetSearch()"
+      >
+        ✕ Reset
+      </button>
+
+    </div>
+
+    <!-- ADVANCED SEARCH -->
+    <div
+      class="advanced-box"
+      *ngIf="showAdvanced"
+    >
+
+      <div class="advanced-grid">
+
+        <div class="filter-group">
+          <label>Title</label>
+          <input
+            type="text"
+            [(ngModel)]="filters.title"
+            placeholder="e.g. Harry Potter"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label>Author</label>
+          <input
+            type="text"
+            [(ngModel)]="filters.author"
+            placeholder="e.g. J.K. Rowling"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label>Genre</label>
+          <select [(ngModel)]="filters.genre">
+            <option value="">All Genres</option>
+            <option
+              *ngFor="let g of genres"
+              [value]="g"
+            >
+              {{ g }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Year</label>
+          <input
+            type="number"
+            [(ngModel)]="filters.year"
+            placeholder="e.g. 2023"
+            min="1000"
+            max="2099"
+          />
+        </div>
+
       </div>
 
-      <!-- TITLE -->
-      <div class="book-title clickable" (click)="goToDetail(book)">
-        {{book.title}}
-      </div>
-
-      <div class="author">{{book.author}}</div>
-
-      <!-- ACTION BUTTONS -->
-      <div class="actions" *ngIf="authService.isAdmin()">
-        <button (click)="editBook(book.id)">Edit</button>
-        <button (click)="deleteBook(book.id)">Delete</button>
+      <div class="advanced-actions">
+        <button
+          class="search-btn"
+          (click)="onAdvancedSearch()"
+        >
+          🔍 Search
+        </button>
+        <button
+          class="reset-btn"
+          (click)="resetSearch()"
+        >
+          ✕ Reset
+        </button>
       </div>
 
     </div>
+
+    <!-- LOADING -->
+    <div class="search-loading" *ngIf="loading">
+      ⏳ Searching...
+    </div>
+
+    <!-- RESULTS INFO -->
+    <div
+      class="results-info"
+      *ngIf="searched && !loading"
+    >
+      Found
+      <strong>{{ displayedBooks.length }}</strong>
+      {{ displayedBooks.length === 1 ? 'book' : 'books' }}
+      <span *ngIf="keyword">
+        for "<strong>{{ keyword }}</strong>"
+      </span>
+      <button
+        class="clear-search"
+        (click)="resetSearch()"
+      >
+        ✕ Clear
+      </button>
+    </div>
+
+    <!-- NO RESULTS -->
+    <div
+      class="no-results"
+      *ngIf="
+        searched &&
+        !loading &&
+        displayedBooks.length === 0
+      "
+    >
+      😔 No books found. Try different keywords.
+    </div>
+
   </div>
+
+  <!-- ================================================ -->
+  <!-- CATEGORIES TABS -->
+  <!-- ================================================ -->
+
+  <div
+    class="categories-section"
+    *ngIf="!searched"
+  >
+
+    <div class="tabs">
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'all'"
+        (click)="setTab('all')"
+      >
+        📚 All Books
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'trending'"
+        (click)="setTab('trending')"
+      >
+        🔥 Trending
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'recent'"
+        (click)="setTab('recent')"
+      >
+        🆕 Recently Added
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'genre'"
+        (click)="setTab('genre')"
+      >
+        🏷️ By Genre
+      </button>
+
+      <!-- ✅ FOR YOU TAB -->
+      <button
+        class="tab-btn tab-recommended"
+        [class.active]="activeTab === 'recommended'"
+        (click)="setTab('recommended')"
+      >
+        ✨ For You
+      </button>
+
+    </div>
+
+    <!-- GENRES CHIPS -->
+    <div
+      class="genres-list"
+      *ngIf="activeTab === 'genre'"
+    >
+
+      <button
+        class="genre-chip"
+        *ngFor="let g of genres"
+        [class.active]="selectedGenre === g"
+        (click)="onGenreSelect(g)"
+      >
+        {{ g }}
+      </button>
+
+      <div
+        class="no-genre-selected"
+        *ngIf="!selectedGenre"
+      >
+        👆 Select a genre to explore
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ================================================ -->
+  <!-- SECTION TITLE -->
+  <!-- ================================================ -->
+
+  <div
+    class="section-title"
+    *ngIf="!searched"
+  >
+
+    <span *ngIf="activeTab === 'all'">
+      📚 All Books
+      <small>({{ books.length }})</small>
+    </span>
+
+    <span *ngIf="activeTab === 'trending'">
+      🔥 Trending Books
+      <small>({{ trendingBooks.length }})</small>
+    </span>
+
+    <span *ngIf="activeTab === 'recent'">
+      🆕 Recently Added
+      <small>({{ recentBooks.length }})</small>
+    </span>
+
+    <span
+      *ngIf="
+        activeTab === 'genre' &&
+        selectedGenre
+      "
+    >
+      🏷️ {{ selectedGenre }}
+      <small>({{ genreBooks.length }})</small>
+    </span>
+
+    <span
+      *ngIf="
+        activeTab === 'genre' &&
+        !selectedGenre
+      "
+    >
+      🏷️ Browse by Genre
+    </span>
+
+    <!-- ✅ RECOMMENDED TITLE -->
+    <span *ngIf="activeTab === 'recommended'">
+      ✨ Recommended For You
+      <small>({{ recommendedBooks.length }})</small>
+    </span>
+
+  </div>
+
+  <!-- ================================================ -->
+  <!-- TRENDING EMPTY STATE -->
+  <!-- ================================================ -->
+
+  <div
+    class="trending-empty"
+    *ngIf="
+      activeTab === 'trending' &&
+      !searched &&
+      trendingBooks.length === 0 &&
+      !loading
+    "
+  >
+    <span class="empty-emoji">⭐</span>
+    <p>No trending books yet</p>
+    <small>Books with ratings will appear here</small>
+  </div>
+
+  <!-- ================================================ -->
+  <!-- RECOMMENDED EMPTY STATE -->
+  <!-- ================================================ -->
+
+  <div
+    class="recommended-empty"
+    *ngIf="
+      activeTab === 'recommended' &&
+      !searched &&
+      recommendedBooks.length === 0
+    "
+  >
+    <span class="empty-emoji">📖</span>
+    <p>No recommendations yet</p>
+    <small>
+      Read and rate books to get
+      personalized recommendations
+    </small>
+  </div>
+
+  <!-- ================================================ -->
+  <!-- BOOKS GRID -->
+  <!-- ================================================ -->
+
+  <div class="book-row">
+
+    <div
+      class="book-card"
+      *ngFor="let book of displayedBooks"
+    >
+
+      <!-- IMAGE -->
+      <div
+        class="cover clickable"
+        (click)="goToDetail(book)"
+      >
+
+        <img
+          [src]="book.pic"
+          (error)="book.pic = 'assets/no-book.png'"
+          alt="Book"
+        />
+
+        <!-- BADGE TRENDING -->
+        <div
+          class="book-badge badge-trending"
+          *ngIf="
+            activeTab === 'trending' &&
+            !searched
+          "
+        >
+          🔥 Trending
+        </div>
+
+        <!-- BADGE NEW -->
+        <div
+          class="book-badge badge-new"
+          *ngIf="
+            activeTab === 'recent' &&
+            !searched
+          "
+        >
+          ✨ New
+        </div>
+
+        <!-- BADGE GENRE -->
+        <div
+          class="book-badge badge-genre"
+          *ngIf="
+            (activeTab === 'genre' || searched) &&
+            book.genre
+          "
+        >
+          {{ book.genre }}
+        </div>
+
+        <!-- ✅ BADGE RECOMMENDED -->
+        <div
+          class="book-badge badge-recommended"
+          *ngIf="
+            activeTab === 'recommended' &&
+            !searched
+          "
+        >
+          ✨ For You
+        </div>
+
+      </div>
+
+      <!-- TITLE -->
+      <div
+        class="book-title clickable"
+        (click)="goToDetail(book)"
+      >
+        {{ book.title }}
+      </div>
+
+      <!-- AUTHOR -->
+      <div class="author">
+        {{ book.author }}
+      </div>
+
+      <!-- RATING -->
+      <div
+        class="book-rating"
+        *ngIf="
+          book.averageRating &&
+          book.averageRating > 0
+        "
+      >
+        ⭐ {{ book.averageRating | number:'1.1-1' }}
+        <span class="reviews-count">
+          ({{ book.reviews?.length || 0 }})
+        </span>
+      </div>
+
+      <!-- ADMIN ACTIONS -->
+      <div
+        class="actions"
+        *ngIf="authService.isAdmin()"
+      >
+        <button (click)="editBook(book.id)">
+          Edit
+        </button>
+        <button (click)="deleteBook(book.id)">
+          Delete
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
 </div>
