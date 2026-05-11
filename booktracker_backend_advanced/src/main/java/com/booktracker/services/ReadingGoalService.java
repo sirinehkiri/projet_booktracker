@@ -6,6 +6,8 @@ import com.booktracker.repository.ReadingGoalRepository;
 import com.booktracker.repository.UserBookRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import com.booktracker.entity.Notification;
+import com.booktracker.repository.NotificationRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,11 +17,13 @@ public class ReadingGoalService {
 
     private final ReadingGoalRepository goalRepository;
     private final UserBookRepository userBookRepository;
+    private final NotificationRepository notificationRepository;
 
     public ReadingGoalService(ReadingGoalRepository goalRepository,
-                              UserBookRepository userBookRepository) {
+                              UserBookRepository userBookRepository, NotificationRepository notificationRepository) {
         this.goalRepository = goalRepository;
         this.userBookRepository = userBookRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     // =========================
@@ -92,7 +96,41 @@ public class ReadingGoalService {
             goal.setCurrentValue(updated);
 
             if (updated >= goal.getTargetValue()) {
+
                 goal.setCompleted(true);
+
+                createNotification(
+                        user,
+                        "🎉 Congratulations! Goal achieved!"
+                );
+
+            } else {
+
+                double percent =
+                        (double) updated / goal.getTargetValue() * 100;
+
+                if (percent >= 75) {
+
+                    createNotification(
+                            user,
+                            "🔥 You are almost there! " +
+                                    (int) percent + "% completed"
+                    );
+
+                } else if (percent >= 50) {
+
+                    createNotification(
+                            user,
+                            "💪 Great progress! Keep reading!"
+                    );
+
+                } else if (percent >= 25) {
+
+                    createNotification(
+                            user,
+                            "📚 Nice start on your reading goal!"
+                    );
+                }
             }
         }
 
@@ -134,29 +172,76 @@ public class ReadingGoalService {
 
         return (double) goal.getCurrentValue() / goal.getTargetValue() * 100;
     }
-
-    // =========================
     // DAILY CHECK (notifications only)
-    // =========================
-    @Scheduled(cron = "0 10 2 * * ?")
-    public void checkGoals() {
+
+    @Scheduled(cron = "0 9 23 * * ?") // chaque jour à 20h
+    public void sendDailyMotivation() {
 
         List<ReadingGoal> goals = goalRepository.findAll();
 
+        LocalDate today = LocalDate.now();
+
         for (ReadingGoal goal : goals) {
 
-            double progress = getProgress(goal, goal.getUser());
+            if (goal.isCompleted()) continue;
 
-            if (progress < 50) {
-                goal.setLastNotification("⚠️ You are behind!");
-            } else if (progress >= 100) {
-                goal.setLastNotification("🎉 Goal achieved!");
-            } else {
-                goal.setLastNotification("💪 Keep going!");
+            double progress =
+                    (double) goal.getCurrentValue()
+                            / goal.getTargetValue()
+                            * 100;
+
+            int daysLeft =
+                    (int) (goal.getEndDate().toEpochDay()
+                            - today.toEpochDay());
+
+            // =====================================
+            // 1. RAPPEL SI PAS ASSEZ ACTIF
+            // =====================================
+            if (progress == 0) {
+
+                createNotification(goal.getUser(),
+                        "📖 N’oublie pas de commencer ton objectif de lecture !");
+            }
+
+            else if (progress < 20 && daysLeft <= 3) {
+
+                createNotification(goal.getUser(),
+                        "⏳ Tu dois accélérer ton rythme de lecture !");
+            }
+
+            // =====================================
+            // 2. ENCOURAGEMENTS
+            // =====================================
+            else if (progress >= 20 && progress < 50) {
+
+                createNotification(goal.getUser(),
+                        "💪 Bon début ! Continue comme ça !");
+            }
+
+            else if (progress >= 50 && progress < 80) {
+
+                createNotification(goal.getUser(),
+                        "🔥 Tu es à mi-chemin de ton objectif !");
+            }
+
+            // =====================================
+            // 3. MOTIVATION FINALE
+            // =====================================
+            else if (progress >= 80 && progress < 100) {
+
+                createNotification(goal.getUser(),
+                        "🚀 Plus que quelques pages pour réussir !");
+            }
+
+            // =====================================
+            // 4. OBJECTIF PRESQUE TERMINÉ
+            // =====================================
+            if (progress >= 90) {
+
+                createNotification(goal.getUser(),
+                        "🏁 Tu es tout proche de ton objectif !");
             }
         }
-
-        goalRepository.saveAll(goals);
     }
 
     public void updateAllGoals(User user, int pages) {
@@ -180,5 +265,23 @@ public class ReadingGoalService {
         }
 
         goalRepository.saveAll(goals);
+    }
+
+
+    private void createNotification(User user, String message) {
+
+        boolean exists =
+                notificationRepository
+                        .existsByUserAndMessage(user, message);
+
+        if (!exists) {
+
+            Notification notification = new Notification();
+
+            notification.setUser(user);
+            notification.setMessage(message);
+
+            notificationRepository.save(notification);
+        }
     }
 }
