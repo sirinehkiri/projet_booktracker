@@ -1,0 +1,27 @@
+# =====================
+# ANGULAR (Frontend)
+# =====================
+PFE-Template-main/node_modules/
+PFE-Template-main/dist/
+
+# =====================
+# SPRING BOOT (Backend)
+# =====================
+booktracker_backend_advanced/target/
+booktracker_backend_advanced/*.log
+
+# fichiers compilés Java
+*.class
+
+# =====================
+# IDE
+# =====================
+.idea/
+.vscode/
+*.iml
+
+# =====================
+# SYSTEM
+# =====================
+.DS_Store
+Thumbs.db
