@@ -1,7 +1,6 @@
 <mat-toolbar class="topbar">
 
   @if(showToggle) {
-<<<<<<< HEAD
     <button
       mat-icon-button
       (click)="toggleCollapsed.emit()"
@@ -30,13 +29,11 @@
   </button>
 
   <!-- NAV LINKS -->
-=======
   <button mat-icon-button
           (click)="toggleCollapsed.emit()"
           class="d-flex justify-content-center">
     <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
   </button>
-  }
 
   @if(!showToggle) {
   <button mat-icon-button
@@ -53,12 +50,10 @@
   </button>
 
   <!-- LINKS -->
->>>>>>> 8476ef0 (update sirine)
   <div class="d-none d-lg-flex">
 
     <a mat-button [routerLink]="['/apps/notes']">
       Home
-<<<<<<< HEAD
     </a>
 
     <a
@@ -78,26 +73,24 @@
 
   </div>
 
-  <span class="flex-1-auto"></span>
+    <span class="flex-1-auto"></span>
 
-  <!-- ================================================ -->
-  <!-- BELL NOTIFICATION -->
-  <!-- ================================================ -->
+    <!-- ================================================ -->
+    <!-- BELL NOTIFICATION -->
+    <!-- ================================================ -->
 
-  <button
-    mat-icon-button
-    [matMenuTriggerFor]="notificationmenu"
-  >
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="notificationmenu"
+    >
     <i-tabler
       class="d-flex"
       name="bell"
-=======
-    </a>
+    />
 
     <a
       mat-button
       [routerLink]="['/apps/chat']"
->>>>>>> 8476ef0 (update sirine)
       [matBadge]="unreadChatMessagesCount"
       matBadgeColor="warn"
       matBadgeSize="small"
@@ -109,8 +102,6 @@
     <a mat-button [routerLink]="['/apps/email/inbox']">
       Email
     </a>
-
-  </div>
 
   <span class="flex-1-auto"></span>
 
@@ -138,7 +129,6 @@
   >
 
     <!-- HEADER -->
-<<<<<<< HEAD
     <div
       class="d-flex align-items-center p-x-32 p-y-16"
     >
@@ -148,7 +138,7 @@
       <span
         class="m-l-auto"
         *ngIf="unreadChatMessagesCount > 0"
-=======
+        >
     <div class="d-flex align-items-center p-x-32 p-y-16">
 
       <h6 class="f-s-16 f-w-600 m-0 mat-subtitle-1">
@@ -158,7 +148,6 @@
       <span
         class="m-l-auto"
         *ngIf="totalNotifications > 0"
->>>>>>> 8476ef0 (update sirine)
       >
         <span
           class="
@@ -171,11 +160,8 @@
             f-s-12
           "
         >
-<<<<<<< HEAD
           {{ unreadChatMessagesCount }} new
-=======
           {{ totalNotifications }} new
->>>>>>> 8476ef0 (update sirine)
         </span>
       </span>
 
@@ -183,17 +169,12 @@
 
     <!-- EMPTY -->
     <div
-<<<<<<< HEAD
-      *ngIf="unreadChatMessagesCount === 0"
-=======
-      *ngIf="totalNotifications === 0"
->>>>>>> 8476ef0 (update sirine)
-      class="p-x-32 p-y-16 text-muted text-center"
-    >
-      No new notifications
-    </div>
+  *ngIf="unreadChatMessagesCount === 0 && totalNotifications === 0"
+  class="p-x-32 p-y-16 text-muted text-center"
+>
+  No new notifications
+</div>
 
-<<<<<<< HEAD
     <!-- SENDERS LIST -->
     @for(sender of unreadSenders; track sender.id) {
 
@@ -292,8 +273,6 @@
       </a>
 
     }
-
-=======
     <!-- ALL NOTIFICATIONS -->
     <div
       *ngFor="let notif of allNotifications"
@@ -367,7 +346,6 @@
 
     </div>
 
->>>>>>> 8476ef0 (update sirine)
     <!-- GO TO CHAT -->
     <div
       class="p-y-12 p-x-32"
@@ -382,17 +360,7 @@
         Go to Chat
       </a>
     </div>
-
-  </mat-menu>
-
-<<<<<<< HEAD
-  <!-- ================================================ -->
   <!-- MOBILE MENU -->
-  <!-- ================================================ -->
-
-=======
-  <!-- MOBILE MENU -->
->>>>>>> 8476ef0 (update sirine)
   <button
     mat-icon-button
     (click)="toggleMobileFilterNav.emit()"
@@ -401,14 +369,7 @@
     <i-tabler name="grid-dots" class="icon-20 d-flex"></i-tabler>
   </button>
 
-<<<<<<< HEAD
-  <!-- ================================================ -->
   <!-- PROFILE -->
-  <!-- ================================================ -->
-
-=======
-  <!-- PROFILE -->
->>>>>>> 8476ef0 (update sirine)
   <button
     mat-icon-button
     [matMenuTriggerFor]="profilemenu"
@@ -419,8 +380,6 @@
       width="35"
     />
   </button>
-
-<<<<<<< HEAD
   <mat-menu
     #profilemenu="matMenu"
     class="topbar-dd cardWithShadow"
@@ -463,8 +422,6 @@
               info&#64;modernize.com
             </span>
           </div>
-=======
-</mat-toolbar>
 <mat-menu
   #profilemenu="matMenu"
   class="cardWithShadow"
@@ -486,15 +443,12 @@
       <div>
         <div class="f-s-14 f-w-600">
           {{ item.title }}
->>>>>>> 8476ef0 (update sirine)
         </div>
 
         <small class="text-muted">
           {{ item.subtitle }}
         </small>
       </div>
-
-<<<<<<< HEAD
       <div class="p-x-32">
         @for(profile of profiledd; track profile.title) {
           <a
@@ -550,14 +504,7 @@
           Logout
         </a>
       </div>
-
-    </ng-scrollbar>
-  </mat-menu>
-
-</mat-toolbar>
-=======
     </button>
   }
 
 </mat-menu>
->>>>>>> 8476ef0 (update sirine)
