@@ -62,49 +62,12 @@ implements OnInit, OnDestroy {
   @Output() toggleCollapsed =
     new EventEmitter<void>();
 
-  // =====================================================
-  // NOTIFICATIONS
-
   unreadChatMessagesCount: number = 0;
 
   unreadSenders: any[] = [];
+  totalNotificationsCount: number = 0;
 
   private subs: Subscription = new Subscription();
-
-  // =====================================================
-  // LANGUAGES
-  // =====================================================
-
-  public selectedLanguage: any = {
-    language: 'English',
-    code: 'en',
-    type: 'US',
-    icon: '/assets/images/flag/icon-flag-en.svg',
-  };
-
-  public languages: any[] = [
-    {
-      language: 'English',
-      code: 'en',
-      type: 'US',
-      icon: '/assets/images/flag/icon-flag-en.svg'
-    },
-    {
-      language: 'Español',
-      code: 'es',
-      icon: '/assets/images/flag/icon-flag-es.svg'
-    },
-    {
-      language: 'Français',
-      code: 'fr',
-      icon: '/assets/images/flag/icon-flag-fr.svg'
-    },
-    {
-      language: 'German',
-      code: 'de',
-      icon: '/assets/images/flag/icon-flag-de.svg'
-    },
-  ];
 
   // =====================================================
   // GOAL NOTIFICATIONS
@@ -149,44 +112,6 @@ implements OnInit, OnDestroy {
       link: '/apps/taskboard'
     },
 
-    {
-      id: 1,
-
-      img:
-        '/assets/images/svgs/icon-account.svg',
-
-      title: 'My Profile',
-
-      subtitle: 'Account Settings',
-
-      link: '/'
-    },
-
-    {
-      id: 2,
-
-      img:
-        '/assets/images/svgs/icon-inbox.svg',
-
-      title: 'My Inbox',
-
-      subtitle: 'Messages & Email',
-
-      link: '/apps/email/inbox'
-    },
-
-    {
-      id: 3,
-
-      img:
-        '/assets/images/svgs/icon-tasks.svg',
-
-      title: 'My Tasks',
-
-      subtitle: 'To-do and Daily Tasks',
-
-      link: '/apps/taskboard'
-    }
   ];
 
   // =====================================================
@@ -294,62 +219,71 @@ implements OnInit, OnDestroy {
 
   combineNotifications(): void {
 
-    const chatNotifications =
+  const chatNotifications =
 
-      this.unreadSenders.map(sender => ({
+    this.unreadSenders.map(sender => ({
 
-        type: 'chat',
+      type: 'chat',
 
-        id: sender.id,
+      id: sender.id,
 
-        name: sender.name,
+      name: sender.name,
 
-        count: sender.count,
+      count: sender.count,
 
-        senderType: sender.type,
+      senderType: sender.type,
 
-        createdAt:
-          sender.createdAt || new Date()
-      }));
+      createdAt:
+        sender.createdAt || new Date()
+    }));
 
-    const goalNotifications =
 
-      this.goalNotifications.map(notif => ({
+  const goalNotifications =
 
-        type: 'goal',
+    this.goalNotifications.map(notif => ({
 
-        id: notif.id,
+      type: 'goal',
 
-        message: notif.message,
+      id: notif.id,
 
-        createdAt: notif.createdAt,
+      message: notif.message,
 
-        read: notif.read
-      }));
+      createdAt: notif.createdAt,
 
-    this.allNotifications = [
+      read: notif.read
+    }));
 
-      ...goalNotifications,
 
-      ...chatNotifications
+  this.allNotifications = [
 
-    ].sort((a: any, b: any) => {
+    ...goalNotifications,
 
-      const dateA =
+    ...chatNotifications
 
-        a.createdAt
-          ? new Date(a.createdAt).getTime()
-          : 0;
+  ].sort((a: any, b: any) => {
 
-      const dateB =
+    const dateA =
+      a.createdAt
+        ? new Date(a.createdAt).getTime()
+        : 0;
 
-        b.createdAt
-          ? new Date(b.createdAt).getTime()
-          : 0;
+    const dateB =
+      b.createdAt
+        ? new Date(b.createdAt).getTime()
+        : 0;
 
-      return dateB - dateA;
-    });
-  }
+    return dateB - dateA;
+  });
+
+  // ✅ UPDATE BADGE
+  const unreadGoals =
+    this.goalNotifications.filter(
+      n => !n.read
+    ).length;
+
+  this.totalNotificationsCount =
+    this.unreadSenders.length + unreadGoals;
+}
 
   // =====================================================
   // TOTAL NOTIFICATIONS

@@ -1,15 +1,6 @@
 <mat-toolbar class="topbar">
 
-  @if(showToggle) {
-    <button
-      mat-icon-button
-      (click)="toggleCollapsed.emit()"
-      class="d-flex justify-content-center"
-    >
-      <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
-    </button>
-  }
-
+  <!-- MENU -->
   @if(!showToggle) {
     <button
       mat-icon-button
@@ -22,30 +13,18 @@
 
   <button
     mat-icon-button
+    (click)="toggleCollapsed.emit()"
+    class="d-flex justify-content-center"
+  >
+    <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
+  </button>
+
+  <!-- SEARCH -->
+  <button
+    mat-icon-button
     (click)="openDialog()"
     class="d-flex justify-content-center"
   >
-    <i-tabler name="search" class="icon-20 d-flex"></i-tabler>
-  </button>
-
-  <!-- NAV LINKS -->
-  <button mat-icon-button
-          (click)="toggleCollapsed.emit()"
-          class="d-flex justify-content-center">
-    <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
-  </button>
-
-  @if(!showToggle) {
-  <button mat-icon-button
-          (click)="toggleMobileNav.emit()"
-          class="d-flex justify-content-center">
-    <i-tabler name="menu-2" class="icon-20 d-flex"></i-tabler>
-  </button>
-  }
-
-  <button mat-icon-button
-          (click)="openDialog()"
-          class="d-flex justify-content-center">
     <i-tabler name="search" class="icon-20 d-flex"></i-tabler>
   </button>
 
@@ -73,55 +52,22 @@
 
   </div>
 
-    <span class="flex-1-auto"></span>
-
-    <!-- ================================================ -->
-    <!-- BELL NOTIFICATION -->
-    <!-- ================================================ -->
-
-    <button
-      mat-icon-button
-      [matMenuTriggerFor]="notificationmenu"
-    >
-    <i-tabler
-      class="d-flex"
-      name="bell"
-    />
-
-    <a
-      mat-button
-      [routerLink]="['/apps/chat']"
-      [matBadge]="unreadChatMessagesCount"
-      matBadgeColor="warn"
-      matBadgeSize="small"
-      [matBadgeHidden]="unreadChatMessagesCount === 0"
-    >
-      Chat
-    </a>
-
-    <a mat-button [routerLink]="['/apps/email/inbox']">
-      Email
-    </a>
-
   <span class="flex-1-auto"></span>
 
-  <!-- ======================================= -->
-  <!-- GLOBAL NOTIFICATIONS -->
-  <!-- ======================================= -->
-
+  <!-- NOTIFICATIONS -->
   <button
-    mat-icon-button
-    [matMenuTriggerFor]="notificationmenu"
-  >
-    <i-tabler
-      class="d-flex"
-      name="bell"
-      [matBadge]="totalNotifications"
-      matBadgeColor="warn"
-      matBadgeSize="small"
-      [matBadgeHidden]="totalNotifications === 0"
-    ></i-tabler>
-  </button>
+  mat-icon-button
+  [matMenuTriggerFor]="notificationmenu"
+  [matBadge]="totalNotificationsCount"
+  matBadgeColor="warn"
+  matBadgeSize="small"
+  [matBadgeHidden]="totalNotificationsCount === 0"
+>
+  <i-tabler
+    class="d-flex"
+    name="bell"
+  ></i-tabler>
+</button>
 
   <mat-menu
     #notificationmenu="matMenu"
@@ -129,16 +75,6 @@
   >
 
     <!-- HEADER -->
-    <div
-      class="d-flex align-items-center p-x-32 p-y-16"
-    >
-      <h6 class="f-s-16 f-w-600 m-0 mat-subtitle-1">
-        Notifications
-      </h6>
-      <span
-        class="m-l-auto"
-        *ngIf="unreadChatMessagesCount > 0"
-        >
     <div class="d-flex align-items-center p-x-32 p-y-16">
 
       <h6 class="f-s-16 f-w-600 m-0 mat-subtitle-1">
@@ -150,17 +86,8 @@
         *ngIf="totalNotifications > 0"
       >
         <span
-          class="
-            bg-primary
-            text-white
-            p-x-8
-            p-y-4
-            f-w-500
-            rounded
-            f-s-12
-          "
+          class="bg-primary text-white p-x-8 p-y-4 f-w-500 rounded f-s-12"
         >
-          {{ unreadChatMessagesCount }} new
           {{ totalNotifications }} new
         </span>
       </span>
@@ -169,13 +96,13 @@
 
     <!-- EMPTY -->
     <div
-  *ngIf="unreadChatMessagesCount === 0 && totalNotifications === 0"
-  class="p-x-32 p-y-16 text-muted text-center"
->
-  No new notifications
-</div>
+      *ngIf="unreadChatMessagesCount === 0 && totalNotifications === 0"
+      class="p-x-32 p-y-16 text-muted text-center"
+    >
+      No new notifications
+    </div>
 
-    <!-- SENDERS LIST -->
+    <!-- SENDERS -->
     @for(sender of unreadSenders; track sender.id) {
 
       <a
@@ -185,36 +112,19 @@
             ? { groupId: sender.id }
             : { userId: sender.id }
         "
-        class="
-          d-flex
-          align-items-center
-          p-x-32
-          p-y-12
-          text-decoration-none
-        "
-        style="cursor: pointer;"
+        class="d-flex align-items-center p-x-32 p-y-12 text-decoration-none"
+        style="cursor:pointer;"
       >
 
         <!-- AVATAR -->
         <div
-          class="
-            rounded-circle
-            d-flex
-            align-items-center
-            justify-content-center
-            f-w-600
-          "
+          class="rounded-circle d-flex align-items-center justify-content-center f-w-600"
           [ngClass]="
             sender.type === 'group'
               ? 'bg-light-accent text-accent'
               : 'bg-light-primary text-primary'
           "
-          style="
-            width: 42px;
-            height: 42px;
-            font-size: 15px;
-            flex-shrink: 0;
-          "
+          style="width:42px;height:42px;font-size:15px;flex-shrink:0;"
         >
           {{ sender.name?.charAt(0) | uppercase }}
         </div>
@@ -226,21 +136,21 @@
 
             {{ sender.name }}
 
-            <!-- GROUP BADGE -->
-           <mat-icon
-  *ngIf="sender.type === 'group'"
-  style="
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-    color: #7b1fa2;
-    vertical-align: middle;
-    margin-left: 6px;
-  "
-  matTooltip="Group message"
->
-  groups
-</mat-icon>
+            <mat-icon
+              *ngIf="sender.type === 'group'"
+              style="
+                font-size:16px;
+                width:16px;
+                height:16px;
+                color:#7b1fa2;
+                vertical-align:middle;
+                margin-left:6px;
+              "
+              matTooltip="Group message"
+            >
+              groups
+            </mat-icon>
+
           </h5>
 
           <span class="f-s-12 text-muted">
@@ -250,22 +160,10 @@
 
         </div>
 
-        <!-- COUNT BADGE -->
+        <!-- BADGE -->
         <span
-          class="
-            bg-primary
-            text-white
-            rounded-circle
-            d-flex
-            align-items-center
-            justify-content-center
-          "
-          style="
-            width: 22px;
-            height: 22px;
-            font-size: 11px;
-            flex-shrink: 0;
-          "
+          class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+          style="width:22px;height:22px;font-size:11px;"
         >
           {{ sender.count }}
         </span>
@@ -273,6 +171,7 @@
       </a>
 
     }
+
     <!-- ALL NOTIFICATIONS -->
     <div
       *ngFor="let notif of allNotifications"
@@ -285,14 +184,7 @@
       <ng-container *ngIf="notif.type === 'chat'">
 
         <div
-          class="
-            rounded-circle
-            bg-light-primary
-            text-primary
-            d-flex
-            align-items-center
-            justify-content-center
-          "
+          class="rounded-circle bg-light-primary text-primary d-flex align-items-center justify-content-center"
           style="width:40px;height:40px;"
         >
           💬
@@ -305,8 +197,7 @@
           </div>
 
           <small class="text-muted">
-            {{ notif.count }}
-            new messages
+            {{ notif.count }} new messages
           </small>
 
         </div>
@@ -317,14 +208,7 @@
       <ng-container *ngIf="notif.type === 'goal'">
 
         <div
-          class="
-            rounded-circle
-            bg-light-warning
-            text-warning
-            d-flex
-            align-items-center
-            justify-content-center
-          "
+          class="rounded-circle bg-light-warning text-warning d-flex align-items-center justify-content-center"
           style="width:40px;height:40px;"
         >
           🎯
@@ -360,7 +244,10 @@
         Go to Chat
       </a>
     </div>
-  <!-- MOBILE MENU -->
+
+  </mat-menu>
+
+  <!-- MOBILE -->
   <button
     mat-icon-button
     (click)="toggleMobileFilterNav.emit()"
@@ -380,131 +267,67 @@
       width="35"
     />
   </button>
+
+  <!-- PROFILE MENU -->
   <mat-menu
     #profilemenu="matMenu"
-    class="topbar-dd cardWithShadow"
+    class="cardWithShadow"
   >
-    <ng-scrollbar
-      class="position-relative"
-      style="height: 647px"
-    >
 
-      <div class="p-x-32 p-y-16">
-        <h6 class="f-s-16 f-w-600 m-0 mat-subtitle-1">
-          User Profile
-        </h6>
-        <div
-          class="
-            d-flex
-            align-items-center
-            p-b-24
-            b-b-1
-            m-t-16
-          "
-        >
-          <img
-            src="/assets/images/profile/user-1.jpg"
-            class="rounded-circle"
-            width="95"
-          />
-          <div class="m-l-16">
-            <h6 class="f-s-14 f-w-600 m-0 mat-subtitle-1">
-              Mathew Anderson
-            </h6>
-            <span class="f-s-14 d-block m-b-4">
-              Designer
-            </span>
-            <span class="d-flex align-items-center">
-              <i-tabler
-                name="mail"
-                class="icon-15 m-r-4"
-              ></i-tabler>
-              info&#64;modernize.com
-            </span>
-          </div>
-<mat-menu
-  #profilemenu="matMenu"
-  class="cardWithShadow"
->
+    <div class="p-x-32 p-y-16">
 
-  @for(item of profiledd; track item.id) {
+      @for(profile of profiledd; track profile.title) {
 
-    <button
-      mat-menu-item
-      [routerLink]="item.link"
-    >
-
-      <img
-        [src]="item.img"
-        width="20"
-        class="m-r-12"
-      />
-
-      <div>
-        <div class="f-s-14 f-w-600">
-          {{ item.title }}
-        </div>
-
-        <small class="text-muted">
-          {{ item.subtitle }}
-        </small>
-      </div>
-      <div class="p-x-32">
-        @for(profile of profiledd; track profile.title) {
-          <a
-            class="
-              p-y-16
-              text-decoration-none
-              d-block
-              text-hover-primary
-            "
-            [routerLink]="[profile.link]"
-          >
-            <div class="d-flex align-items-center">
-              <button
-                mat-mini-fab
-                class="
-                  text-primary
-                  bg-light-primary
-                  shadow-none
-                  rounded
-                "
-              >
-                <img [src]="profile.img" width="20" />
-              </button>
-              <div class="m-l-16">
-                <h5
-                  class="
-                    f-s-14
-                    f-w-600
-                    m-0
-                    textprimary
-                    mat-subtitle-1
-                    hover-text
-                  "
-                >
-                  {{ profile.title }}
-                </h5>
-                <span class="mat-body-1">
-                  {{ profile.subtitle }}
-                </span>
-              </div>
-            </div>
-          </a>
-        }
-      </div>
-
-      <div class="p-y-12 p-x-32">
         <a
-          [routerLink]="['/authentication/side-login']"
-          mat-stroked-button
-          color="primary"
-          class="w-100"
+          class="p-y-16 text-decoration-none d-block text-hover-primary"
+          [routerLink]="[profile.link]"
         >
-          Logout
-        </a>
-      </div>
-    </button>
-  }
 
-</mat-menu>
+          <div class="d-flex align-items-center">
+
+            <button
+              mat-mini-fab
+              class="text-primary bg-light-primary shadow-none rounded"
+            >
+              <img [src]="profile.img" width="20" />
+            </button>
+
+            <div class="m-l-16">
+
+              <h5
+                class="f-s-14 f-w-600 m-0 textprimary mat-subtitle-1 hover-text"
+              >
+                {{ profile.title }}
+              </h5>
+
+              <span class="mat-body-1">
+                {{ profile.subtitle }}
+              </span>
+
+            </div>
+
+          </div>
+
+        </a>
+
+      }
+
+    </div>
+
+    <!-- LOGOUT -->
+    <div class="p-y-12 p-x-32">
+
+      <a
+        [routerLink]="['/authentication/side-login']"
+        mat-stroked-button
+        color="primary"
+        class="w-100"
+      >
+        Logout
+      </a>
+
+    </div>
+
+  </mat-menu>
+
+</mat-toolbar>
