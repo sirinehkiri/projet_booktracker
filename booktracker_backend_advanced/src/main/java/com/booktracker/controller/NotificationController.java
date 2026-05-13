@@ -50,11 +50,7 @@ public class NotificationController {
             Authentication authentication
     ) {
 
-        User user =
-                userRepository
-                        .findByUsername(authentication.getName())
-                        .orElseThrow(() ->
-                                new RuntimeException("User not found"));
+        User user = (User) authentication.getPrincipal();
 
         Notification notification =
                 notificationRepository

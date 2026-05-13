@@ -83,12 +83,12 @@
 
       <span
         class="m-l-auto"
-        *ngIf="totalNotifications > 0"
+        *ngIf="totalNotificationsCount > 0"
       >
         <span
           class="bg-primary text-white p-x-8 p-y-4 f-w-500 rounded f-s-12"
         >
-          {{ totalNotifications }} new
+          {{ totalNotificationsCount }} new
         </span>
       </span>
 
@@ -96,82 +96,11 @@
 
     <!-- EMPTY -->
     <div
-      *ngIf="unreadChatMessagesCount === 0 && totalNotifications === 0"
+      *ngIf="totalNotificationsCount === 0"
       class="p-x-32 p-y-16 text-muted text-center"
     >
       No new notifications
     </div>
-
-    <!-- SENDERS -->
-    @for(sender of unreadSenders; track sender.id) {
-
-      <a
-        [routerLink]="['/apps/chat']"
-        [queryParams]="
-          sender.type === 'group'
-            ? { groupId: sender.id }
-            : { userId: sender.id }
-        "
-        class="d-flex align-items-center p-x-32 p-y-12 text-decoration-none"
-        style="cursor:pointer;"
-      >
-
-        <!-- AVATAR -->
-        <div
-          class="rounded-circle d-flex align-items-center justify-content-center f-w-600"
-          [ngClass]="
-            sender.type === 'group'
-              ? 'bg-light-accent text-accent'
-              : 'bg-light-primary text-primary'
-          "
-          style="width:42px;height:42px;font-size:15px;flex-shrink:0;"
-        >
-          {{ sender.name?.charAt(0) | uppercase }}
-        </div>
-
-        <!-- INFO -->
-        <div class="m-l-16 flex-grow-1">
-
-          <h5 class="f-s-14 f-w-600 m-0">
-
-            {{ sender.name }}
-
-            <mat-icon
-              *ngIf="sender.type === 'group'"
-              style="
-                font-size:16px;
-                width:16px;
-                height:16px;
-                color:#7b1fa2;
-                vertical-align:middle;
-                margin-left:6px;
-              "
-              matTooltip="Group message"
-            >
-              groups
-            </mat-icon>
-
-          </h5>
-
-          <span class="f-s-12 text-muted">
-            {{ sender.count }}
-            {{ sender.count === 1 ? 'message' : 'messages' }}
-          </span>
-
-        </div>
-
-        <!-- BADGE -->
-        <span
-          class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-          style="width:22px;height:22px;font-size:11px;"
-        >
-          {{ sender.count }}
-        </span>
-
-      </a>
-
-    }
-
     <!-- ALL NOTIFICATIONS -->
     <div
       *ngFor="let notif of allNotifications"
@@ -183,19 +112,20 @@
       <!-- CHAT -->
       <ng-container *ngIf="notif.type === 'chat'">
 
-        <div
-          class="rounded-circle bg-light-primary text-primary d-flex align-items-center justify-content-center"
+        <div class="rounded-circle d-flex align-items-center justify-content-center f-w-600"
+          [ngClass]="
+            notif.senderType === 'group'
+              ? 'bg-light-accent text-accent'
+              : 'bg-light-primary text-primary'
+          "
           style="width:40px;height:40px;"
         >
-          💬
+          {{ notif.name?.charAt(0) | uppercase }}
         </div>
-
         <div class="m-l-16 flex-grow-1">
-
           <div class="f-s-14 f-w-600">
             {{ notif.name }}
           </div>
-
           <small class="text-muted">
             {{ notif.count }} new messages
           </small>
@@ -273,11 +203,8 @@
     #profilemenu="matMenu"
     class="cardWithShadow"
   >
-
     <div class="p-x-32 p-y-16">
-
       @for(profile of profiledd; track profile.title) {
-
         <a
           class="p-y-16 text-decoration-none d-block text-hover-primary"
           [routerLink]="[profile.link]"

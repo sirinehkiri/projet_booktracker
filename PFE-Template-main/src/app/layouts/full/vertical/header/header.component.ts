@@ -69,25 +69,10 @@ implements OnInit, OnDestroy {
 
   private subs: Subscription = new Subscription();
 
-  // =====================================================
-  // GOAL NOTIFICATIONS
-  // =====================================================
-
   goalNotifications: any[] = [];
-
-  // =====================================================
-  // ALL NOTIFICATIONS
-  // =====================================================
 
   allNotifications: any[] = [];
 
-  // =====================================================
-  // SUBSCRIPTIONS
-  // =====================================================
-
-  // =====================================================
-  // PROFILE MENU
-  // =====================================================
 
   profiledd: any[] = [
     {
@@ -137,43 +122,19 @@ implements OnInit, OnDestroy {
   // INIT
   // =====================================================
 
-  // =====================================================
-  // LIFECYCLE
-  // =====================================================
 
   ngOnInit(): void {
 
-    // Start polling
-    this.chatService.startUnreadPolling();
-
-    // Subscribe unread count
-    this.subs.add(
-      this.chatService.unreadCount$.subscribe(
-        (count: number) => {
-          this.unreadChatMessagesCount = count;
-        }
-      )
-    );
-
-    // Subscribe unread senders
-    this.subs.add(
-      this.chatService.unreadSenders$.subscribe(
-        (senders: any[]) => {
-          this.unreadSenders = senders;
-        }
-      )
-    );
-
   this.chatService.startUnreadPolling();
-   this.notificationService.startPolling();
+
+  this.notificationService.startPolling();
 
   this.subs.add(
 
     this.chatService.unreadCount$
       .subscribe((count: number) => {
 
-        this.unreadChatMessagesCount =
-          count;
+        this.unreadChatMessagesCount = count;
       })
   );
 
@@ -182,8 +143,7 @@ implements OnInit, OnDestroy {
     this.chatService.unreadSenders$
       .subscribe((senders: any[]) => {
 
-        this.unreadSenders =
-          senders;
+        this.unreadSenders = senders;
 
         this.combineNotifications();
       })
@@ -194,8 +154,7 @@ implements OnInit, OnDestroy {
     this.notificationService.notifications$
       .subscribe((data: any[]) => {
 
-        this.goalNotifications =
-          data;
+        this.goalNotifications = data;
 
         this.combineNotifications();
       })
@@ -205,103 +164,70 @@ implements OnInit, OnDestroy {
   // =====================================================
   // DESTROY
   // =====================================================
-
   ngOnDestroy(): void {
-
     this.subs.unsubscribe();
   }
-
-  // =====================================================
-  // METHODS
   // =====================================================
   // COMBINE NOTIFICATIONS
   // =====================================================
 
   combineNotifications(): void {
+    const chatNotifications = this.unreadSenders.map(sender => ({
+    type: 'chat',
+    id: sender.id,
+    name: sender.name,
+    count: sender.count,
+    senderType: sender.type,
 
-  const chatNotifications =
+    // IMPORTANT
+    userId:
+      sender.type === 'private'
+        ? sender.userId || sender.senderId || sender.id
+        : null,
 
-    this.unreadSenders.map(sender => ({
+    groupId:
+      sender.type === 'group'
+        ? sender.groupId || sender.id
+        : null,
 
-      type: 'chat',
-
-      id: sender.id,
-
-      name: sender.name,
-
-      count: sender.count,
-
-      senderType: sender.type,
-
-      createdAt:
-        sender.createdAt || new Date()
-    }));
-
-
+    createdAt: sender.createdAt || new Date()
+  }));
   const goalNotifications =
-
-    this.goalNotifications.map(notif => ({
-
+  this.goalNotifications
+    .filter(notif => !notif.read)
+    .map(notif => ({
       type: 'goal',
-
       id: notif.id,
-
       message: notif.message,
-
       createdAt: notif.createdAt,
-
       read: notif.read
     }));
-
-
   this.allNotifications = [
-
     ...goalNotifications,
-
     ...chatNotifications
-
   ].sort((a: any, b: any) => {
-
     const dateA =
       a.createdAt
         ? new Date(a.createdAt).getTime()
         : 0;
-
     const dateB =
       b.createdAt
         ? new Date(b.createdAt).getTime()
         : 0;
-
     return dateB - dateA;
   });
-
-  // ✅ UPDATE BADGE
   const unreadGoals =
     this.goalNotifications.filter(
       n => !n.read
     ).length;
-
-  this.totalNotificationsCount =
-    this.unreadSenders.length + unreadGoals;
-}
-
-  // =====================================================
-  // TOTAL NOTIFICATIONS
-  // =====================================================
-
-  get totalNotifications(): number {
-
-    const unreadGoals =
-
-      this.goalNotifications
-        .filter(n => !n.read)
-        .length;
-
-    return (
-      this.unreadChatMessagesCount
-      + unreadGoals
+  const unreadChats =
+    this.unreadSenders.reduce(
+      (sum, sender) => sum + sender.count,
+      0
     );
-  }
+  this.totalNotificationsCount =
+    unreadGoals + unreadChats;
+}
 
   // =====================================================
   // MARK AS READ
@@ -315,76 +241,79 @@ implements OnInit, OnDestroy {
 
     if (notif.type === 'chat') {
 
-      this.router.navigate(['/apps/chat']);
+      console.log('CHAT NOTIF =>', notif);
+
+      const queryParams: any = {};
+
+      if (notif.senderType === 'group') {
+        queryParams.groupId = notif.groupId;
+      } else {
+        queryParams.userId = notif.userId;
+      }
+
+      console.log('QUERY PARAMS =>', queryParams);
+
+      this.router.navigate(
+        ['/apps/chat'],
+        { queryParams }
+      );
 
       return;
     }
-
     // ==========================================
     // GOAL
     // ==========================================
 
-    if (
-      notif.type === 'goal'
-      && !notif.read
-    ) {
+    if (notif.type === 'goal') {
 
-      this.notificationService
-        .markAsRead(notif.id)
-        .subscribe({
+  // déjà lu
+  if (notif.read) {
 
-          next: () => {
+    this.router.navigate([
+      '/apps/goals'
+    ]);
 
-            this.goalNotifications =
+    return;
+  }
 
-              this.goalNotifications.map(n =>
+  this.notificationService
+  .markAsRead(notif.id)
+  .subscribe({
 
-                n.id === notif.id
+    next: () => {
 
-                  ? {
-                      ...n,
-                      read: true
-                    }
+      console.log('Notification marked as read');
 
-                  : n
-              );
+      this.goalNotifications =
+        this.goalNotifications.map(n =>
+          n.id === notif.id
+            ? { ...n, read: true }
+            : n
+        );
 
-            this.combineNotifications();
+      this.combineNotifications();
 
-            this.router.navigate([
-              '/apps/goals'
-            ]);
-          },
+      this.router.navigate([
+        '/apps/reading-goal'
+      ]);
+    },
 
-          error: (err) => {
+    error: (err) => {
 
-            console.error(
-              'Error marking notification as read',
-              err
-            );
-          }
-        });
+      console.error(
+        'MARK READ ERROR =>',
+        err
+      );
     }
+  });
+
+  return;
+}
   }
-
-  // =====================================================
-  // TRACK BY
-  // =====================================================
-
-  trackByNotif(
-    index: number,
-    item: any
-  ): number {
-
-    return item.id;
-  }
-
   // =====================================================
   // OPEN SEARCH
   // =====================================================
-
   openDialog(): void {
-
     console.log('Search dialog opened');
   }
 }

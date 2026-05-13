@@ -65,10 +65,10 @@ export class NotificationService {
   // MARK AS READ
   // =========================
   markAsRead(id: number) {
-
     return this.http.put(
       `${this.api}/${id}/read`,
-      {}
+      {},
+      this.getHeaders()
     );
   }
 }
