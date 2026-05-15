@@ -1,42 +1,300 @@
-<app-top-cards></app-top-cards>
+<div class="row">
+
+  <!-- LIVRES LUS -->
+  <div class="col-sm-6 col-lg-3">
+
+    <mat-card class="cardWithShadow">
+
+      <mat-card-content class="p-y-24">
+
+        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4">
+          {{ stats?.totalBooksRead || 0 }}
+        </mat-card-title>
+
+        <div class="d-flex align-items-center">
+
+          <span class="mat-body-1">
+            Livres lus
+          </span>
+
+          <span class="mat-body-1 text-success m-l-auto">
+            +12%
+          </span>
+
+        </div>
+
+      </mat-card-content>
+
+      <apx-chart
+        [series]="booksChart.series"
+        [chart]="booksChart.chart"
+        [colors]="booksChart.colors"
+        [stroke]="booksChart.stroke"
+        [dataLabels]="booksChart.dataLabels"
+        [legend]="booksChart.legend"
+        [grid]="booksChart.grid"
+        [tooltip]="booksChart.tooltip">
+      </apx-chart>
+
+    </mat-card>
+
+  </div>
+
+  <!-- PAGES -->
+  <div class="col-sm-6 col-lg-3">
+
+    <mat-card class="cardWithShadow">
+
+      <mat-card-content class="p-y-24">
+
+        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4">
+          {{ stats?.totalPagesRead || 0 }}
+        </mat-card-title>
+
+        <div class="d-flex align-items-center">
+
+          <span class="mat-body-1">
+            Pages lues
+          </span>
+
+          <span class="mat-body-1 text-primary m-l-auto">
+            +8%
+          </span>
+
+        </div>
+
+      </mat-card-content>
+
+      <apx-chart
+        [series]="pagesChart.series"
+        [chart]="pagesChart.chart"
+        [colors]="pagesChart.colors"
+        [plotOptions]="pagesChart.plotOptions"
+        [dataLabels]="pagesChart.dataLabels"
+        [legend]="pagesChart.legend"
+        [grid]="pagesChart.grid"
+        [xaxis]="pagesChart.xaxis"
+        [yaxis]="pagesChart.yaxis"
+        [tooltip]="pagesChart.tooltip">
+      </apx-chart>
+
+    </mat-card>
+
+  </div>
+
+  <!-- HEURES -->
+  <div class="col-sm-6 col-lg-3">
+
+    <mat-card class="cardWithShadow">
+
+      <mat-card-content class="p-y-24">
+
+        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-4">
+          {{ stats?.totalReadingHours || 0 }}h
+        </mat-card-title>
+
+        <div class="d-flex align-items-center">
+
+          <span class="mat-body-1">
+            Temps lecture
+          </span>
+
+          <span class="mat-body-1 text-success m-l-auto">
+            +15%
+          </span>
+
+        </div>
+
+      </mat-card-content>
+
+      <apx-chart
+        [series]="hoursChart.series"
+        [chart]="hoursChart.chart"
+        [colors]="hoursChart.colors"
+        [stroke]="hoursChart.stroke"
+        [dataLabels]="hoursChart.dataLabels"
+        [legend]="hoursChart.legend"
+        [grid]="hoursChart.grid"
+        [tooltip]="hoursChart.tooltip">
+      </apx-chart>
+
+    </mat-card>
+
+  </div>
+
+  <!-- OBJECTIF -->
+  <div class="col-sm-6 col-lg-3">
+
+    <mat-card class="cardWithShadow">
+
+      <mat-card-content class="p-y-24">
+
+        <span class="mat-body-1 m-b-4 d-block">
+          Objectif annuel
+        </span>
+
+        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-24">
+          {{ getGoalPercentage() }}%
+        </mat-card-title>
+
+        <apx-chart
+          [series]="goalChart.series"
+          [chart]="goalChart.chart"
+          [colors]="goalChart.colors"
+          [plotOptions]="goalChart.plotOptions"
+          [dataLabels]="goalChart.dataLabels"
+          [stroke]="goalChart.stroke"
+          [legend]="goalChart.legend"
+          [tooltip]="goalChart.tooltip">
+        </apx-chart>
+
+      </mat-card-content>
+
+    </mat-card>
+
+  </div>
+
+</div>
+
+<!-- ROW 2 -->
 
 <div class="row">
+
+  <!-- PROGRESSION -->
   <div class="col-lg-8">
-    <app-revenue-updates></app-revenue-updates>
+
+    <mat-card class="cardWithShadow">
+
+      <mat-card-header>
+
+        <mat-card-title>
+          Progression mensuelle
+        </mat-card-title>
+
+        <mat-card-subtitle>
+          Livres terminés chaque mois
+        </mat-card-subtitle>
+
+      </mat-card-header>
+
+      <mat-card-content class="p-b-30">
+
+        <apx-chart
+          [series]="monthlyReadingChart.series"
+          [chart]="monthlyReadingChart.chart"
+          [colors]="monthlyReadingChart.colors"
+          [stroke]="monthlyReadingChart.stroke"
+          [xaxis]="monthlyReadingChart.xaxis"
+          [tooltip]="monthlyReadingChart.tooltip">
+        </apx-chart>
+
+      </mat-card-content>
+
+    </mat-card>
+
   </div>
+
+  <!-- GENRES -->
   <div class="col-lg-4">
-    <div class="row">
-      <div class="col-12 col-sm-6 col-lg-12">
-        <app-yearly-breakup></app-yearly-breakup>
-      </div>
-      <div class="col-12 col-sm-6 col-lg-12">
-        <app-monthly-earnings></app-monthly-earnings>
-      </div>
-    </div>
+
+    <mat-card class="cardWithShadow">
+
+      <mat-card-header>
+
+        <mat-card-title>
+          Genres favoris
+        </mat-card-title>
+
+        <mat-card-subtitle>
+          Répartition des lectures
+        </mat-card-subtitle>
+
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <apx-chart
+          [series]="genreChart.series"
+          [chart]="genreChart.chart"
+          [labels]="genreChart.labels"
+          [colors]="genreChart.colors"
+          [legend]="genreChart.legend"
+          [plotOptions]="genreChart.plotOptions"
+          [tooltip]="genreChart.tooltip">
+        </apx-chart>
+
+      </mat-card-content>
+
+    </mat-card>
+
   </div>
-  <div class="col-lg-4">
-    <app-employee-salary></app-employee-salary>
+
+</div>
+
+<!-- ROW 3 -->
+
+<div class="row">
+
+  <!-- AUTEURS -->
+  <div class="col-lg-6">
+
+    <mat-card class="cardWithShadow">
+
+      <mat-card-header>
+
+        <mat-card-title>
+          Auteurs les plus lus
+        </mat-card-title>
+
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <apx-chart
+          [series]="authorChart.series"
+          [chart]="authorChart.chart"
+          [colors]="authorChart.colors"
+          [plotOptions]="authorChart.plotOptions"
+          [dataLabels]="authorChart.dataLabels"
+          [xaxis]="authorChart.xaxis"
+          [tooltip]="authorChart.tooltip">
+        </apx-chart>
+
+      </mat-card-content>
+
+    </mat-card>
+
   </div>
-  <div class="col-lg-4">
-    <div class="row">
-      <div class="col-sm-6">
-        <app-customers></app-customers>
-      </div>
-      <div class="col-sm-6">
-        <app-projects></app-projects>
-      </div>
-      <div class="col-12">
-        <app-social-card></app-social-card>
-      </div>
-    </div>
+
+  <!-- ETAT LECTURE -->
+  <div class="col-lg-6">
+
+    <mat-card class="cardWithShadow">
+
+      <mat-card-header>
+
+        <mat-card-title>
+          État des lectures
+        </mat-card-title>
+
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <apx-chart
+          [series]="readingStatusChart.series"
+          [chart]="readingStatusChart.chart"
+          [labels]="readingStatusChart.labels"
+          [colors]="readingStatusChart.colors"
+          [legend]="readingStatusChart.legend"
+          [plotOptions]="readingStatusChart.plotOptions"
+          [tooltip]="readingStatusChart.tooltip">
+        </apx-chart>
+
+      </mat-card-content>
+
+    </mat-card>
+
   </div>
-  <div class="col-lg-4">
-    <app-selling-product></app-selling-product>
-  </div>
-  <div class="col-lg-4">
-    <app-weekly-stats></app-weekly-stats>
-  </div>
-  <div class="col-lg-8">
-    <app-top-projects></app-top-projects>
-  </div>
+
 </div>

@@ -23,4 +23,8 @@ public interface UserBookRepository extends JpaRepository<UserBook, Long> {
 
     @Query("SELECT COUNT(ub) FROM UserBook ub WHERE ub.user = :user AND ub.status = 'READ' AND YEAR(ub.finishDate) = :year")
     int countBooksReadThisYear(User user, int year);
+
+    long countByStatus(ReadingStatus status);
+    List<UserBook> findByUserId(Long userId);
+
 }

@@ -1,0 +1,168 @@
+.dashboard-card {
+  border-radius: 24px;
+  border: none;
+
+  overflow: hidden;
+
+  transition: 0.3s ease;
+
+  box-shadow:
+    0 8px 30px rgba(0,0,0,0.05);
+
+  &:hover {
+    transform: translateY(-6px);
+  }
+
+  mat-card-content {
+    padding: 24px !important;
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+.card-label {
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+}
+
+.dashboard-card h2 {
+  font-size: 34px;
+  font-weight: 800;
+  color: white;
+
+  margin: 8px 0;
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+
+  border-radius: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 28px;
+
+  background: rgba(255,255,255,0.15);
+
+  backdrop-filter: blur(10px);
+}
+
+.growth {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.positive {
+  color: #bbf7d0;
+}
+
+.negative {
+  color: #fecaca;
+}
+
+/* COLORS */
+
+.books-card {
+  background:
+    linear-gradient(135deg,#6366f1,#8b5cf6);
+}
+
+.pages-card {
+  background:
+    linear-gradient(135deg,#06b6d4,#3b82f6);
+}
+
+.hours-card {
+  background:
+    linear-gradient(135deg,#f97316,#ef4444);
+}
+
+.goal-card {
+  background:
+    linear-gradient(135deg,#8b5cf6,#ec4899);
+}
+
+/* CHART CARDS */
+
+.chart-card {
+  border-radius: 24px;
+  border: none;
+
+  box-shadow:
+    0 8px 30px rgba(0,0,0,0.05);
+
+  mat-card-content {
+    padding: 24px !important;
+  }
+}
+
+.goal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+.goal-circle {
+  width: 60px;
+  height: 60px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 28px;
+
+  background: rgba(255,255,255,0.15);
+}
+
+.goal-text {
+  margin-top: 14px;
+  color: white;
+  opacity: 0.9;
+}
+
+::ng-deep .mat-mdc-progress-bar {
+  border-radius: 12px;
+  overflow: hidden;
+}
+.row {
+  margin-bottom: 10px;
+}
+
+.chart-card {
+  height: 100%;
+}
+
+::ng-deep .apexcharts-tooltip {
+  border-radius: 12px !important;
+}
+
+::ng-deep .apexcharts-canvas {
+  margin: auto;
+}
+
+@media (max-width: 768px) {
+
+  .dashboard-card h2 {
+    font-size: 26px;
+  }
+
+  .card-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+  }
+}

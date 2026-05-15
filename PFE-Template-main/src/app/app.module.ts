@@ -27,11 +27,21 @@ import { AddBookComponent } from './pages/admin/add-book/add-book.component';
 import { EditBookComponent } from './pages/admin/edit-book/edit-book.component';
 import { ReviewComponent } from './pages/blogs/review/review.component';
 
+import { MatCardModule } from '@angular/material/card';
+
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { NgApexchartsModule } from 'ng-apexcharts';
+
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+
 export function HttpLoaderFactory(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
 @NgModule({
+   providers: [
+    provideCharts(withDefaultRegisterables())
+  ],
   declarations: [
     AppComponent, 
     BlankComponent, 
@@ -46,7 +56,13 @@ export function HttpLoaderFactory(http: HttpClient): any {
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
+    BrowserModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    MatCardModule,
+    MatProgressBarModule,
     MaterialModule,
+    NgApexchartsModule,
     TablerIconsModule.pick(TablerIcons),
     TranslateModule.forRoot({
       loader: {

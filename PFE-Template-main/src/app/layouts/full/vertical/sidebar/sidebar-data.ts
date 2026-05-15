@@ -7,7 +7,7 @@ export const navItems: NavItem[] = [
   {
     displayName: 'Dashboard',
     iconName: 'aperture',
-    route: '/dashboards/dashboard1',
+    route: 'dashboards/dashboard1',
   },
   
   {
