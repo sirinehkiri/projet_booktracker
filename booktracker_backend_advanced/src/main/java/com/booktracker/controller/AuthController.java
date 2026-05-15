@@ -25,16 +25,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        System.out.println("Username: " + request.getUsername());
         return authService.loginService(request);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request)
             throws MessagingException, UnsupportedEncodingException {
-        System.out.println("REGISTER API CALLED");
-        System.out.println("Username: " + request.getUsername());
-        System.out.println("Email: " + request.getEmail());
         return authService.registerService(request);
     }
 

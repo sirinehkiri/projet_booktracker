@@ -144,7 +144,6 @@ public class BookController {
          Authentication authentication
  ) {
   String username = authentication.getName();
-  System.out.println("url " + book.getPic());
   return ResponseEntity.ok(
           bookService.createBook(book, username)
   );
@@ -162,7 +161,6 @@ public class BookController {
          Authentication authentication
  ) {
   String username = authentication.getName();
-  System.out.println(book.getTotal_pages());
   return ResponseEntity.ok(
           bookService.updateBook(
                   id,

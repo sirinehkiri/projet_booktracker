@@ -33,8 +33,6 @@ public class NotificationController {
             Authentication authentication
     ) {
 
-        System.out.println("AUTH NAME: " + authentication.getPrincipal());
-
         User user = (User) authentication.getPrincipal();
 
         return notificationRepository

@@ -90,8 +90,6 @@ public class AuthService {
     // ================= REGISTER =================
     public ResponseEntity registerService(RegisterRequest request)
             throws MessagingException, UnsupportedEncodingException {
-        System.out.println("Username: " + request.getUsername());
-        System.out.println("Email: " + request.getEmail());
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -115,9 +113,7 @@ public class AuthService {
         }
 
         user.setEmailVerified(false);
-        System.out.println("Before save");
         userRepository.save(user);
-        System.out.println("After save");
 
         // Token
         String token = UUID.randomUUID().toString();

@@ -23,7 +23,6 @@ public class ReadingService {
     private final ReadingGoalRepository goalRepository;
 
     public void updateProgress(ProgressRequest req) {
-        System.out.println("ID reçu = " + req.getUserBookId());
         UserBook userBook = userBookRepository.findById(req.getUserBookId())
                 .orElseThrow();
 
