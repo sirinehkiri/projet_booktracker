@@ -3,13 +3,9 @@ import { Routes } from '@angular/router';
 import { AppChatComponent } from './chat/chat.component';
 import { AppNotesComponent } from './notes/notes.component';
 import { ReadingGoalComponent } from './reading-goal/reading-goal.component';
-import { AppEmailComponent } from './email/email.component';
-import { DetailComponent } from './email/detail/detail.component';
 import { AppTaskboardComponent } from './taskboard/taskboard.component';
 import { AppTicketlistComponent } from './ticketlist/ticketlist.component';
 import { AppContactComponent } from './contact/contact.component';
-import { AppCoursesComponent } from './courses/courses.component';
-import { AppCourseDetailComponent } from './courses/course-detail/course-detail.component';
 import { AppEmployeeComponent } from './employee/employee.component';
 import { AppInvoiceListComponent } from './invoice/invoice-list/invoice-list.component';
 import { AppAddInvoiceComponent } from './invoice/add-invoice/add-invoice.component';
@@ -46,30 +42,6 @@ export const AppsRoutes: Routes = [
       },
       { path: 'email', redirectTo: 'email/inbox', pathMatch: 'full' },
       {
-        path: 'email/:type',
-        component: AppEmailComponent,
-        data: {
-          title: 'Email',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Email' },
-          ],
-        },
-        children: [
-          {
-            path: ':id',
-            component: DetailComponent,
-            data: {
-              title: 'Email Detail',
-              urls: [
-                { title: 'Dashboard', url: '/dashboards/dashboard1' },
-                { title: 'Email Detail' },
-              ],
-            },
-          },
-        ],
-      },
-      {
         path: 'reading-goal',
         component: ReadingGoalComponent
       },
@@ -103,28 +75,6 @@ export const AppsRoutes: Routes = [
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard1' },
             { title: 'Contacts' },
-          ],
-        },
-      },
-      {
-        path: 'courses',
-        component: AppCoursesComponent,
-        data: {
-          title: 'Courses',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Courses' },
-          ],
-        },
-      },
-      {
-        path: 'courses/coursesdetail/:id',
-        component: AppCourseDetailComponent,
-        data: {
-          title: 'Course Detail',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Course Detail' },
           ],
         },
       },

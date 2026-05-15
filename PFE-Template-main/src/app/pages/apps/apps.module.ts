@@ -21,21 +21,10 @@ import { AppChatComponent } from './chat/chat.component';
 //Contact
 import { AppContactDialogContentComponent } from './contact/contact.component';
 import { AppContactComponent } from './contact/contact.component';
-//Courses
-import { AppCoursesComponent } from './courses/courses.component';
-import { AppCourseDetailComponent } from './courses/course-detail/course-detail.component';
-
 //Notes
 import { AppNotesComponent } from './notes/notes.component';
 //Todo
 import { ReadingGoalComponent } from './reading-goal/reading-goal.component';
-//Mailbox
-import {
-  ListingComponent,
-  ListingDialogDataExampleDialogComponent,
-} from './email/listing/listing.component';
-import { DetailComponent } from './email/detail/detail.component';
-import { AppEmailComponent } from './email/email.component';
 
 //Taskboard
 import { AppTaskboardComponent } from './taskboard/taskboard.component';
@@ -104,16 +93,10 @@ import { ProfileComponent } from './profil/profile.component';
     TaskDialogComponent,
     OkAppTaskComponent,
     DeleteAppTaskComponent,
-    ListingDialogDataExampleDialogComponent,
-    ListingComponent,
-    DetailComponent,
-    AppEmailComponent,
     AppTicketlistComponent,
     AppTicketDialogContentComponent,
     AppContactComponent,
     AppContactDialogContentComponent,
-    AppCoursesComponent,
-    AppCourseDetailComponent,
     AppEmployeeComponent,
     AppEmployeeDialogContentComponent,
     AppAddEmployeeComponent,
