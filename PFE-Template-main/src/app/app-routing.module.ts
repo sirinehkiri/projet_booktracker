@@ -42,21 +42,9 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'ui-components',
-        loadChildren: () =>
-          import('./pages/ui-components/ui-components.module').then(
-            (m) => m.UicomponentsModule
-          ),
-      },
-      {
         path: 'apps',
         loadChildren: () =>
           import('./pages/apps/apps.module').then((m) => m.AppsModule),
-      },
-      {
-        path: 'widgets',
-        loadChildren: () =>
-          import('./pages/widgets/widgets.module').then((m) => m.WidgetsModule),
       },
       {
         path: 'tables',

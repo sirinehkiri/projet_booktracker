@@ -93,21 +93,6 @@ export const navItems: NavItem[] = [
     route: '/datatable/kichen-sink',
   },
   {
-    navCap: 'UI',
-  },
-  {
-    displayName: 'Ui Components',
-    iconName: 'box',
-    route: 'ui-components',
-    children: [
-      {
-        displayName: 'Paginator',
-        iconName: 'point',
-        route: 'ui-components/paginator',
-      },
-    ],
-  },
-  {
     navCap: 'Auth',
   },
   {
