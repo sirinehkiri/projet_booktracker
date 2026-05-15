@@ -213,7 +213,19 @@ export class FullComponent implements OnInit {
       });
   }
 
-  ngOnInit(): void {}
+  currentUsername = '';
+
+ngOnInit(): void {
+
+  const userData = localStorage.getItem('user');
+
+  if (userData) {
+
+    const user = JSON.parse(userData);
+
+    this.currentUsername = user.username;
+  }
+}
 
   ngOnDestroy() {
     this.layoutChangesSubscription.unsubscribe();

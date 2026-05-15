@@ -15,12 +15,12 @@ export const navItems: NavItem[] = [
   },
   
   {
-    displayName: 'Ajouter Amis',
+    displayName: 'Friends',
     iconName: 'phone',
     route: 'apps/contacts',
   },
   {
-    displayName: 'Tickets',
+    displayName: 'My Books',
     iconName: 'ticket',
     route: 'apps/tickets',
   },
@@ -28,11 +28,6 @@ export const navItems: NavItem[] = [
     displayName: 'Goals',
     iconName: 'edit',
     route: 'apps/reading-goal',
-  },
-  {
-    displayName: 'Taskboard',
-    iconName: 'checklist',
-    route: 'apps/taskboard',
   },
   {
     displayName: 'Books',
@@ -43,36 +38,9 @@ export const navItems: NavItem[] = [
     navCap: 'Pages',
   },
   {
-    displayName: 'Pricing',
-    iconName: 'currency-dollar',
-    route: 'theme-pages/pricing',
-  },
-  {
     displayName: 'Account Setting',
     iconName: 'user-circle',
     route: 'theme-pages/account-setting',
-  },
-  {
-    displayName: 'Widgets',
-    iconName: 'layout',
-    route: 'widgets',
-    children: [
-      {
-        displayName: 'Cards',
-        iconName: 'point',
-        route: 'widgets/cards',
-      },
-      {
-        displayName: 'Banners',
-        iconName: 'point',
-        route: 'widgets/banners',
-      },
-      {
-        displayName: 'Charts',
-        iconName: 'point',
-        route: 'widgets/charts',
-      },
-    ],
   },
   {
     navCap: 'Tables',
@@ -125,14 +93,6 @@ export const navItems: NavItem[] = [
     route: '/datatable/kichen-sink',
   },
   {
-    navCap: 'Chart',
-  },
-  {
-    displayName: 'Doughnut & Pie',
-    iconName: 'chart-donut-3',
-    route: '/charts/doughnut-pie',
-  },
-  {
     navCap: 'UI',
   },
   {
@@ -144,11 +104,6 @@ export const navItems: NavItem[] = [
         displayName: 'Paginator',
         iconName: 'point',
         route: 'ui-components/paginator',
-      },
-      {
-        displayName: 'Progress Bar',
-        iconName: 'point',
-        route: 'ui-components/progress',
       },
     ],
   },
