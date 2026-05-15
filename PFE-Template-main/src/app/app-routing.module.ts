@@ -46,27 +46,15 @@ const routes: Routes = [
         loadChildren: () =>
           import('./pages/apps/apps.module').then((m) => m.AppsModule),
       },
-      {
-        path: 'tables',
-        loadChildren: () =>
-          import('./pages/tables/tables.module').then((m) => m.TablesModule),
+      { path: 'profil/:id', 
+        component: ProfileComponent
       },
-      {
-        path: 'datatable',
-        loadChildren: () =>
-          import('./pages/datatable/datatable.module').then((m) => m.DatatableModule),
-      },
-       { path: 'profil/:id', 
-  component: ProfileComponent
-
-       },
       {
         path: 'theme-pages',
         loadChildren: () =>
           import('./pages/theme-pages/theme-pages.module').then(
             (m) => m.ThemePagesModule
-          ),
-          
+          ),  
       },
     ],
   },
