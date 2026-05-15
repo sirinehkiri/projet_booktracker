@@ -51,7 +51,7 @@ export const AppsRoutes: Routes = [
           ],
         },
       },
-      {
+      {  
         path: 'contacts',
         component: AppContactComponent,
         data: {

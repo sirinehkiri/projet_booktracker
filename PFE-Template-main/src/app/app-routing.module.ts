@@ -49,11 +49,6 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'charts',
-        loadChildren: () =>
-          import('./pages/charts/charts.module').then((m) => m.ChartsModule),
-      },
-      {
         path: 'apps',
         loadChildren: () =>
           import('./pages/apps/apps.module').then((m) => m.AppsModule),
