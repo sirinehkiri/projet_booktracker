@@ -26,7 +26,6 @@ import { AppNotesComponent } from './notes/notes.component';
 //Todo
 import { ReadingGoalComponent } from './reading-goal/reading-goal.component';
 
-
 //Calendar
 import { CalendarModule, DateAdapter } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
@@ -47,6 +46,9 @@ import { AppBlogDetailsComponent } from '../blogs/details/details.component';
 
 //profile
 import { ProfileComponent } from './profil/profile.component';
+
+// ---> LES IMPORTS JDOD LI ZEDNEHOM <---
+import { MyBookListsComponent } from './my-book-lists/my-book-lists.component';
 
 @NgModule({
   imports: [
@@ -84,6 +86,9 @@ import { ProfileComponent } from './profil/profile.component';
     AppAddEmployeeComponent,
     AppBlogsComponent,
     AppBlogDetailsComponent,
+    
+    // ---> LES COMPOSANTS JDOD LI ZEDNEHOM HOUNI <---
+    MyBookListsComponent,
     
   ],
   providers: [DatePipe],

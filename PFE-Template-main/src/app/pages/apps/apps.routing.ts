@@ -8,8 +8,13 @@ import { AppContactComponent } from './contact/contact.component';
 import { AppEmployeeComponent } from './employee/employee.component';
 import { AppBlogsComponent } from '../blogs/blogs.component';
 import { AppBlogDetailsComponent } from '../blogs/details/details.component';
+import { MyBookListsComponent } from './my-book-lists/my-book-lists.component';
 
 export const AppsRoutes: Routes = [
+    {
+        path: 'mes-listes',
+        component: MyBookListsComponent
+      },
   {
     path: '',
     children: [

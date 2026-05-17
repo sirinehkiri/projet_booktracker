@@ -1,0 +1,222 @@
+<div class="lists-page">
+
+  <!-- Header avec gradient -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>📚 My Reading Lists</h1>
+      <p class="subtitle">Organize your books with style</p>
+    </div>
+  </div>
+
+  <!-- Toast message -->
+  <div *ngIf="message" class="toast">
+    {{ message }}
+  </div>
+
+  <!-- Création -->
+  <div class="create-section">
+    <div class="create-header">
+      <h3>✨ Create a new list</h3>
+    </div>
+    <div class="create-form">
+      <input type="text" placeholder="📝 List name *"
+             [(ngModel)]="newListName" name="newListName" class="input-field">
+      <input type="text" placeholder="💭 Description (optional)"
+             [(ngModel)]="newListDesc" name="newListDesc" class="input-field">
+      <button (click)="createList()" class="btn-create">
+        ➕ Create
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading your lists...</p>
+  </div>
+
+  <!-- LISTES -->
+  <div *ngIf="!loading && lists.length > 0" class="lists-grid">
+    <div *ngFor="let list of lists; let i = index"
+         class="list-card"
+         [class.active]="selectedList?.id === list.id"
+         [style.animation-delay.ms]="i * 50"
+         (click)="openList(list)">
+
+      <div *ngIf="editingListId !== list.id">
+        <div class="card-icon">
+          <span *ngIf="(list.name.toLowerCase().includes('to read') || list.name.toLowerCase().includes('lire')) && !list.name.toLowerCase().includes('re-read') && !list.name.toLowerCase().includes('reread') && !list.name.toLowerCase().includes('relire')">📖</span>
+          <span *ngIf="list.name.toLowerCase().includes('to gift') || list.name.toLowerCase().includes('offrir')">🎁</span>
+          <span *ngIf="list.name.toLowerCase().includes('re-read') || list.name.toLowerCase().includes('reread') || list.name.toLowerCase().includes('relire')">🔁</span>
+          <span *ngIf="!list.name.toLowerCase().includes('to read') && !list.name.toLowerCase().includes('lire') && !list.name.toLowerCase().includes('to gift') && !list.name.toLowerCase().includes('offrir') && !list.name.toLowerCase().includes('re-read') && !list.name.toLowerCase().includes('reread') && !list.name.toLowerCase().includes('relire')">📚</span>
+        </div>
+        <div class="list-header">
+          <h3>{{ list.name }}</h3>
+          <span *ngIf="list.isDefault" class="badge">⭐ Default</span>
+        </div>
+        <p *ngIf="list.description" class="description">{{ list.description }}</p>
+        <p *ngIf="!list.description" class="description placeholder">No description</p>
+
+        <div class="actions">
+          <button (click)="startEdit(list, $event)" class="btn-action btn-edit">
+            ✏️ Edit
+          </button>
+          <button (click)="deleteList(list.id, $event)" class="btn-action btn-delete">
+            🗑️
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="editingListId === list.id" class="edit-mode" (click)="$event.stopPropagation()">
+        <input type="text" [(ngModel)]="editName" [name]="'editName' + list.id"
+               class="input-field full-width" placeholder="Name">
+        <input type="text" [(ngModel)]="editDesc" [name]="'editDesc' + list.id"
+               class="input-field full-width" placeholder="Description">
+        <div class="actions">
+          <button (click)="saveEdit(list.id, $event)" class="btn-action btn-save">✅ Save</button>
+          <button (click)="cancelEdit($event)" class="btn-action btn-cancel">❌ Cancel</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PANEL DÉTAIL -->
+  <div *ngIf="selectedList" id="detail-panel" class="detail-panel">
+
+    <div class="detail-hero">
+      <div class="hero-content">
+        <div class="hero-icon">
+          <span *ngIf="(selectedList.name.toLowerCase().includes('to read') || selectedList.name.toLowerCase().includes('lire')) && !selectedList.name.toLowerCase().includes('re-read') && !selectedList.name.toLowerCase().includes('reread') && !selectedList.name.toLowerCase().includes('relire')">📖</span>
+          <span *ngIf="selectedList.name.toLowerCase().includes('to gift') || selectedList.name.toLowerCase().includes('offrir')">🎁</span>
+          <span *ngIf="selectedList.name.toLowerCase().includes('re-read') || selectedList.name.toLowerCase().includes('reread') || selectedList.name.toLowerCase().includes('relire')">🔁</span>
+          <span *ngIf="!selectedList.name.toLowerCase().includes('to read') && !selectedList.name.toLowerCase().includes('lire') && !selectedList.name.toLowerCase().includes('to gift') && !selectedList.name.toLowerCase().includes('offrir') && !selectedList.name.toLowerCase().includes('re-read') && !selectedList.name.toLowerCase().includes('reread') && !selectedList.name.toLowerCase().includes('relire')">📚</span>
+        </div>
+        <div>
+          <h2>{{ selectedList.name }}</h2>
+          <p class="hero-subtitle">{{ booksInList.length }} book(s) in this collection</p>
+        </div>
+      </div>
+      <button (click)="closeDetail()" class="btn-close-hero">✕</button>
+    </div>
+
+    <div *ngIf="loadingDetail" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading books...</p>
+    </div>
+
+    <div *ngIf="!loadingDetail">
+
+      <!-- Mes livres -->
+      <div class="section in-list-section">
+        <div class="section-header">
+          <h3>📚 My books in this list</h3>
+          <select [(ngModel)]="sortBy" name="sortBy" class="sort-select">
+            <option value="custom">🔀 Custom order</option>
+            <option value="title">🔤 By title</option>
+            <option value="author">👤 By author</option>
+          </select>
+        </div>
+
+        <div *ngIf="booksInList.length === 0" class="empty-section">
+          <div class="empty-icon">📭</div>
+          <p>No books in this list</p>
+          <small>Add books below 👇</small>
+        </div>
+
+        <!-- Drag & drop si custom -->
+        <div *ngIf="sortBy === 'custom' && booksInList.length > 0"
+             cdkDropList (cdkDropListDropped)="drop($event)"
+             class="books-grid sortable">
+          <div *ngFor="let book of booksInList" cdkDrag class="book-card in-list">
+            <div class="drag-handle" cdkDragHandle>⋮⋮</div>
+            <div class="book-cover">
+              <img *ngIf="getBookImage(book)" 
+                   [src]="getBookImage(book)" 
+                   [alt]="book.title"
+                   (error)="onImageError($event)">
+              <div *ngIf="!getBookImage(book)" class="book-placeholder">
+                <span>📕</span>
+              </div>
+              <div class="in-list-badge">✓</div>
+            </div>
+            <div class="book-info">
+              <h4>{{ book.title }}</h4>
+              <p>{{ book.author }}</p>
+            </div>
+            <button (click)="removeBook(book)" class="btn-remove">
+              🗑️ Remove
+            </button>
+          </div>
+        </div>
+
+        <!-- Sans drag&drop -->
+        <div *ngIf="sortBy !== 'custom' && booksInList.length > 0" class="books-grid">
+          <div *ngFor="let book of sortBooks()" class="book-card in-list">
+            <div class="book-cover">
+              <img *ngIf="getBookImage(book)" 
+                   [src]="getBookImage(book)" 
+                   [alt]="book.title"
+                   (error)="onImageError($event)">
+              <div *ngIf="!getBookImage(book)" class="book-placeholder">
+                <span>📕</span>
+              </div>
+              <div class="in-list-badge">✓</div>
+            </div>
+            <div class="book-info">
+              <h4>{{ book.title }}</h4>
+              <p>{{ book.author }}</p>
+            </div>
+            <button (click)="removeBook(book)" class="btn-remove">
+              🗑️ Remove
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ajouter livres -->
+      <div class="section">
+        <h3>➕ Add books to this list</h3>
+
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search by title or author..."
+                 [(ngModel)]="searchTerm" name="search" class="search-input">
+        </div>
+
+        <div *ngIf="filteredBooks().length === 0" class="empty-section">
+          <div class="empty-icon">🔍</div>
+          <p>No books found</p>
+        </div>
+
+        <div class="books-grid">
+          <div *ngFor="let book of filteredBooks()"
+               class="book-card"
+               [class.already-in]="isInList(book.id)">
+            <div class="book-cover">
+              <img *ngIf="getBookImage(book)" 
+                   [src]="getBookImage(book)" 
+                   [alt]="book.title"
+                   (error)="onImageError($event)">
+              <div *ngIf="!getBookImage(book)" class="book-placeholder">
+                <span>📕</span>
+              </div>
+              <div *ngIf="isInList(book.id)" class="in-list-badge">✓</div>
+            </div>
+            <div class="book-info">
+              <h4>{{ book.title }}</h4>
+              <p>{{ book.author }}</p>
+            </div>
+            <button *ngIf="!isInList(book.id)" (click)="addBook(book)" class="btn-add">
+              ➕ Add
+            </button>
+            <button *ngIf="isInList(book.id)" disabled class="btn-already">
+              ✅ Added
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

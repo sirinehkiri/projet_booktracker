@@ -14,4 +14,5 @@ public interface GroupMessageRepository extends JpaRepository<GroupMessage, Long
     GroupMessage findTopByChatGroupOrderBySentAtDesc(ChatGroup chatGroup);
 
     List<GroupMessage> findByChatGroupAndSentAtAfter(ChatGroup chatGroup, LocalDateTime after);
+
 }

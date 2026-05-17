@@ -1,10 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { NgScrollbar } from 'ngx-scrollbar';
@@ -16,7 +10,6 @@ import { ChatService } from './chat.service';
   styleUrls: ['./chat.component.scss'],
 })
 export class AppChatComponent implements OnInit, OnDestroy {
-
   sidePanelOpened = true;
   msg = '';
   searchText = '';
@@ -26,10 +19,7 @@ export class AppChatComponent implements OnInit, OnDestroy {
   unreadMessages: any[] = [];
   conversation: any[] = [];
 
-  selectedChat: {
-    type: 'private' | 'group';
-    data: any;
-  } | null = null;
+  selectedChat: { type: 'private' | 'group'; data: any } | null = null;
 
   currentUserId: number | null = null;
   currentUsername = '';
@@ -50,19 +40,18 @@ export class AppChatComponent implements OnInit, OnDestroy {
   availableGroups: any[] = [];
   joinSearchText = '';
 
-  @ViewChild('scrollContainer', { static: false })
-  scrollContainer!: NgScrollbar;
+  // ✅ ADD MEMBER (FROM DB)
+  showAddMemberPanel = false;
+  addMemberSearchText = '';
+  dbUsers: any[] = [];
+  loadingDbUsers = false;
 
-  @ViewChild('myInput', { static: false })
-  myInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('scrollContainer', { static: false }) scrollContainer!: NgScrollbar;
+  @ViewChild('myInput', { static: false }) myInput!: ElementRef<HTMLInputElement>;
 
-  constructor(
-    private chatService: ChatService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private chatService: ChatService, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
 
@@ -74,12 +63,8 @@ export class AppChatComponent implements OnInit, OnDestroy {
       if (user) {
         try {
           const userObj = JSON.parse(user);
-          this.currentUsername =
-            userObj.username || userObj.name || '';
-          this.currentUserId =
-            this.currentUserId ||
-            userObj.id ||
-            userObj.userId;
+          this.currentUsername = userObj.username || userObj.name || '';
+          this.currentUserId = this.currentUserId || userObj.id || userObj.userId;
         } catch (e) {}
       }
     }
@@ -89,11 +74,8 @@ export class AppChatComponent implements OnInit, OnDestroy {
     this.loadUnreadMessages();
 
     this.route.queryParams.subscribe((params: any) => {
-      if (params['groupId']) {
-        this.openGroupConversation(+params['groupId']);
-      } else if (params['userId']) {
-        this.openConversation(+params['userId']);
-      }
+      if (params['groupId']) this.openGroupConversation(+params['groupId']);
+      else if (params['userId']) this.openConversation(+params['userId']);
     });
 
     this.refreshSub = interval(4000).subscribe(() => {
@@ -105,172 +87,117 @@ export class AppChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.refreshSub) {
-      this.refreshSub.unsubscribe();
-    }
+    this.refreshSub?.unsubscribe();
   }
 
   // ================= FILTERS =================
-
   get filteredContacts(): any[] {
     if (!this.searchText.trim()) return this.contacts;
     return this.contacts.filter((c: any) =>
-      (c.username || '')
-        .toLowerCase()
-        .includes(this.searchText.toLowerCase())
+      (c.username || '').toLowerCase().includes(this.searchText.toLowerCase())
     );
   }
 
   get filteredGroups(): any[] {
     if (!this.searchText.trim()) return this.groups;
     return this.groups.filter((g: any) =>
-      (g.name || '')
-        .toLowerCase()
-        .includes(this.searchText.toLowerCase())
+      (g.name || '').toLowerCase().includes(this.searchText.toLowerCase())
     );
   }
 
   get filteredAvailableGroups(): any[] {
-    if (!this.joinSearchText.trim()) {
-      return this.availableGroups;
-    }
+    if (!this.joinSearchText.trim()) return this.availableGroups;
     return this.availableGroups.filter((g: any) =>
-      (g.name || '')
-        .toLowerCase()
-        .includes(this.joinSearchText.toLowerCase())
+      (g.name || '').toLowerCase().includes(this.joinSearchText.toLowerCase())
     );
   }
 
-  // ================= SCROLL =================
+  // ✅ users from DB اللي ماهمش déjà members
+  get addableUsers(): any[] {
+    if (!this.selectedChat || this.selectedChat.type !== 'group') return [];
+    const members = this.selectedChat.data?.members || [];
+    const memberIds = new Set<number>(members.map((m: any) => Number(m.id)));
+    return (this.dbUsers || []).filter((u: any) => !memberIds.has(Number(u.id)));
+  }
 
+  // ================= SCROLL =================
   scrollToBottom(): void {
     setTimeout(() => {
-      if (this.scrollContainer) {
-        this.scrollContainer.scrollTo({
-          bottom: 0,
-          duration: 0
-        });
-      }
+      this.scrollContainer?.scrollTo({ bottom: 0, duration: 0 });
     }, 200);
   }
 
-  // ================= LOAD DATA =================
-
+  // ================= LOAD =================
   loadContacts(): void {
     this.chatService.getContacts().subscribe({
-      next: (data: any[]) => {
-        this.contacts = data || [];
-      },
-      error: (err: any) =>
-        console.error('Error loading contacts', err)
+      next: (data: any[]) => (this.contacts = data || []),
+      error: (err: any) => console.error('Error loading contacts', err),
     });
   }
 
   loadGroups(): void {
     this.chatService.getGroups().subscribe({
-      next: (data: any[]) => {
-        this.groups = data || [];
-      },
-      error: (err: any) =>
-        console.error('Error loading groups', err)
+      next: (data: any[]) => (this.groups = data || []),
+      error: (err: any) => console.error('Error loading groups', err),
     });
   }
 
   loadUnreadMessages(): void {
     this.chatService.getUnreadMessages().subscribe({
-      next: (data: any[]) => {
-        this.unreadMessages = data || [];
-      },
-      error: (err: any) =>
-        console.error('Error loading unread', err)
+      next: (data: any[]) => (this.unreadMessages = data || []),
+      error: (err: any) => console.error('Error loading unread', err),
     });
   }
 
   reloadCurrentConversation(): void {
     if (!this.selectedChat) return;
-
-    if (this.selectedChat.type === 'private') {
-      this.loadConversation(this.selectedChat.data.id);
-    } else {
-      this.loadGroupConversation(
-        this.selectedChat.data.id
-      );
-    }
+    if (this.selectedChat.type === 'private') this.loadConversation(this.selectedChat.data.id);
+    else this.loadGroupConversation(this.selectedChat.data.id);
   }
 
   // ================= OPEN CHAT =================
-
   openConversation(userId: number): void {
-
-    const found = this.contacts.find(
-      (c: any) => c.id === userId
-    );
+    const found = this.contacts.find((c: any) => c.id === userId);
 
     if (found) {
       this.selectedChat = { type: 'private', data: found };
       this.loadConversation(userId);
-      this.chatService
-        .markAsRead(userId)
-        .subscribe(() => this.loadUnreadMessages());
+      this.chatService.markAsRead(userId).subscribe(() => this.loadUnreadMessages());
       return;
     }
 
-    this.selectedChat = {
-      type: 'private',
-      data: { id: userId, username: 'Loading...' }
-    };
+    this.selectedChat = { type: 'private', data: { id: userId, username: 'Loading...' } };
 
     this.chatService.getUserInfo(userId).subscribe({
-      next: (user: any) => {
-        this.selectedChat = {
-          type: 'private',
-          data: user
-        };
-      },
-      error: (err: any) =>
-        console.error('Error loading user info', err)
+      next: (user: any) => (this.selectedChat = { type: 'private', data: user }),
+      error: (err: any) => console.error('Error loading user info', err),
     });
 
     this.loadConversation(userId);
-    this.chatService
-      .markAsRead(userId)
-      .subscribe(() => this.loadUnreadMessages());
+    this.chatService.markAsRead(userId).subscribe(() => this.loadUnreadMessages());
   }
 
   openGroupConversation(groupId: number): void {
-
-    const found = this.groups.find(
-      (g: any) => g.id === groupId
-    );
+    const found = this.groups.find((g: any) => g.id === groupId);
 
     if (found) {
       this.selectedChat = { type: 'group', data: found };
       this.loadGroupConversation(groupId);
-      this.chatService
-        .markGroupAsRead(groupId)
-        .subscribe(() => this.loadGroups());
+      this.chatService.markGroupAsRead(groupId).subscribe(() => this.loadGroups());
       return;
     }
 
     this.chatService.getGroups().subscribe({
       next: (groups: any[]) => {
         this.groups = groups || [];
-        const group = this.groups.find(
-          (g: any) => g.id === groupId
-        );
+        const group = this.groups.find((g: any) => g.id === groupId);
         if (group) {
-          this.selectedChat = {
-            type: 'group',
-            data: group
-          };
+          this.selectedChat = { type: 'group', data: group };
           this.loadGroupConversation(groupId);
-          this.chatService
-            .markGroupAsRead(groupId)
-            .subscribe(() => this.loadGroups());
+          this.chatService.markGroupAsRead(groupId).subscribe(() => this.loadGroups());
         }
       },
-      error: (err: any) =>
-        console.error('Error loading groups', err)
+      error: (err: any) => console.error('Error loading groups', err),
     });
   }
 
@@ -280,29 +207,21 @@ export class AppChatComponent implements OnInit, OnDestroy {
         this.conversation = data || [];
         this.scrollToBottom();
       },
-      error: (err: any) =>
-        console.error('Error loading conversation', err)
+      error: (err: any) => console.error('Error loading conversation', err),
     });
   }
 
   loadGroupConversation(groupId: number): void {
-    this.chatService
-      .getGroupConversation(groupId)
-      .subscribe({
-        next: (data: any[]) => {
-          this.conversation = data || [];
-          this.scrollToBottom();
-        },
-        error: (err: any) =>
-          console.error(
-            'Error loading group conversation',
-            err
-          )
-      });
+    this.chatService.getGroupConversation(groupId).subscribe({
+      next: (data: any[]) => {
+        this.conversation = data || [];
+        this.scrollToBottom();
+      },
+      error: (err: any) => console.error('Error loading group conversation', err),
+    });
   }
 
   // ================= SELECT =================
-
   onSelect(contact: any): void {
     this.openConversation(contact.id);
     this.searchText = '';
@@ -314,46 +233,34 @@ export class AppChatComponent implements OnInit, OnDestroy {
   }
 
   // ================= CREATE GROUP =================
-
   toggleMember(userId: number, checked: boolean): void {
     if (checked) {
-      if (!this.selectedMemberIds.includes(userId)) {
-        this.selectedMemberIds.push(userId);
-      }
+      if (!this.selectedMemberIds.includes(userId)) this.selectedMemberIds.push(userId);
     } else {
-      this.selectedMemberIds =
-        this.selectedMemberIds.filter(
-          id => id !== userId
-        );
+      this.selectedMemberIds = this.selectedMemberIds.filter((id) => id !== userId);
     }
   }
 
   createGroup(): void {
-
     const name = this.newGroupName.trim();
     if (!name) return;
 
-    this.chatService
-      .createGroup(name, this.selectedMemberIds)
-      .subscribe({
-        next: (group: any) => {
-          this.newGroupName = '';
-          this.selectedMemberIds = [];
-          this.showCreateGroupForm = false;
-          this.loadGroups();
-          this.selectedChat = {
-            type: 'group',
-            data: group
-          };
-          this.loadGroupConversation(group.id);
-        },
-        error: (err: any) =>
-          console.error('Error creating group', err)
-      });
+    this.chatService.createGroup(name, this.selectedMemberIds).subscribe({
+      next: (group: any) => {
+        this.newGroupName = '';
+        this.selectedMemberIds = [];
+        this.showCreateGroupForm = false;
+
+        this.loadGroups();
+
+        this.selectedChat = { type: 'group', data: group };
+        this.loadGroupConversation(group.id);
+      },
+      error: (err: any) => console.error('Error creating group', err),
+    });
   }
 
   // ================= LEAVE GROUP =================
-
   isGroupAdmin(group: any): boolean {
     return group?.createdById === this.currentUserId;
   }
@@ -370,23 +277,14 @@ export class AppChatComponent implements OnInit, OnDestroy {
   }
 
   leaveGroup(): void {
-
     if (!this.leaveGroupTarget) return;
-
     const groupId = this.leaveGroupTarget.id;
 
     this.chatService.leaveGroup(groupId).subscribe({
-
       next: () => {
+        this.groups = this.groups.filter((g: any) => g.id !== groupId);
 
-        this.groups = this.groups.filter(
-          (g: any) => g.id !== groupId
-        );
-
-        if (
-          this.selectedChat?.type === 'group' &&
-          this.selectedChat?.data?.id === groupId
-        ) {
+        if (this.selectedChat?.type === 'group' && this.selectedChat?.data?.id === groupId) {
           this.selectedChat = null;
           this.conversation = [];
         }
@@ -394,21 +292,16 @@ export class AppChatComponent implements OnInit, OnDestroy {
         this.showLeaveConfirm = false;
         this.leaveGroupTarget = null;
       },
-
       error: (err: any) => {
         console.error('Error leaving group', err);
-        alert(
-          err?.error?.message ||
-          'Cannot leave this group'
-        );
+        alert(err?.error?.message || 'Cannot leave this group');
         this.showLeaveConfirm = false;
         this.leaveGroupTarget = null;
-      }
+      },
     });
   }
 
   // ================= JOIN GROUP =================
-
   openJoinPanel(): void {
     this.showJoinGroupPanel = true;
     this.joinSearchText = '';
@@ -423,104 +316,112 @@ export class AppChatComponent implements OnInit, OnDestroy {
 
   loadAvailableGroups(): void {
     this.chatService.getAllGroups().subscribe({
-      next: (data: any[]) => {
-        this.availableGroups = data || [];
-      },
-      error: (err: any) =>
-        console.error(
-          'Error loading available groups',
-          err
-        )
+      next: (data: any[]) => (this.availableGroups = data || []),
+      error: (err: any) => console.error('Error loading available groups', err),
     });
   }
 
   rejoinGroup(group: any): void {
-
     this.chatService.rejoinGroup(group.id).subscribe({
-
       next: () => {
-
-        // Retire de available
-        this.availableGroups =
-          this.availableGroups.filter(
-            (g: any) => g.id !== group.id
-          );
-
-        // Reload mes groups
+        this.availableGroups = this.availableGroups.filter((g: any) => g.id !== group.id);
         this.loadGroups();
-
-        // Fermer si vide
-        if (this.availableGroups.length === 0) {
-          this.closeJoinPanel();
-        }
+        if (this.availableGroups.length === 0) this.closeJoinPanel();
       },
-
       error: (err: any) => {
         console.error('Error joining group', err);
-        alert(
-          err?.error?.message ||
-          'Cannot join this group'
-        );
-      }
+        alert(err?.error?.message || 'Cannot join this group');
+      },
     });
   }
 
-  // ================= SEND MESSAGE =================
+  // ================= ✅ ADD MEMBER FROM DB =================
+  openAddMemberPanel(): void {
+    if (!this.selectedChat || this.selectedChat.type !== 'group') return;
+    this.showAddMemberPanel = true;
+    this.addMemberSearchText = '';
+    this.loadDbUsers();
+  }
 
+  closeAddMemberPanel(): void {
+    this.showAddMemberPanel = false;
+    this.addMemberSearchText = '';
+    this.dbUsers = [];
+  }
+
+  loadDbUsers(): void {
+    this.loadingDbUsers = true;
+
+    this.chatService.searchUsers(this.addMemberSearchText || '').subscribe({
+      next: (users: any[]) => {
+        this.dbUsers = users || [];
+        this.loadingDbUsers = false;
+      },
+      error: (err: any) => {
+        console.error('Error loading db users', err);
+        this.loadingDbUsers = false;
+      },
+    });
+  }
+
+  addMember(user: any): void {
+    if (!this.selectedChat || this.selectedChat.type !== 'group') return;
+    const groupId = this.selectedChat.data.id;
+
+    this.chatService.addMemberToGroup(groupId, user.id).subscribe({
+      next: () => {
+        // refresh groups so members menu updates
+        this.chatService.getGroups().subscribe({
+          next: (groups: any[]) => {
+            this.groups = groups || [];
+            const updated = this.groups.find((g: any) => g.id === groupId);
+            if (updated) this.selectedChat = { type: 'group', data: updated };
+          },
+          error: (err: any) => console.error('Error refreshing groups', err),
+        });
+
+        this.closeAddMemberPanel();
+      },
+      error: (err: any) => {
+        console.error('Error adding member', err);
+        alert(err?.error?.message || 'Cannot add this member');
+      },
+    });
+  }
+
+  // ================= SEND =================
   OnAddMsg(): void {
-
     const value = this.msg.trim();
     if (!value || !this.selectedChat) return;
 
     if (this.selectedChat.type === 'private') {
-
-      this.chatService
-        .sendMessage(this.selectedChat.data.id, value)
-        .subscribe({
-          next: (savedMessage: any) => {
-            this.conversation.push(savedMessage);
-            this.msg = '';
-            if (this.myInput) {
-              this.myInput.nativeElement.value = '';
-            }
-            this.loadContacts();
-            this.loadUnreadMessages();
-            this.scrollToBottom();
-          },
-          error: (err: any) =>
-            console.error('Error sending message', err)
-        });
-
+      this.chatService.sendMessage(this.selectedChat.data.id, value).subscribe({
+        next: (savedMessage: any) => {
+          this.conversation.push(savedMessage);
+          this.msg = '';
+          if (this.myInput) this.myInput.nativeElement.value = '';
+          this.loadContacts();
+          this.loadUnreadMessages();
+          this.scrollToBottom();
+        },
+        error: (err: any) => console.error('Error sending message', err),
+      });
     } else {
-
-      this.chatService
-        .sendGroupMessage(
-          this.selectedChat.data.id,
-          value
-        )
-        .subscribe({
-          next: (savedMessage: any) => {
-            this.conversation.push(savedMessage);
-            this.msg = '';
-            if (this.myInput) {
-              this.myInput.nativeElement.value = '';
-            }
-            this.loadGroups();
-            this.scrollToBottom();
-          },
-          error: (err: any) =>
-            console.error(
-              'Error sending group message',
-              err
-            )
-        });
+      this.chatService.sendGroupMessage(this.selectedChat.data.id, value).subscribe({
+        next: (savedMessage: any) => {
+          this.conversation.push(savedMessage);
+          this.msg = '';
+          if (this.myInput) this.myInput.nativeElement.value = '';
+          this.loadGroups();
+          this.scrollToBottom();
+        },
+        error: (err: any) => console.error('Error sending group message', err),
+      });
     }
   }
 
-  // ================= DELETE MESSAGE =================
-
+  // ================= DELETE =================
   deleteMessage(messageId: number): void {
-
     if (!this.selectedChat) return;
 
     const req =
@@ -530,85 +431,50 @@ export class AppChatComponent implements OnInit, OnDestroy {
 
     req.subscribe({
       next: () => {
-        this.conversation = this.conversation.filter(
-          (m: any) => m.id !== messageId
-        );
+        this.conversation = this.conversation.filter((m: any) => m.id !== messageId);
         this.loadContacts();
         this.loadGroups();
         this.loadUnreadMessages();
       },
-      error: (err: any) =>
-        console.error('Error deleting message', err)
+      error: (err: any) => console.error('Error deleting message', err),
     });
   }
 
   // ================= HELPERS =================
-
   isOver(): boolean {
-    return window.matchMedia(
-      '(max-width: 960px)'
-    ).matches;
+    return window.matchMedia('(max-width: 960px)').matches;
   }
 
   isMine(message: any): boolean {
+    if (!this.currentUserId && !this.currentUsername) return false;
 
-    if (!this.currentUserId && !this.currentUsername) {
-      return false;
+    if (message.senderId !== undefined && this.currentUserId) {
+      return Number(message.senderId) === this.currentUserId;
     }
-
-    if (
-      message.senderId !== undefined &&
-      this.currentUserId
-    ) {
-      return (
-        Number(message.senderId) === this.currentUserId
-      );
+    if (message.sender?.id !== undefined && this.currentUserId) {
+      return Number(message.sender.id) === this.currentUserId;
     }
-
-    if (
-      message.sender?.id !== undefined &&
-      this.currentUserId
-    ) {
-      return (
-        Number(message.sender.id) === this.currentUserId
-      );
-    }
-
     if (message.senderName && this.currentUsername) {
       return message.senderName === this.currentUsername;
     }
-
-    if (
-      message.sender?.username &&
-      this.currentUsername
-    ) {
-      return (
-        message.sender.username === this.currentUsername
-      );
+    if (message.sender?.username && this.currentUsername) {
+      return message.sender.username === this.currentUsername;
     }
-
     return false;
   }
 
   getSenderName(message: any): string {
     if (message.senderName) return message.senderName;
-    if (message.sender?.username) {
-      return message.sender.username;
-    }
-    if (message.sender?.name) {
-      return message.sender.name;
-    }
+    if (message.sender?.username) return message.sender.username;
+    if (message.sender?.name) return message.sender.name;
     return 'Unknown';
   }
 
   getUnreadCount(contactId: number): number {
     return this.unreadMessages.filter((m: any) => {
       let senderId: number | null = null;
-      if (m.senderId !== undefined) {
-        senderId = Number(m.senderId);
-      } else if (m.sender?.id !== undefined) {
-        senderId = Number(m.sender.id);
-      }
+      if (m.senderId !== undefined) senderId = Number(m.senderId);
+      else if (m.sender?.id !== undefined) senderId = Number(m.sender.id);
       return senderId === contactId;
     }).length;
   }
@@ -621,7 +487,6 @@ export class AppChatComponent implements OnInit, OnDestroy {
   }
 
   getMemberColor(username: string): string {
-
     const colors = [
       'linear-gradient(135deg, #7b1fa2, #9c27b0)',
       'linear-gradient(135deg, #1976d2, #42a5f5)',
@@ -632,17 +497,13 @@ export class AppChatComponent implements OnInit, OnDestroy {
       'linear-gradient(135deg, #2e7d32, #66bb6a)',
       'linear-gradient(135deg, #6d4c41, #8d6e63)',
       'linear-gradient(135deg, #ad1457, #ec407a)',
-      'linear-gradient(135deg, #283593, #5c6bc0)'
+      'linear-gradient(135deg, #283593, #5c6bc0)',
     ];
 
     let hash = 0;
-
     for (let i = 0; i < username.length; i++) {
-      hash =
-        username.charCodeAt(i) +
-        ((hash << 5) - hash);
+      hash = username.charCodeAt(i) + ((hash << 5) - hash);
     }
-
     return colors[Math.abs(hash % colors.length)];
   }
 }

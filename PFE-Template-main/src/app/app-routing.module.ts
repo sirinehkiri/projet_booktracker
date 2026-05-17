@@ -7,7 +7,12 @@ import { EditBookComponent } from './pages/admin/edit-book/edit-book.component';
 import { ReviewComponent } from './pages/blogs/review/review.component';
 import { ReadingGoalComponent } from './pages/apps/reading-goal/reading-goal.component';
 import { ProfileComponent } from './pages/apps/profil/profile.component';
+import { MyBookListsComponent } from './pages/apps/my-book-lists/my-book-lists.component';
 const routes: Routes = [
+  {
+  path: 'mes-listes',
+  component: MyBookListsComponent
+},
   {
     path: 'review/:id',
     component: ReviewComponent
