@@ -45,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/chat/**").authenticated()
                         .requestMatchers("/api/book-lists/**").authenticated()
                         .requestMatchers("/reading/**").permitAll()
+                        .requestMatchers("/api/preferences/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())

@@ -11,7 +11,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { HttpClientModule } from '@angular/common/http';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { NgScrollbarModule } from 'ngx-scrollbar';
-
+import { RecommendationsComponent } from './contact/recommendations.component';
 // icons
 import { TablerIconsModule } from 'angular-tabler-icons';
 import * as TablerIcons from 'angular-tabler-icons/icons';
@@ -49,7 +49,7 @@ import { ProfileComponent } from './profil/profile.component';
 
 // ---> LES IMPORTS JDOD LI ZEDNEHOM <---
 import { MyBookListsComponent } from './my-book-lists/my-book-lists.component';
-
+import { PreferencesComponent } from './preferences/preferences.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -86,6 +86,8 @@ import { MyBookListsComponent } from './my-book-lists/my-book-lists.component';
     AppAddEmployeeComponent,
     AppBlogsComponent,
     AppBlogDetailsComponent,
+    RecommendationsComponent,
+    PreferencesComponent,
     
     // ---> LES COMPOSANTS JDOD LI ZEDNEHOM HOUNI <---
     MyBookListsComponent,

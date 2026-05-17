@@ -9,7 +9,8 @@ import { AppEmployeeComponent } from './employee/employee.component';
 import { AppBlogsComponent } from '../blogs/blogs.component';
 import { AppBlogDetailsComponent } from '../blogs/details/details.component';
 import { MyBookListsComponent } from './my-book-lists/my-book-lists.component';
-
+import { RecommendationsComponent } from './contact/recommendations.component';
+import { PreferencesComponent } from './preferences/preferences.component';
 export const AppsRoutes: Routes = [
     {
         path: 'mes-listes',
@@ -100,6 +101,16 @@ export const AppsRoutes: Routes = [
           ],
         },
       },
+       {
+        path: 'recommendations', 
+        component: RecommendationsComponent,
+        data: { title: 'Recommendations' }
+      },
+       {
+        path: 'preferences',  
+        component: PreferencesComponent,
+        data: { title: 'Preferences' }
+      }
     ],
   },
 ];

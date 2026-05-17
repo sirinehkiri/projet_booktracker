@@ -29,12 +29,15 @@
   </button>
 
   <!-- LINKS -->
-  <div class="d-none d-lg-flex">
+  <div class="d-none d-lg-flex align-items-center">
 
-    <a mat-button [routerLink]="['/apps/notes']">
-      Home
+    <!-- 🏠 HOME -->
+    <a mat-button [routerLink]="['/apps/notes']" class="d-flex align-items-center gap-1">
+      <i-tabler name="home" class="icon-18 d-flex"></i-tabler>
+      <span>Home</span>
     </a>
 
+    <!-- 💬 CHAT -->
     <a
       mat-button
       [routerLink]="['/apps/chat']"
@@ -42,17 +45,29 @@
       matBadgeColor="warn"
       matBadgeSize="small"
       [matBadgeHidden]="unreadChatMessagesCount === 0"
+      class="d-flex align-items-center gap-1"
     >
-      Chat
+      <i-tabler name="message-circle" class="icon-18 d-flex"></i-tabler>
+      <span>Chat</span>
     </a>
 
-    <!-- ========================================== -->
-    <!-- HEDHA L'BOUTON JDID MTA3 MES LISTES ZEDNEH -->
-    <!-- ========================================== -->
-    <a mat-button [routerLink]="['/apps/mes-listes']">
-      Mes Listes
+    <!-- 📚 MES LISTES -->
+    <a mat-button [routerLink]="['/apps/mes-listes']" class="d-flex align-items-center gap-1">
+      <i-tabler name="books" class="icon-18 d-flex"></i-tabler>
+      <span>Mes Listes</span>
     </a>
-    <!-- ========================================== -->
+
+    <!-- ⚙️ PREFERENCES (AVANT Recommendations) -->
+    <a mat-button [routerLink]="['/apps/preferences']" class="d-flex align-items-center gap-1">
+      <i-tabler name="settings" class="icon-18 d-flex"></i-tabler>
+      <span>Preferences</span>
+    </a>
+
+    <!-- 🎯 RECOMMENDATIONS -->
+    <a mat-button [routerLink]="['/apps/recommendations']" class="d-flex align-items-center gap-1">
+      <i-tabler name="sparkles" class="icon-18 d-flex"></i-tabler>
+      <span>Recommendations</span>
+    </a>
 
   </div>
 
@@ -60,18 +75,18 @@
 
   <!-- NOTIFICATIONS -->
   <button
-  mat-icon-button
-  [matMenuTriggerFor]="notificationmenu"
-  [matBadge]="totalNotificationsCount"
-  matBadgeColor="warn"
-  matBadgeSize="small"
-  [matBadgeHidden]="totalNotificationsCount === 0"
->
-  <i-tabler
-    class="d-flex"
-    name="bell"
-  ></i-tabler>
-</button>
+    mat-icon-button
+    [matMenuTriggerFor]="notificationmenu"
+    [matBadge]="totalNotificationsCount"
+    matBadgeColor="warn"
+    matBadgeSize="small"
+    [matBadgeHidden]="totalNotificationsCount === 0"
+  >
+    <i-tabler
+      class="d-flex"
+      name="bell"
+    ></i-tabler>
+  </button>
 
   <mat-menu
     #notificationmenu="matMenu"
@@ -105,6 +120,7 @@
     >
       No new notifications
     </div>
+
     <!-- ALL NOTIFICATIONS -->
     <div
       *ngFor="let notif of allNotifications"
@@ -133,7 +149,6 @@
           <small class="text-muted">
             {{ notif.count }} new messages
           </small>
-
         </div>
 
       </ng-container>
@@ -149,15 +164,12 @@
         </div>
 
         <div class="m-l-16 flex-grow-1">
-
           <div class="f-s-14 f-w-600">
             {{ notif.message }}
           </div>
-
           <small class="text-muted">
             {{ notif.createdAt | date:'short' }}
           </small>
-
         </div>
 
       </ng-container>
@@ -240,9 +252,7 @@
           </div>
 
         </a>
-
       }
-
     </div>
 
     <!-- LOGOUT -->

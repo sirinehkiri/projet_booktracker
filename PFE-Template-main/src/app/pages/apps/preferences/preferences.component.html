@@ -1,0 +1,136 @@
+<div class="preferences-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>⚙️ My Reading Preferences</h1>
+      <p class="subtitle">Tell us what you love and we'll find perfect books for you</p>
+    </div>
+  </div>
+
+  <!-- Toast message -->
+  <div *ngIf="message" class="toast">
+    {{ message }}
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading your preferences...</p>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading" class="content">
+
+    <!-- 🎨 GENRES SECTION -->
+    <div class="section">
+      <h2>🎨 Favorite Genres</h2>
+      <p class="section-description">Select all genres you enjoy reading</p>
+
+      <div class="chips-grid">
+        <div *ngFor="let genre of availableGenres"
+             class="chip"
+             [class.selected]="isGenreSelected(genre)"
+             (click)="toggleGenre(genre)">
+          <span class="chip-icon">{{ getGenreIcon(genre) }}</span>
+          <span class="chip-label">{{ genre }}</span>
+          <span *ngIf="isGenreSelected(genre)" class="chip-check">✓</span>
+        </div>
+      </div>
+
+      <p class="counter" *ngIf="selectedGenres.length > 0">
+        ✅ {{ selectedGenres.length }} genre(s) selected
+      </p>
+    </div>
+
+    <!-- 🌍 LANGUAGES SECTION -->
+    <div class="section">
+      <h2>🌍 Preferred Languages</h2>
+      <p class="section-description">Which languages do you read in?</p>
+
+      <div class="chips-grid">
+        <div *ngFor="let lang of availableLanguages"
+             class="chip"
+             [class.selected]="isLanguageSelected(lang)"
+             (click)="toggleLanguage(lang)">
+          <span class="chip-label">{{ lang }}</span>
+          <span *ngIf="isLanguageSelected(lang)" class="chip-check">✓</span>
+        </div>
+      </div>
+
+      <p class="counter" *ngIf="selectedLanguages.length > 0">
+        ✅ {{ selectedLanguages.length }} language(s) selected
+      </p>
+    </div>
+
+    <!-- ✍️ AUTHORS SECTION -->
+    <div class="section">
+      <h2>✍️ Favorite Authors</h2>
+      <p class="section-description">List your favorite authors (separated by commas)</p>
+
+      <textarea
+        [(ngModel)]="favoriteAuthors"
+        placeholder="Ex: J.K. Rowling, Stephen King, Agatha Christie..."
+        rows="3"
+        class="textarea-field">
+      </textarea>
+    </div>
+
+    <!-- 📊 GOAL SECTION -->
+    <div class="section">
+      <h2>📊 Monthly Reading Goal</h2>
+      <p class="section-description">How many books do you want to read per month?</p>
+
+      <div class="goal-input">
+        <input type="number"
+               [(ngModel)]="monthlyGoal"
+               min="0"
+               max="100"
+               class="number-field">
+        <span class="goal-label">books / month</span>
+      </div>
+    </div>
+
+    <!-- 🆕 👥 SOCIAL RECOMMENDATIONS SECTION -->
+    <div class="section">
+      <h2>👥 Social Recommendations</h2>
+      <p class="section-description">
+        Receive recommendations based on what other users are reading and rating
+      </p>
+
+      <div class="toggle-card"
+           [class.enabled]="socialRecommendations"
+           (click)="toggleSocialRecommendations()">
+        <div class="toggle-info">
+          <div class="toggle-icon">
+            <span *ngIf="socialRecommendations">🌟</span>
+            <span *ngIf="!socialRecommendations">💤</span>
+          </div>
+          <div class="toggle-text">
+            <h3>{{ socialRecommendations ? 'Enabled' : 'Disabled' }}</h3>
+            <p>
+              {{ socialRecommendations
+                  ? 'You will get books loved by the community'
+                  : 'Click to enable social recommendations' }}
+            </p>
+          </div>
+        </div>
+        <div class="toggle-switch" [class.active]="socialRecommendations">
+          <div class="toggle-circle"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVE BUTTON -->
+    <div class="save-section">
+      <button (click)="savePreferences()"
+              [disabled]="saving"
+              class="btn-save">
+        <span *ngIf="!saving">💾 Save Preferences</span>
+        <span *ngIf="saving">⏳ Saving...</span>
+      </button>
+    </div>
+
+  </div>
+
+</div>
