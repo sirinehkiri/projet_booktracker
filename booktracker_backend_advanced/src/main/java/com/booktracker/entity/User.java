@@ -29,6 +29,28 @@ public class User {
  @JsonIgnore
  private List<Review> reviews;
 
+ @Column(nullable = true)
+ private String image;
+
+ public User(Long id, String username, String password, String role, String email, boolean emailVerified, List<Review> reviews, String image) {
+  this.id = id;
+  this.username = username;
+  this.password = password;
+  this.role = role;
+  this.email = email;
+  this.emailVerified = emailVerified;
+  this.reviews = reviews;
+  this.image = image;
+ }
+
+ public String getImage() {
+  return image;
+ }
+
+ public void setImage(String image) {
+  this.image = image;
+ }
+
  // ✅ Constructeur vide obligatoire
  public User() {}
 

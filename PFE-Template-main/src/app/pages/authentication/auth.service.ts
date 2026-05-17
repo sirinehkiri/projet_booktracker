@@ -12,6 +12,7 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/register`, data);
   }
   login(data: any) {
+    console.log(data)
     return this.http.post(`${this.baseUrl}/login`, data);
   }
 isAdmin(): boolean {

@@ -208,9 +208,11 @@
     [matMenuTriggerFor]="profilemenu"
   >
     <img
-      src="/assets/images/profile/user-1.jpg"
-      class="rounded-circle object-cover icon-35 profile-dd"
-      width="35"
+      [src]="getProfileImage()"
+      class="rounded-circle"
+      width="40"
+      height="40"
+      style="object-fit: cover;"
     />
   </button>
 

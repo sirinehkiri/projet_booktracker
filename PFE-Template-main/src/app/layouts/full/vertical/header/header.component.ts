@@ -87,7 +87,7 @@ implements OnInit, OnDestroy {
       img: '/assets/images/svgs/icon-inbox.svg',
       title: 'My Inbox',
       subtitle: 'Messages & Email',
-      link: '/apps/email/inbox'
+      link: '/apps/chat'
     },
 
   ];
@@ -309,4 +309,16 @@ implements OnInit, OnDestroy {
   openDialog(): void {
     console.log('Search dialog opened');
   }
+  getProfileImage(): string {
+
+  const user = JSON.parse(
+    localStorage.getItem('user') || '{}'
+  );
+
+  if (user.image) {
+    return `http://localhost:8081/uploads/${user.image}`;
+  }
+
+  return '/assets/images/profile/user-1.jpg';
+}
 }

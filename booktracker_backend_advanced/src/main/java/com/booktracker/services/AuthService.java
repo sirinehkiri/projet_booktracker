@@ -60,6 +60,7 @@ public class AuthService {
                     .stream()
                     .map(GrantedAuthority::getAuthority)
                     .toList();
+            System.out.println(username);
 
             // Récupération utilisateur
             User user = userRepository.findByUsername(username)
@@ -78,7 +79,8 @@ public class AuthService {
                     "token", token,
                     "username", username,
                     "roles", roles,
-                    "id",user.getId()
+                    "id",user.getId(),
+                    "image", user.getImage() != null ? user.getImage() : ""
             ));
 
         } catch (Exception ex) {
