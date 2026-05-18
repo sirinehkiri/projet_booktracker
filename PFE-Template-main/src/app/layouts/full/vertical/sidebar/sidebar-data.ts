@@ -43,56 +43,6 @@ export const navItems: NavItem[] = [
     route: 'theme-pages/account-setting',
   },
   {
-    navCap: 'Tables',
-  },
-  {
-    displayName: 'Tables',
-    iconName: 'layout',
-    route: 'tables',
-    children: [
-      {
-        displayName: 'Basic Table',
-        iconName: 'point',
-        route: 'tables/basic-table',
-      },
-      {
-        displayName: 'Filterable Table',
-        iconName: 'point',
-        route: 'tables/filterable-table',
-      },
-      {
-        displayName: 'Mix Table',
-        iconName: 'point',
-        route: 'tables/mix-table',
-      },
-      {
-        displayName: 'Pagination Table',
-        iconName: 'point',
-        route: 'tables/pagination-table',
-      },
-      {
-        displayName: 'Selection Table',
-        iconName: 'point',
-        route: 'tables/selection-table',
-      },
-      {
-        displayName: 'Sortable Table',
-        iconName: 'point',
-        route: 'tables/sortable-table',
-      },
-      {
-        displayName: 'Sticky Column',
-        iconName: 'point',
-        route: 'tables/sticky-column-table',
-      },
-    ],
-  },
-  {
-    displayName: 'Data table',
-    iconName: 'border-outer',
-    route: '/datatable/kichen-sink',
-  },
-  {
     navCap: 'Auth',
   },
   {
