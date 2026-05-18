@@ -1,130 +1,342 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { ReadingGoal } from './reading-goal';
 import { ReadingGoalService } from './reading-goal.service';
-
 
 @Component({
   selector: 'app-reading-goal',
   templateUrl: './reading-goal.component.html',
   styleUrls: ['./reading-goal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ReadingGoalComponent implements OnInit{
+export class ReadingGoalComponent implements OnInit {
 
   sidePanelOpened = true;
-  showSidebar = false;
 
-  inputFg: UntypedFormGroup = Object.create(null);
+  loading = false;
 
-  goalId = 1;
-
-  goals: ReadingGoal[] = [];
-  copyGoals: ReadingGoal[] = [];
+  creating = false;
 
   selectedCategory = 'all';
 
+  inputFg!: FormGroup;
+
+  goals: ReadingGoal[] = [];
+
+  copyGoals: ReadingGoal[] = [];
+
   constructor(
-  public fb: UntypedFormBuilder,
-  private goalService: ReadingGoalService
-) {}
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef,
+    private goalService: ReadingGoalService
+  ) {}
 
   ngOnInit(): void {
 
-  this.inputFg = this.fb.group({
-  targetValue: [''],
-  period: ['DAILY'],
-  metric: ['PAGES']
-});
+    this.initializeForm();
 
-  this.loadGoals();
-}
-
-  isOver(): boolean {
-    return window.matchMedia('(max-width: 960px)').matches;
+    this.loadGoals();
   }
 
-  mobileSidebar(): void {
-    this.showSidebar = !this.showSidebar;
+  // ======================================================
+  // FORM
+  // ======================================================
+
+  initializeForm(): void {
+
+    this.inputFg = this.fb.group({
+
+      targetValue: [
+        '',
+        [
+          Validators.required,
+          Validators.min(1)
+        ]
+      ],
+
+      metric: [
+        'PAGES',
+        Validators.required
+      ],
+
+      period: [
+        'DAILY',
+        Validators.required
+      ]
+    });
   }
+
+  // ======================================================
+  // LOAD GOALS
+  // ======================================================
+
+  loadGoals(): void {
+
+    this.loading = true;
+
+    this.goalService.getGoals()
+      .subscribe({
+
+        next: (data: any) => {
+
+          this.goals =
+            Array.isArray(data)
+              ? data
+              : [data];
+
+          this.copyGoals = [...this.goals];
+
+          this.loading = false;
+
+          this.cdr.markForCheck();
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.loading = false;
+
+          this.showMessage(
+            'Failed to load goals'
+          );
+
+          this.cdr.markForCheck();
+        }
+
+      });
+  }
+
+  // ======================================================
+  // CREATE GOAL
+  // ======================================================
 
   createGoal(): void {
 
-  const goal = this.inputFg.value;
+    if (this.inputFg.invalid) {
 
-  this.goalService.createGoal(goal).subscribe(res => {
-    this.goals.unshift(res);
-    this.copyGoals = [...this.goals];
-  });
-}
+      this.inputFg.markAllAsTouched();
 
-  selectionlblClick(val: string): void {
-    this.selectedCategory = val;
-
-    if (val === 'all') {
-      this.copyGoals = this.goals;
+      return;
     }
 
-    if (val === 'active') {
-      this.copyGoals = this.goals.filter(goal => !goal.completed);
-    }
+    this.creating = true;
 
-    if (val === 'completed') {
-      this.copyGoals = this.goals.filter(goal => goal.completed);
-    }
+    const goal = this.inputFg.value;
+
+    this.goalService.createGoal(goal)
+      .subscribe({
+
+        next: (res: any) => {
+
+          this.goals.unshift(res);
+
+          this.filterGoals(
+            this.selectedCategory
+          );
+
+          this.inputFg.reset({
+            metric: 'PAGES',
+            period: 'DAILY'
+          });
+
+          this.creating = false;
+
+          this.showMessage(
+            'Goal created successfully'
+          );
+
+          this.cdr.markForCheck();
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.creating = false;
+
+          this.showMessage(
+            'Failed to create goal'
+          );
+
+          this.cdr.markForCheck();
+        }
+
+      });
   }
 
-  editGoal(id: number): void {
-  const goal = this.goals.find(g => g.id === id);
+  // ======================================================
+  // FILTER
+  // ======================================================
 
-  if (goal) {
-    this.goalService.updateProgress(id, 1).subscribe({
-      next: (res: any) => {
-        goal.currentValue = res.currentValue;
-        goal.completed = res.completed;
-      },
-      error: (err) => {
-        console.error('Error updating goal', err);
-      }
-    });
+  filterGoals(category: string): void {
+
+    this.selectedCategory = category;
+
+    switch (category) {
+
+      case 'active':
+
+        this.copyGoals =
+          this.goals.filter(
+            goal => !goal.completed
+          );
+
+        break;
+
+      case 'completed':
+
+        this.copyGoals =
+          this.goals.filter(
+            goal => goal.completed
+          );
+
+        break;
+
+      default:
+
+        this.copyGoals = [...this.goals];
+    }
+
+    this.cdr.markForCheck();
   }
-}
+
+  // ======================================================
+  // DELETE
+  // ======================================================
 
   deleteGoal(id: number): void {
 
-  this.goalService.deleteGoal(id).subscribe({
-    next: () => {
-      this.goals = this.goals.filter(goal => goal.id !== id);
-      this.copyGoals = [...this.goals];
-    },
-    error: (err) => {
-      console.error(err);
+    const confirmDelete =
+      confirm('Delete this goal?');
+
+    if (!confirmDelete) {
+      return;
     }
-  });
-}
+
+    this.goalService.deleteGoal(id)
+      .subscribe({
+
+        next: () => {
+
+          this.goals =
+            this.goals.filter(
+              goal => goal.id !== id
+            );
+
+          this.filterGoals(
+            this.selectedCategory
+          );
+
+          this.showMessage(
+            'Goal deleted'
+          );
+
+          this.cdr.markForCheck();
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.showMessage(
+            'Failed to delete goal'
+          );
+        }
+
+      });
+  }
+
+  // ======================================================
+  // COUNTS
+  // ======================================================
 
   activeGoalsCount(): number {
-    return this.goals.filter(goal => !goal.completed).length;
+
+    return this.goals.filter(
+      goal => !goal.completed
+    ).length;
   }
 
   completedGoalsCount(): number {
-    return this.goals.filter(goal => goal.completed).length;
-  }
-getProgress(goal: any): number {
 
-  return goal.targetValue
-    ? (goal.currentValue / goal.targetValue) * 100
-    : 0;
-}
-loadGoals(): void {
-  this.goalService.getGoals().subscribe({
-    next: (data: any) => {
-      console.log(data)
-      this.goals = Array.isArray(data) ? data : [data];
-      this.copyGoals = [...this.goals];
-    },
-    error: (err) => {
-      console.error(err);
+    return this.goals.filter(
+      goal => goal.completed
+    ).length;
+  }
+
+  // ======================================================
+  // PROGRESS
+  // ======================================================
+
+  getProgress(goal: ReadingGoal): number {
+
+    if (!goal.targetValue) {
+      return 0;
     }
-  });
-}
+
+    const progress =
+      (goal.currentValue / goal.targetValue) * 100;
+
+    return Math.min(progress, 100);
+  }
+
+  getProgressColor(goal: ReadingGoal): string {
+
+    const progress = this.getProgress(goal);
+
+    if (progress >= 100) {
+      return 'completed';
+    }
+
+    if (progress >= 70) {
+      return 'good';
+    }
+
+    return 'normal';
+  }
+
+  // ======================================================
+  // HELPERS
+  // ======================================================
+
+  trackByGoal(
+    index: number,
+    item: ReadingGoal
+  ): number {
+
+    return item.id;
+  }
+
+  isOver(): boolean {
+
+    return window.matchMedia(
+      '(max-width: 960px)'
+    ).matches;
+  }
+
+  showMessage(message: string): void {
+
+    this.snackBar.open(
+      message,
+      'Close',
+      {
+        duration: 3000
+      }
+    );
+  }
 }

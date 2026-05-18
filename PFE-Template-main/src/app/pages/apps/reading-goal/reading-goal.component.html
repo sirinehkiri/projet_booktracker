@@ -1,212 +1,352 @@
-<div class="row">
-  <div class="col-12">
-    <mat-card class="mat-card-top cardWithShadow position-relative">
+<div class="goal-page">
 
-      <mat-sidenav-container
-        [ngClass]="{
-          'side-panel-opened': sidePanelOpened,
-          'side-panel-closed': !sidePanelOpened
-        }"
-        style="min-height: 80vh"
-      >
+  <!-- HEADER -->
+  <div class="page-header">
 
-        <!-- Sidebar -->
-        <mat-sidenav
-          #goalnav
-          class="app-left-sidebar"
-          [mode]="isOver() ? 'over' : 'side'"
-          [opened]="!isOver()"
-          (open)="sidePanelOpened = true"
-          (close)="sidePanelOpened = false"
-          position="start"
-        >
-          <mat-toolbar class="bg-white">
-            <p class="f-w-500 f-s-18 m-0 mat-subtitle-1">
-              Reading Goals
-            </p>
-          </mat-toolbar>
+    <div>
 
-          <mat-nav-list>
+      <h1>
+        Reading Goals
+      </h1>
 
-            <mat-list-item
-              (click)="selectionlblClick('all')"
-              [class.bg-light-primary]="selectedCategory === 'all'"
-            >
-              <div class="d-flex align-items-center w-100">
-                <span class="mat-subtitle-2">All Goals</span>
-                <div class="m-l-auto">
-                  <span
-                    class="icon-27 bg-primary text-white rounded d-flex align-items-center justify-content-center"
-                  >
-                    {{ goals.length }}
-                  </span>
-                </div>
-              </div>
-            </mat-list-item>
+      <p>
+        Track your reading progress
+      </p>
 
-            <mat-list-item
-              (click)="selectionlblClick('active')"
-              [class.bg-light-primary]="selectedCategory === 'active'"
-            >
-              <div class="d-flex align-items-center w-100">
-                <span class="mat-subtitle-2">Active Goals</span>
-                <div class="m-l-auto">
-                  <span
-                    class="icon-27 bg-warning text-white rounded d-flex align-items-center justify-content-center"
-                  >
-                    {{ activeGoalsCount() }}
-                  </span>
-                </div>
-              </div>
-            </mat-list-item>
+    </div>
 
-            <mat-list-item
-              (click)="selectionlblClick('completed')"
-              [class.bg-light-primary]="selectedCategory === 'completed'"
-            >
-              <div class="d-flex align-items-center w-100">
-                <span class="mat-subtitle-2">Completed Goals</span>
-                <div class="m-l-auto">
-                  <span
-                    class="icon-27 bg-success text-white rounded d-flex align-items-center justify-content-center"
-                  >
-                    {{ completedGoalsCount() }}
-                  </span>
-                </div>
-              </div>
-            </mat-list-item>
+    <div class="stats-container">
 
-          </mat-nav-list>
-        </mat-sidenav>
+      <div class="stat-card">
 
-        <!-- Toolbar -->
-        <mat-toolbar class="bg-white">
-          <div class="d-flex align-items-center w-100">
+        <h3>
+          {{ goals.length }}
+        </h3>
 
-            <button
-              mat-icon-button
-              (click)="goalnav.toggle()"
-              class="ml-1 shadow-none"
-            >
-              <i-tabler name="align-left" class="icon-20"></i-tabler>
-            </button>
+        <span>
+          Total
+        </span>
 
-            <div class="m-l-auto">
-              <span class="bg-primary text-white p-8 rounded f-s-14">
-                {{ activeGoalsCount() }} Active Goals
-              </span>
-            </div>
+      </div>
+
+      <div class="stat-card active">
+
+        <h3>
+          {{ activeGoalsCount() }}
+        </h3>
+
+        <span>
+          Active
+        </span>
+
+      </div>
+
+      <div class="stat-card completed">
+
+        <h3>
+          {{ completedGoalsCount() }}
+        </h3>
+
+        <span>
+          Completed
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- CREATE -->
+  <mat-card class="create-card">
+
+    <form
+      [formGroup]="inputFg"
+      class="goal-form">
+
+      <!-- TARGET -->
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          Target
+        </mat-label>
+
+        <input
+          matInput
+          type="number"
+          formControlName="targetValue">
+
+      </mat-form-field>
+
+      <!-- METRIC -->
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          Metric
+        </mat-label>
+
+        <mat-select formControlName="metric">
+
+          <mat-option value="PAGES">
+            Pages
+          </mat-option>
+
+          <mat-option value="BOOKS">
+            Books
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
+      <!-- PERIOD -->
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          Period
+        </mat-label>
+
+        <mat-select formControlName="period">
+
+          <mat-option value="DAILY">
+            Daily
+          </mat-option>
+
+          <mat-option value="WEEKLY">
+            Weekly
+          </mat-option>
+
+          <mat-option value="MONTHLY">
+            Monthly
+          </mat-option>
+
+          <mat-option value="YEARLY">
+            Yearly
+          </mat-option>
+
+        </mat-select>
+
+      </mat-form-field>
+
+      <!-- BUTTON -->
+      <button
+        mat-flat-button
+        color="primary"
+        class="create-btn"
+        (click)="createGoal()"
+        [disabled]="creating">
+
+        {{ creating
+          ? 'Creating...'
+          : 'Create Goal' }}
+
+      </button>
+
+    </form>
+
+  </mat-card>
+
+  <!-- FILTERS -->
+  <div class="filters">
+
+    <button
+      class="filter-btn"
+      [class.active]="selectedCategory === 'all'"
+      (click)="filterGoals('all')">
+
+      All
+
+    </button>
+
+    <button
+      class="filter-btn"
+      [class.active]="selectedCategory === 'active'"
+      (click)="filterGoals('active')">
+
+      Active
+
+    </button>
+
+    <button
+      class="filter-btn"
+      [class.active]="selectedCategory === 'completed'"
+      (click)="filterGoals('completed')">
+
+      Completed
+
+    </button>
+
+  </div>
+
+  <!-- LOADING -->
+  <div
+    *ngIf="loading"
+    class="loading-container">
+
+    <mat-spinner></mat-spinner>
+
+  </div>
+
+  <!-- EMPTY -->
+  <div
+    *ngIf="
+      !loading &&
+      copyGoals.length === 0
+    "
+    class="empty-state">
+
+    <mat-icon>
+      auto_stories
+    </mat-icon>
+
+    <h3>
+      No goals found
+    </h3>
+
+    <p>
+      Create your first reading goal
+    </p>
+
+  </div>
+
+  <!-- GOALS -->
+  <div
+    *ngIf="
+      !loading &&
+      copyGoals.length > 0
+    "
+    class="goals-grid">
+
+    <mat-card
+      class="goal-card"
+      *ngFor="
+        let goal of copyGoals;
+        trackBy: trackByGoal
+      ">
+
+      <!-- TOP -->
+      <div class="goal-top">
+
+        <div>
+
+          <div class="goal-badge">
+
+            {{ goal.metric }}
 
           </div>
-        </mat-toolbar>
 
-        <mat-divider></mat-divider>
+          <h2>
 
-        <!-- Form -->
-        <div class="p-16 bg-white">
-          <form [formGroup]="inputFg">
+            {{ goal.targetValue }}
+            {{ goal.metric }}
 
-            <div class="row">
+          </h2>
 
-                <!-- target -->
-                <div class="col-md-3">
-                    <input matInput type="number" formControlName="targetValue" placeholder="Target">
-                </div>
-
-                <!-- metric -->
-                <div class="col-md-3">
-                    <mat-select formControlName="metric">
-                    <mat-option value="PAGES">Pages</mat-option>
-                    <mat-option value="BOOKS">Books</mat-option>
-                    </mat-select>
-                </div>
-
-                <!-- period -->
-                <div class="col-md-3">
-                    <mat-select formControlName="period">
-                    <mat-option value="DAILY">Daily</mat-option>
-                    <mat-option value="WEEKLY">Weekly</mat-option>
-                    <mat-option value="MONTHLY">Monthly</mat-option>
-                    <mat-option value="YEARLY">Yearly</mat-option>
-                    </mat-select>
-                </div>
-
-                <div class="col-md-3">
-                    <button (click)="createGoal()">Create</button>
-                </div>
-
-                </div>
-
-          </form>
         </div>
 
-        <mat-divider></mat-divider>
+        <div
+          class="goal-status"
+          [class.completed]="goal.completed">
 
-        <!-- Goals list -->
-        <mat-card-content class="p-x-0" style="min-height: 70vh">
+          {{ goal.completed
+            ? 'Completed'
+            : 'In Progress' }}
 
-          @for(goal of copyGoals; track goal.id; let i = $index) {
+        </div>
 
-          <div class="todo-item p-y-12 p-x-8 b-b-1">
+      </div>
 
-            <div class="d-flex flex-column w-100">
+      <!-- PROGRESS -->
+      <div class="progress-section">
 
-              <h4>
-                Goal: {{ goal.targetValue }} {{ goal.metric }}
-                </h4>
+        <div class="progress-info">
 
-                <p *ngIf="goal.metric === 'PAGES'">
-                Progress: {{ goal.currentValue }} / {{ goal.targetValue }}
-                </p>
+          <span>
 
-                <p *ngIf="goal.metric === 'BOOKS'">
-                {{ goal.currentValue }} / {{ goal.targetValue }}
-                </p>
+            {{ goal.currentValue }}
+            /
+            {{ goal.targetValue }}
 
-                <mat-progress-bar
-                [value]="getProgress(goal)">
-                </mat-progress-bar>
+          </span>
 
-                <p>
-                {{ goal.lastNotification }}
-                </p>
+          <strong>
 
-              <p class="m-t-10">
-                Start: {{ goal.startDate | date }}
-              </p>
+            {{ getProgress(goal)
+              | number:'1.0-0' }}%
 
-              <p>
-                End: {{ goal.endDate | date }}
-              </p>
+          </strong>
 
-              <div class="m-t-10 d-flex">
+        </div>
 
-                <button
-                  mat-icon-button
-                  (click)="editGoal(goal.id)"
-                >
-                  <i-tabler name="pencil"></i-tabler>
-                </button>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="getProgress(goal)">
+        </mat-progress-bar>
 
-                <button
-                  mat-icon-button
-                  (click)="deleteGoal(goal.id)"
-                >
-                  <i-tabler name="trash"></i-tabler>
-                </button>
+      </div>
 
-              </div>
+      <!-- DATES -->
+      <div class="goal-dates">
 
-            </div>
+        <div>
 
-          </div>
+          <span>
+            Start
+          </span>
 
-          }
+          <strong>
+            {{ goal.startDate | date }}
+          </strong>
 
-        </mat-card-content>
+        </div>
 
-      </mat-sidenav-container>
+        <div>
+
+          <span>
+            End
+          </span>
+
+          <strong>
+            {{ goal.endDate | date }}
+          </strong>
+
+        </div>
+
+      </div>
+
+      <!-- NOTIFICATION -->
+      <div
+        *ngIf="goal.lastNotification"
+        class="notification-box">
+
+        <mat-icon>
+          notifications
+        </mat-icon>
+
+        <span>
+
+          {{ goal.lastNotification }}
+
+        </span>
+
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="goal-actions">
+
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="deleteGoal(goal.id)">
+
+          Delete
+
+        </button>
+
+      </div>
 
     </mat-card>
+
   </div>
+
 </div>
