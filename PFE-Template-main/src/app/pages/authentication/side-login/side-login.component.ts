@@ -37,7 +37,7 @@ export class AppSideLoginComponent {
     localStorage.setItem('user', JSON.stringify(res));
 
 
-    this.router.navigate(['/apps/notes']);
+    this.router.navigate(['/dashboards/dashboard1']);
   },
   error: (err) => {
     if (err.error?.message) {

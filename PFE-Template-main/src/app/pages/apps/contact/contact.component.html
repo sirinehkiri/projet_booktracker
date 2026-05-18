@@ -9,14 +9,14 @@
   }
 
   /* =================================================== */
-  /* TOP NAV BAR (HOVER DROPDOWNS) - FACEBOOK STYLE */
+  /* TOP NAV BAR 
   /* =================================================== */
   .top-nav-card {
-    background-color: #5d87ff !important; /* اللون الأزرق متاع البار */
+    background-color: #5d87ff !important; 
     border-radius: 12px;
     padding: 0 !important;
     margin-bottom: 24px;
-    overflow: visible !important; /* ضرورية باش الـ Dropdown يخرج البرة */
+    overflow: visible !important; 
     position: relative;
     z-index: 100;
   }
@@ -70,12 +70,11 @@
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    color: #333; /* نرجعو لون التيكست كحل لداخل */
+    color: #333; 
     cursor: default;
     border: 1px solid #e4e6eb;
   }
 
-  /* المثلث الصغير الفوق (Arrow) */
   .nav-dropdown::before {
     content: '';
     position: absolute;
@@ -89,11 +88,10 @@
     border-left: 1px solid #e4e6eb;
   }
 
-  /* كي تحط الـ Souris تظهر البلاكة */
   .nav-item:hover .nav-dropdown {
     opacity: 1;
     visibility: visible;
-    top: 100%; /* تطلع الفوق شوية Animation */
+    top: 100%;
   }
 
   /* =================================================== */
@@ -130,7 +128,7 @@
   }
 
   .request-item:hover, .notification-item:hover {
-    background: #f2f2f2; /* Hover رمادي خفيف كيما فايسبوك */
+    background: #f2f2f2; 
   }
 
   .empty-state {
@@ -253,6 +251,8 @@
   }
 
   .btn-fb-secondary:hover { background-color: #d8dadf !important; }
+
+  
 </style>
 
 <!-- ===================================================== -->
@@ -336,14 +336,47 @@
         </div>
         <div class="scroll-list" *ngIf="sentRequests.length > 0">
           <div *ngFor="let req of sentRequests" class="request-item">
-            <div class="avatar avatar-info" style="width: 40px; height: 40px; font-size: 14px;">{{ req.receiver.username?.charAt(0) | uppercase }}</div>
-            <div class="m-l-12">
-              <div class="f-w-600 text-dark f-s-14">{{ req.receiver.username }}</div>
-              <div class="text-muted f-s-12">Awaiting response</div>
+
+            <!-- AVATAR -->
+            <div
+              class="avatar avatar-info overflow-hidden p-0"
+              style="width: 40px; height: 40px; font-size: 14px;"
+            >
+
+              <!-- IMAGE -->
+              <img
+                *ngIf="getContactImage(req.receiver); else initialBlock"
+                [src]="getContactImage(req.receiver)!"
+                class="w-100 h-100"
+                style="object-fit: cover;"
+              />
+
+              <!-- INITIAL -->
+              <ng-template #initialBlock>
+                <div
+                  class="w-100 h-100 d-flex align-items-center justify-content-center"
+                >
+                  {{ getContactInitial(req.receiver) }}
+                </div>
+              </ng-template>
+
             </div>
+
+            <!-- TEXT -->
+            <div class="m-l-12">
+              <div class="f-w-600 text-dark f-s-14">
+                {{ req.receiver.username }}
+              </div>
+
+              <div class="text-muted f-s-12">
+                Awaiting response
+              </div>
+            </div>
+
           </div>
+
         </div>
-      </div>
+    </div>
     </div>
 
     <!-- 3. NOTIFICATIONS -->
@@ -384,9 +417,35 @@
 
       <div class="contact-card-content">
         <!-- Avatar -->
-        <div class="avatar-wrapper">
-          <img [src]="contact.image || 'assets/images/profile/user-1.jpg'" class="rounded-circle contact-image" width="84" height="84" />
-        </div>
+<div class="avatar-wrapper">
+
+  <!-- Si image existe -->
+  <img
+    *ngIf="getContactImage(contact); else initialBlock"
+      [src]="getContactImage(contact)!"
+    class="rounded-circle contact-image"
+    width="84"
+    height="84"
+  />
+
+  <!-- Sinon afficher initial -->
+  <ng-template #initialBlock>
+    <div
+      class="rounded-circle d-flex align-items-center justify-content-center contact-image"
+      style="
+        width: 84px;
+        height: 84px;
+        background-color: #1976d2;
+        color: white;
+        font-size: 30px;
+        font-weight: bold;
+      "
+    >
+      {{ getContactInitial(contact) }}
+    </div>
+  </ng-template>
+
+</div>
 
         <h4 class="f-w-600 f-s-16 m-b-4 text-dark">{{ contact.username }}</h4>
         

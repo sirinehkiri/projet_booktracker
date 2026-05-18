@@ -29,12 +29,30 @@
         <div class="p-24 m-t-auto profile-bar">
           <div class="bg-light-accent d-flex align-items-center rounded p-16">
             <img
-              [src]="getProfileImage()"
+              *ngIf="getProfileImage(); else initialBlock"
+              [src]="getProfileImage()!"
               class="rounded-circle"
               width="40"
               height="40"
               style="object-fit: cover;"
             />
+
+            <!-- Sinon afficher initial -->
+            <ng-template #initialBlock>
+              <div
+                class="rounded-circle d-flex align-items-center justify-content-center"
+                style="
+                  width: 40px;
+                  height: 40px;
+                  background-color: #1976d2;
+                  color: white;
+                  font-weight: bold;
+                  font-size: 18px;
+                "
+              >
+                {{ getUserInitial() }}
+              </div>
+            </ng-template>
             <div class="m-l-16">
               <h5 class="mat-subtitle-2 f-w-600"> {{ currentUsername }}</h5>
             </div>

@@ -5,6 +5,15 @@ public class UserProfileResponse {
     private Long id;
     private String username;
     private String email;
+    private String image;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
 
     // Stats
     private long followersCount;

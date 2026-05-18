@@ -14,6 +14,8 @@ export class AppChatComponent implements OnInit, OnDestroy {
   msg = '';
   searchText = '';
 
+  currentUserImage = '';
+
   contacts: any[] = [];
   groups: any[] = [];
   unreadMessages: any[] = [];
@@ -55,8 +57,11 @@ export class AppChatComponent implements OnInit, OnDestroy {
     const userId = localStorage.getItem('userId');
     const username = localStorage.getItem('username');
 
+
     this.currentUserId = userId ? +userId : null;
     this.currentUsername = username || '';
+    this.currentUserImage = localStorage.getItem('image') || '';
+    console.log(this.currentUserImage)
 
     if (!this.currentUsername) {
       const user = localStorage.getItem('user');
@@ -65,9 +70,11 @@ export class AppChatComponent implements OnInit, OnDestroy {
           const userObj = JSON.parse(user);
           this.currentUsername = userObj.username || userObj.name || '';
           this.currentUserId = this.currentUserId || userObj.id || userObj.userId;
+          this.currentUserImage = userObj.image || '';
         } catch (e) {}
       }
     }
+
 
     this.loadContacts();
     this.loadGroups();
@@ -133,6 +140,7 @@ export class AppChatComponent implements OnInit, OnDestroy {
       next: (data: any[]) => (this.contacts = data || []),
       error: (err: any) => console.error('Error loading contacts', err),
     });
+    console.log(this.contacts)
   }
 
   loadGroups(): void {
@@ -209,6 +217,7 @@ export class AppChatComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => console.error('Error loading conversation', err),
     });
+    console.log(this.conversation)
   }
 
   loadGroupConversation(groupId: number): void {
@@ -506,4 +515,29 @@ export class AppChatComponent implements OnInit, OnDestroy {
     }
     return colors[Math.abs(hash % colors.length)];
   }
+
+
+getUserImage(user: any): string | null {
+
+  if (!user) {
+    return null;
+  }
+
+  if (user.image) {
+    return `http://localhost:8081/uploads/${user.image}`;
+  }
+
+  return null;
+}
+
+getUserInitial(user: any): string {
+
+  if (!user) {
+    return '?';
+  }
+
+  return user?.username
+    ? user.username.charAt(0).toUpperCase()
+    : 'U';
+}
 }

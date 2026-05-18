@@ -65,6 +65,7 @@ export class ProfileComponent implements OnInit {
       next: (data) => {
         this.profile = data;
         this.isLoading = false;
+        console.log(this.profile)
       },
       error: (err) => {
         console.error(
@@ -98,4 +99,20 @@ export class ProfileComponent implements OnInit {
         }
       });
   }
+
+  getContactImage(): string | null {
+
+  if (this.profile.image) {
+    return `http://localhost:8081/uploads/${this.profile.image}`;
+  }
+
+  return null;
+}
+
+getContactInitial(): string {
+
+  return this.profile?.username
+    ? this.profile.username.charAt(0).toUpperCase()
+    : 'U';
+}
 }

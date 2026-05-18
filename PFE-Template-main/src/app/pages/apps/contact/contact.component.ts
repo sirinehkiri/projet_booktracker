@@ -212,6 +212,22 @@ export class AppContactComponent implements OnInit {
       }
     });
   }
+
+  getContactImage(contact: any): string | null {
+
+  if (contact.image) {
+    return `http://localhost:8081/uploads/${contact.image}`;
+  }
+
+  return null;
+}
+
+getContactInitial(contact: any): string {
+
+  return contact?.username
+    ? contact.username.charAt(0).toUpperCase()
+    : 'U';
+}
 }
 
 // =====================================================
@@ -298,4 +314,21 @@ export class AppContactDialogContentComponent
   closeDialog(): void {
     this.dialogRef.close();
   }
+
+  getContactImage(user: any): string | null {
+
+  if (user.image) {
+    return `http://localhost:8081/uploads/${user.image}`;
+  }
+
+  return null;
+}
+
+getContactInitial(user: any): string {
+
+  return user?.username
+    ? user.username.charAt(0).toUpperCase()
+    : 'U';
+}
+  
 }

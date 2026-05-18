@@ -52,6 +52,7 @@ public class UserProfileService {
         response.setId(user.getId());
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
+        response.setImage(user.getImage());
 
         // =====================================================
         // 1. STATS

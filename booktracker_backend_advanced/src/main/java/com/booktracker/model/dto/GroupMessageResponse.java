@@ -16,4 +16,5 @@ public class GroupMessageResponse {
     private String senderName;
     private String content;
     private LocalDateTime sentAt;
+    private String senderImage;
 }

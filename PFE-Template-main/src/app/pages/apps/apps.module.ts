@@ -21,8 +21,6 @@ import { AppChatComponent } from './chat/chat.component';
 //Contact
 import { AppContactDialogContentComponent } from './contact/contact.component';
 import { AppContactComponent } from './contact/contact.component';
-//Notes
-import { AppNotesComponent } from './notes/notes.component';
 //Todo
 import { ReadingGoalComponent } from './reading-goal/reading-goal.component';
 
@@ -75,7 +73,6 @@ import { PreferencesComponent } from './preferences/preferences.component';
   exports: [TablerIconsModule],
   declarations: [
     AppChatComponent,
-    AppNotesComponent,
     ReadingGoalComponent,
     AppTicketlistComponent,
     AppTicketDialogContentComponent,

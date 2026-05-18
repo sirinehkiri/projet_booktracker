@@ -31,12 +31,6 @@
   <!-- LINKS -->
   <div class="d-none d-lg-flex align-items-center">
 
-    <!-- 🏠 HOME -->
-    <a mat-button [routerLink]="['/apps/notes']" class="d-flex align-items-center gap-1">
-      <i-tabler name="home" class="icon-18 d-flex"></i-tabler>
-      <span>Home</span>
-    </a>
-
     <!-- 💬 CHAT -->
     <a
       mat-button
@@ -207,13 +201,33 @@
     mat-icon-button
     [matMenuTriggerFor]="profilemenu"
   >
+    <!-- Si image existe -->
     <img
-      [src]="getProfileImage()"
+      *ngIf="getProfileImage(); else initialBlock"
+      [src]="getProfileImage()!"
       class="rounded-circle"
       width="40"
       height="40"
       style="object-fit: cover;"
     />
+
+    <!-- Sinon afficher initial -->
+    <ng-template #initialBlock>
+      <div
+        class="rounded-circle d-flex align-items-center justify-content-center"
+        style="
+          width: 40px;
+          height: 40px;
+          background-color: #1976d2;
+          color: white;
+          font-weight: bold;
+          font-size: 18px;
+        "
+      >
+        {{ getUserInitial() }}
+      </div>
+    </ng-template>
+
   </button>
 
   <!-- PROFILE MENU -->

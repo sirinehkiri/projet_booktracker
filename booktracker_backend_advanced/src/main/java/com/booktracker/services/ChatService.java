@@ -96,7 +96,7 @@ public class ChatService {
                             contact.getId(),
                             contact.getUsername(),
                             contact.getEmail(),
-                            "",
+                            contact.getImage(),
                             lastMessage != null ? lastMessage.getContent() : "",
                             lastMessage != null ? lastMessage.getSentAt() : null,
                             lastMessage != null ? lastMessage.getSender().getUsername() : ""
@@ -133,7 +133,9 @@ public class ChatService {
                         m.getSender().getUsername(),
                         m.getContent(),
                         m.getSentAt(),
-                        m.isRead()
+                        m.isRead(),
+                        m.getSender().getImage()
+
                 ))
                 .collect(Collectors.toList());
     }
@@ -167,7 +169,8 @@ public class ChatService {
                 sender.getUsername(),
                 saved.getContent(),
                 saved.getSentAt(),
-                saved.isRead()
+                saved.isRead(),
+                sender.getImage()
         );
     }
 
@@ -188,7 +191,8 @@ public class ChatService {
                         m.getSender().getUsername(),
                         m.getContent(),
                         m.getSentAt(),
-                        m.isRead()
+                        m.isRead(),
+                        m.getSender().getImage()
                 ))
                 .collect(Collectors.toList());
     }
@@ -292,7 +296,8 @@ public class ChatService {
                         .map(m -> new MemberDto(
                                 m.getUser().getId(),
                                 m.getUser().getUsername(),
-                                m.getUser().getEmail()
+                                m.getUser().getEmail(),
+                                m.getUser().getImage()
                         ))
                         .collect(Collectors.toList());
 
@@ -332,7 +337,8 @@ public class ChatService {
                                     .map(m -> new MemberDto(
                                             m.getUser().getId(),
                                             m.getUser().getUsername(),
-                                            m.getUser().getEmail()
+                                            m.getUser().getEmail(),
+                                            m.getUser().getImage()
                                     ))
                                     .collect(Collectors.toList());
 
@@ -380,7 +386,8 @@ public class ChatService {
                                     .map(m -> new MemberDto(
                                             m.getUser().getId(),
                                             m.getUser().getUsername(),
-                                            m.getUser().getEmail()
+                                            m.getUser().getEmail(),
+                                            m.getUser().getImage()
                                     ))
                                     .collect(Collectors.toList());
 
@@ -417,7 +424,8 @@ public class ChatService {
                         m.getSender().getId(),
                         m.getSender().getUsername(),
                         m.getContent(),
-                        m.getSentAt()
+                        m.getSentAt(),
+                        m.getSender().getImage()
                 ))
                 .collect(Collectors.toList());
     }
@@ -445,7 +453,8 @@ public class ChatService {
                 currentUser.getId(),
                 currentUser.getUsername(),
                 saved.getContent(),
-                saved.getSentAt()
+                saved.getSentAt(),
+                currentUser.getImage()
         );
     }
 
@@ -529,7 +538,7 @@ public class ChatService {
 
         return users.stream()
                 .filter(u -> !u.getId().equals(currentUser.getId()))
-                .map(u -> new MemberDto(u.getId(), u.getUsername(), u.getEmail()))
+                .map(u -> new MemberDto(u.getId(), u.getUsername(), u.getEmail(),u.getImage()))
                 .toList();
     }
 

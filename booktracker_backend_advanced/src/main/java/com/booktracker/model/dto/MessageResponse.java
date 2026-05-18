@@ -9,14 +9,20 @@ public class MessageResponse {
     private Long receiverId;
     private String senderName;
     private String content;
-    private LocalDateTime sentAt;
-    private boolean isRead;
 
-    public MessageResponse() {
+    public String getSenderImage() {
+        return senderImage;
     }
 
-    public MessageResponse(Long id, Long senderId, Long receiverId, String senderName,
-                           String content, LocalDateTime sentAt, boolean isRead) {
+    public void setSenderImage(String senderImage) {
+        this.senderImage = senderImage;
+    }
+
+    private LocalDateTime sentAt;
+    private boolean isRead;
+    private String senderImage;
+
+    public MessageResponse(Long id, Long senderId, Long receiverId, String senderName, String content, LocalDateTime sentAt, boolean isRead, String senderImage) {
         this.id = id;
         this.senderId = senderId;
         this.receiverId = receiverId;
@@ -24,7 +30,12 @@ public class MessageResponse {
         this.content = content;
         this.sentAt = sentAt;
         this.isRead = isRead;
+        this.senderImage = senderImage;
     }
+
+    public MessageResponse() {
+    }
+
 
     public Long getId() {
         return id;

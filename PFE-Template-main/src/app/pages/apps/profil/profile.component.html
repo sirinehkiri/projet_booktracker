@@ -31,17 +31,33 @@
         >
 
           <!-- AVATAR -->
-          <div
-            class="
-              avatar-large
-              bg-primary
-              text-white
-              d-flex
-              align-items-center
-              justify-content-center
-            "
-          >
-            {{ profile.username?.charAt(0) | uppercase }}
+          <div class="avatar-wrapper">
+
+          <!-- Si image existe -->
+          <img
+            *ngIf="getContactImage(); else initialBlock"
+              [src]="getContactImage()!"
+            class="rounded-circle contact-image"
+            width="84"
+            height="84"
+          />
+
+          <!-- Sinon afficher initial -->
+          <ng-template #initialBlock>
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center contact-image"
+              style="
+                width: 84px;
+                height: 84px;
+                background-color: #1976d2;
+                color: white;
+                font-size: 30px;
+                font-weight: bold;
+              "
+            >
+              {{ getContactInitial() }}
+            </div>
+          </ng-template>
           </div>
 
           <div class="flex-1">

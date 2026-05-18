@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 
 import { AppChatComponent } from './chat/chat.component';
-import { AppNotesComponent } from './notes/notes.component';
 import { ReadingGoalComponent } from './reading-goal/reading-goal.component';
 import { AppTicketlistComponent } from './ticketlist/ticketlist.component';
 import { AppContactComponent } from './contact/contact.component';
@@ -27,17 +26,6 @@ export const AppsRoutes: Routes = [
           urls: [
             { title: 'Dashboard', url: '/dashboards/dashboard1' },
             { title: 'Chat' },
-          ],
-        },
-      },
-      {
-        path: 'notes',
-        component: AppNotesComponent,
-        data: {
-          title: 'Notes',
-          urls: [
-            { title: 'Dashboard', url: '/dashboards/dashboard1' },
-            { title: 'Notes' },
           ],
         },
       },
