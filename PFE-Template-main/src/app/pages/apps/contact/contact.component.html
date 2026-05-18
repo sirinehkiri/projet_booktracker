@@ -302,7 +302,29 @@
         <div class="scroll-list" *ngIf="requests.length > 0">
           <div *ngFor="let req of requests" class="request-item justify-content-between">
             <div class="d-flex align-items-center">
-              <div class="avatar avatar-primary" style="width: 40px; height: 40px; font-size: 14px;">{{ req.sender.username?.charAt(0) | uppercase }}</div>
+               <div
+              class="avatar avatar-info overflow-hidden p-0"
+              style="width: 40px; height: 40px; font-size: 14px;"
+            >
+
+              <!-- IMAGE -->
+              <img
+                *ngIf="getContactImage(req.receiver); else initialBlock"
+                [src]="getContactImage(req.receiver)!"
+                class="w-100 h-100"
+                style="object-fit: cover;"
+              />
+
+              <!-- INITIAL -->
+              <ng-template #initialBlock>
+                <div
+                  class="w-100 h-100 d-flex align-items-center justify-content-center"
+                >
+                  {{ getContactInitial(req.receiver) }}
+                </div>
+              </ng-template>
+
+            </div>
               <div class="m-l-12">
                 <div class="f-w-600 text-dark f-s-14">{{ req.sender.username }}</div>
                 <div class="text-muted f-s-12">wants to follow you</div>
