@@ -1,35 +1,135 @@
-<div class="review-card">
+<div class="review-page">
 
-  <h2>Your Review</h2>
+  <!-- LOADING -->
+  <div *ngIf="loading" class="loading-container">
 
-  <!-- STARS -->
-  <div class="stars-container">
-    <span *ngFor="let s of [1,2,3,4,5]"
-          (click)="selectedRating = s"
-          (mouseover)="hoverRating = s"
-          (mouseleave)="hoverRating = 0"
-          [class.active]="s <= (hoverRating || selectedRating)"
-          class="star">
-      ★
-    </span>
+    <mat-spinner></mat-spinner>
+
   </div>
 
-  <!-- TEXT FEEDBACK -->
-  <p class="rating-text" *ngIf="selectedRating">
-    {{ (selectedRating) }} ({{ selectedRating }}/5)
-  </p>
+  <!-- REVIEW CARD -->
+  <div *ngIf="!loading" class="review-card">
 
-  <!-- TEXTAREA -->
-  <textarea [(ngModel)]="comment"
-            placeholder="Write your honest review..."
-            class="textarea">
-  </textarea>
+    <!-- HEADER -->
+    <div class="review-header">
 
-  <!-- BUTTON -->
-  <button (click)="submit()" 
-          [disabled]="!selectedRating || !comment"
-          class="btn-submit">
-    Save Review
-  </button>
+      <div>
+
+        <h1>
+
+          {{ isEditMode
+            ? 'Edit Your Review'
+            : 'Write a Review' }}
+
+        </h1>
+
+        <p class="subtitle">
+
+          Share your thoughts about this book
+
+        </p>
+
+      </div>
+
+      <div class="review-badge">
+
+        <mat-icon>auto_stories</mat-icon>
+
+      </div>
+
+    </div>
+
+    <!-- STARS -->
+    <div class="stars-section">
+
+      <div class="stars-container">
+
+        <span
+          *ngFor="let s of [1,2,3,4,5]"
+          class="star"
+          [class.active]="
+            s <= (hoverRating || selectedRating)
+          "
+          (click)="setRating(s)"
+          (mouseenter)="setHover(s)"
+          (mouseleave)="clearHover()">
+
+          ★
+
+        </span>
+
+      </div>
+
+      <!-- RATING LABEL -->
+      <div
+        class="rating-label"
+        *ngIf="selectedRating">
+
+        {{ currentLabel }}
+        •
+        {{ selectedRating }}/5
+
+      </div>
+
+    </div>
+
+    <!-- TEXTAREA -->
+    <div class="textarea-wrapper">
+
+      <textarea
+        [(ngModel)]="comment"
+        maxlength="1000"
+        placeholder="What did you like or dislike about this book?"
+        class="textarea">
+      </textarea>
+
+      <!-- COUNTER -->
+      <div class="counter">
+
+        {{ comment.length }}/1000
+
+      </div>
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+
+      <button
+        class="btn-cancel"
+        routerLink="/apps/blogs">
+
+        Cancel
+
+      </button>
+
+      <button
+        class="btn-submit"
+        (click)="submit()"
+        [disabled]="
+          !selectedRating ||
+          !comment.trim() ||
+          saving
+        ">
+
+        <span *ngIf="!saving">
+
+          {{ isEditMode
+            ? 'Update Review'
+            : 'Publish Review' }}
+
+        </span>
+
+        <span *ngIf="saving">
+
+          Saving...
+
+        </span>
+
+      </button>
+
+    </div>
+
+  </div>
 
 </div>

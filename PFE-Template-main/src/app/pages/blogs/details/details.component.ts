@@ -1,220 +1,485 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin } from 'rxjs';
+
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { BookService } from '../book.service';
-import { ReadingGoalService } from '../../apps/reading-goal/reading-goal.service'
+import { ReadingGoalService } from '../../apps/reading-goal/reading-goal.service';
 
 @Component({
   selector: 'app-book-details',
   templateUrl: './details.component.html',
-  styleUrls: ['./details.component.scss']
+  styleUrls: ['./details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppBlogDetailsComponent implements OnInit {
 
-  book: any;
-  comments: any[] = [];
-  newComment = '';
+  loading = false;
+
+  book: any = null;
+
   newQuote: string = '';
 
-  selectedRating = 0;  
-  hoverRating = 0;
   currentUserId!: number;
 
   currentStatus: string = 'WANT_TO_READ';
 
   showStatusModal = false;
-  
-  isOpen = false;
-  showActivity: boolean = false;
+
+  showActivity = false;
+
   pagesRead: number = 0;
+
   totalReadPages: number = 0;
 
   constructor(
     private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+    private snackBar: MatSnackBar,
     public bookService: BookService,
     private goalService: ReadingGoalService
   ) {}
 
   ngOnInit(): void {
+
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    this.currentUserId = user?.id;
+
     const id = this.route.snapshot.paramMap.get('id');
+
     if (id) {
       this.loadBook(Number(id));
-  }
-    const user = JSON.parse(localStorage.getItem('user')!);
-    this.currentUserId = user.id;
-  }
-  loadBook(id: number) {
-    this.bookService.getBook(id).subscribe({
-      next: (data) => {
-        console.log("BOOKS:", data);
-        this.book = data;
-        this.book.quotes ??= [];
-        this.book.reviews ??= [];
-        this.book.likes ??= 0;
-        this.bookService.getUserStatus(this.book.id).subscribe({
-          next: (status) => {
-            this.currentStatus = status;
-            console.log("STATUS:", status);
-          },
-          error: (err) => {
-            console.error("Status error:", err);
-          }
-        });
-        this.bookService.getUserBook(this.book.id).subscribe({
-        next: (ub:any) => {
-          console.log("USERBOOK:", ub);
-          console.log("USERBOOK:", ub.progress);
-          if (ub) {
-            this.book.userBookId = ub.id;
-            this.totalReadPages = ub.pagesRead ?? 0; 
-            this.pagesRead = 0;
-            this.book.progress = ub.progress ?? 0;
-          }
-        },
-        error: (err) => {
-          console.error(err);
-        }
-      });
-      },
-      error: (err) => {
-        console.error("Book error:", err);
-      }
-    });
+    }
   }
 
-  getFullStars() {
+  // ======================================================
+  // LOAD BOOK
+  // ======================================================
+
+  loadBook(id: number): void {
+
+    this.loading = true;
+
+   forkJoin({
+
+  book: this.bookService.getBook(id),
+
+  status: this.bookService.getUserStatus(id),
+
+  userBook: this.bookService.getUserBook(id)
+
+}).subscribe({
+
+  next: ({ book, status, userBook }: any) => {
+
+    this.book = {
+      ...book,
+      reviews: book.reviews ?? [],
+      quotes: book.quotes ?? [],
+      progress: Math.min(
+        userBook?.progress ?? 0,
+        100
+      )
+    };
+
+    this.currentStatus = status;
+
+    if (userBook) {
+
+      this.book.userBookId = userBook.id;
+
+      this.totalReadPages =
+        this.totalReadPages = Math.min(
+          userBook.pagesRead ?? 0,
+          book.total_pages
+        );
+
+      this.pagesRead = 0;
+    }
+
+    this.loading = false;
+
+    this.cdr.markForCheck();
+  },
+
+  error: (err) => {
+
+    console.error(err);
+
+    this.loading = false;
+
+    this.showMessage('Failed to load book');
+
+    this.cdr.markForCheck();
+  }
+
+});
+  }
+
+  // ======================================================
+  // STARS
+  // ======================================================
+
+  getFullStars(): any[] {
+
+    if (!this.book?.averageRating) {
+      return [];
+    }
+
     return Array(Math.floor(this.book.averageRating));
   }
 
-  hasHalfStar() {
+  hasHalfStar(): boolean {
+
+    if (!this.book?.averageRating) {
+      return false;
+    }
+
     return this.book.averageRating % 1 >= 0.5;
   }
 
-  getEmptyStars() {
+  getEmptyStars(): any[] {
+
+    if (!this.book?.averageRating) {
+      return Array(5);
+    }
+
     const full = Math.floor(this.book.averageRating);
+
     const half = this.hasHalfStar() ? 1 : 0;
+
     return Array(5 - full - half);
   }
 
-  calculateAverage() {
-  if (!this.book.reviews || this.book.reviews.length === 0) {
-    return 0;
-  }
-  let sum = 0;
-  this.book.reviews.forEach((r: any) => {
-    sum += r.rating;
-  });
-  return sum / this.book.reviews.length;
-}
-  getStars(rating: number) {
+  getStars(rating: number): any[] {
     return Array(rating);
   }
 
-  addQuote() {
-    if (!this.newQuote?.trim()) return;
-    const quote = {
+  // ======================================================
+  // TRACK BY
+  // ======================================================
+
+  trackByReview(index: number, item: any): number {
+    return item.id;
+  }
+
+  trackByQuote(index: number, item: any): number {
+    return item.id;
+  }
+
+  // ======================================================
+  // QUOTES
+  // ======================================================
+
+  addQuote(): void {
+
+    if (!this.newQuote.trim()) {
+      return;
+    }
+
+    const payload = {
       content: this.newQuote
     };
-    this.bookService.addQuote(this.book.id, quote).subscribe((res: any) => {
-      if (!this.book.quotes) {
-        this.book.quotes = [];
-      }
-      this.book.quotes.push(res);
-      this.newQuote = '';
-    });
-  }
 
-  vote(reviewId: number) {
-  this.bookService.voteReview(reviewId).subscribe((res: any) => {
-    const review = this.book.reviews.find((r: any) => r.id === reviewId);
-    if (review) {
-      review.liked = res.status === 'liked';
-    }
-  });
-  }
+    this.bookService.addQuote(this.book.id, payload)
+      .subscribe({
 
-  deleteReview(id: number) {
-    console.log(id)
-    if (!confirm('Delete this review?')) return;
-    this.bookService.deleteReview(id).subscribe(() => {
-      this.book.reviews = this.book.reviews.filter((r: any) => r.id !== id);
-    });
-  }
+        next: (res: any) => {
 
-  openStatusModal() {
-  this.showStatusModal = true;
-  }
+          this.book.quotes.unshift(res);
 
-  closeStatusModal() {
-    this.showStatusModal = false;
-  }
+          this.newQuote = '';
 
-  setStatus(status: string) {
-    this.currentStatus = status;
-    this.showStatusModal = false;
-    this.bookService.setStatus(this.book.id, status)
-      .subscribe(() => {
-        console.log("Status updated");
+          this.showMessage('Quote added');
+
+          this.cdr.markForCheck();
+        },
+
+        error: (err) => {
+          this.handleError(err);
+        }
+
       });
-    this.loadBook(this.book.id);
+  }
+
+  // ======================================================
+  // LIKE REVIEW
+  // ======================================================
+
+  vote(reviewId: number): void {
+
+    const review = this.book.reviews.find(
+      (r: any) => r.id === reviewId
+    );
+
+    if (!review) {
+      return;
+    }
+
+    review.liked = !review.liked;
+
+    this.bookService.voteReview(reviewId)
+      .subscribe({
+
+        next: () => {
+          this.cdr.markForCheck();
+        },
+
+        error: (err) => {
+
+          review.liked = !review.liked;
+
+          this.handleError(err);
+        }
+
+      });
+  }
+
+  // ======================================================
+  // DELETE REVIEW
+  // ======================================================
+
+  deleteReview(id: number): void {
+
+    const confirmDelete = confirm(
+      'Delete this review ?'
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    this.bookService.deleteReview(id)
+      .subscribe({
+
+        next: () => {
+
+          this.book.reviews =
+            this.book.reviews.filter(
+              (r: any) => r.id !== id
+            );
+
+          this.showMessage('Review deleted');
+
+          this.cdr.markForCheck();
+        },
+
+        error: (err) => {
+          this.handleError(err);
+        }
+
+      });
+  }
+
+  // ======================================================
+  // STATUS MODAL
+  // ======================================================
+
+  openStatusModal(): void {
+    this.showStatusModal = true;
+  }
+
+  closeStatusModal(): void {
+    this.showStatusModal = false;
+  }
+
+  setStatus(status: string): void {
+
+    this.currentStatus = status;
+
+    this.closeStatusModal();
+
+    this.bookService
+      .setStatus(this.book.id, status)
+      .subscribe({
+
+        next: () => {
+
+          this.showMessage('Status updated');
+
+          this.cdr.markForCheck();
+        },
+
+        error: (err) => {
+          this.handleError(err);
+        }
+
+      });
   }
 
   getStatusLabel(status: string): string {
+
     switch (status) {
-      case 'READ': return 'Read';
-      case 'READING': return 'Currently Reading';
-      case 'WANT_TO_READ': return 'Want to Read';
-      default: return 'Select Status';
+
+      case 'READ':
+        return 'Read';
+
+      case 'READING':
+        return 'Currently Reading';
+
+      case 'WANT_TO_READ':
+        return 'Want to Read';
+
+      default:
+        return 'Select Status';
     }
   }
 
-  openActivity() {
+  // ======================================================
+  // ACTIVITY
+  // ======================================================
+
+  openActivity(): void {
     this.showActivity = true;
   }
 
-  closeActivity() {
+  closeActivity(): void {
     this.showActivity = false;
   }
 
- updateProgress() {
-  if (!this.book || !this.book.userBookId) {
-    console.error("UserBook introuvable");
+  updateProgress(): void {
+
+  if (!this.book?.userBookId) {
     return;
   }
 
-  // 1. Update UI
-  this.totalReadPages += this.pagesRead;
+  if (this.pagesRead <= 0) {
 
-  if (this.totalReadPages > this.book.total_pages) {
-    this.totalReadPages = this.book.total_pages;
+    this.showMessage(
+      'Pages must be greater than 0'
+    );
+
+    return;
   }
 
-  this.book.progress = (this.totalReadPages / this.book.total_pages) * 100;
+  // Remaining pages
+  const remainingPages =
+    this.book.total_pages - this.totalReadPages;
+
+  // Prevent overflow
+  const pagesToAdd = Math.min(
+    this.pagesRead,
+    remainingPages
+  );
+
+  // Update local UI
+  this.totalReadPages += pagesToAdd;
+
+  this.book.progress =
+    (this.totalReadPages / this.book.total_pages) * 100;
+
+  // Security
+  if (this.book.progress > 100) {
+    this.book.progress = 100;
+  }
 
   const payload = {
+
     userBookId: this.book.userBookId,
-    pagesRead: this.pagesRead
+
+    pagesRead: pagesToAdd
   };
 
-  // 2. Update book progress
-  this.bookService.updateProgress(payload).subscribe({
-    next: () => {
-      console.log("Progress updated");
+  this.bookService.updateProgress(payload)
+    .subscribe({
 
-      // 🔥 3. UPDATE GOALS AUSSI
-      this.updateReadingGoals(this.pagesRead);
+      next: () => {
 
-    },
-    error: (err) => console.error(err)
-  });
+        // =====================================
+        // AUTO CHANGE STATUS TO READ
+        // =====================================
 
-  this.showActivity = false;
+        if (this.book.progress >= 100) {
+
+          this.currentStatus = 'READ';
+
+          this.bookService
+            .setStatus(this.book.id, 'READ')
+            .subscribe({
+
+              next: () => {
+
+                this.showMessage(
+                  'Book completed 🎉'
+                );
+
+                this.cdr.markForCheck();
+              },
+
+              error: (err) => {
+                console.error(err);
+              }
+
+            });
+        }
+
+        // Update goals
+        this.updateReadingGoals(pagesToAdd);
+
+        this.showMessage(
+          'Progress updated'
+        );
+
+        this.pagesRead = 0;
+
+        this.closeActivity();
+
+        this.cdr.markForCheck();
+      },
+
+      error: (err) => {
+        this.handleError(err);
+      }
+
+    });
 }
 
-updateReadingGoals(pages: number) {
+  updateReadingGoals(pages: number): void {
 
-  this.goalService.updateAllGoals(this.pagesRead).subscribe({
-  next: () => console.log("All goals updated"),
-  error: (err) => console.error(err)
-});
-}
+    this.goalService
+      .updateAllGoals(pages)
+      .subscribe({
+
+        next: () => {
+          console.log('Goals updated');
+        },
+
+        error: (err) => {
+          console.error(err);
+        }
+
+      });
+  }
+
+  // ======================================================
+  // HELPERS
+  // ======================================================
+
+  showMessage(message: string): void {
+
+    this.snackBar.open(
+      message,
+      'Close',
+      {
+        duration: 3000
+      }
+    );
+  }
+
+  handleError(error: any): void {
+
+    console.error(error);
+
+    this.showMessage(
+      'Something went wrong'
+    );
+  }
 }
