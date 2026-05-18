@@ -14,4 +14,6 @@ public interface ReviewVoteRepository extends JpaRepository<ReviewVote, Long> {
     Optional<ReviewVote> findByUserAndReview(User user, Review review);
     @Query("SELECT v.review.id FROM ReviewVote v WHERE v.user = :user")
     List<Long> findLikedReviewIds(@Param("user") User user);
+
+    long countByReview(Review review);
 }

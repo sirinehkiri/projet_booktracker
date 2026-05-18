@@ -20,6 +20,9 @@ public class ReviewVote {
 
     private int value; // 1 = helpful
 
+    @Transient
+    private long likesCount;
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -50,5 +53,13 @@ public class ReviewVote {
 
     public void setValue(int value) {
         this.value = value;
+    }
+
+    public long getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(long likesCount) {
+        this.likesCount = likesCount;
     }
 }

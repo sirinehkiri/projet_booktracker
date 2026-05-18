@@ -74,6 +74,8 @@ public class BookService {
 
         for (Review r : book.getReviews()) {
             r.setLiked(likedIds.contains(r.getId()));
+            long count = reviewVoteRepository.countByReview(r);
+            r.setLikesCount(count);
         }
 
         return book;

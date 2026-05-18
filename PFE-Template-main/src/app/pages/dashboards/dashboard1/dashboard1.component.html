@@ -125,17 +125,35 @@
   <!-- OBJECTIF -->
   <div class="col-sm-6 col-lg-3">
 
-    <mat-card class="cardWithShadow">
+  <mat-card class="cardWithShadow yearly-goal-card">
 
-      <mat-card-content class="p-y-24">
+    <mat-card-content class="p-y-24">
 
-        <span class="mat-body-1 m-b-4 d-block">
+      <!-- HEADER -->
+      <div class="goal-header">
+
+        <span class="goal-label">
           Objectif annuel
         </span>
 
-        <mat-card-title class="mat-subtitle-1 f-w-600 m-b-24">
-          {{ getGoalPercentage() }}%
-        </mat-card-title>
+        <span class="goal-badge">
+
+          {{ yearlyGoalProgress }}%
+
+        </span>
+
+      </div>
+
+      <!-- VALUE -->
+      <div class="goal-books">
+
+        {{ stats.totalBooksRead }}
+        <span>/ {{ yearlyGoal }} livres</span>
+
+      </div>
+
+      <!-- CHART -->
+      <div class="goal-chart">
 
         <apx-chart
           [series]="goalChart.series"
@@ -148,13 +166,15 @@
           [tooltip]="goalChart.tooltip">
         </apx-chart>
 
-      </mat-card-content>
+      </div>
 
-    </mat-card>
+    </mat-card-content>
 
-  </div>
+  </mat-card>
 
 </div>
+</div>
+
 
 <!-- ROW 2 -->
 

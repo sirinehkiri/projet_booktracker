@@ -23,6 +23,17 @@ public class Review {
  @Transient
  private boolean liked;
 
+ @Transient
+ private long likesCount;
+
+ public long getLikesCount() {
+  return likesCount;
+ }
+
+ public void setLikesCount(long likesCount) {
+  this.likesCount = likesCount;
+ }
+
  public boolean isLiked() {
   return liked;
  }

@@ -20,6 +20,7 @@ import {
 } from 'ng-apexcharts';
 
 import { StatisticsService } from 'src/app/services/statistics.service';
+import { ReadingGoalService } from 'src/app/pages/apps/reading-goal/reading-goal.service';
 
 @Component({
   selector: 'app-statistics',
@@ -45,6 +46,9 @@ export class StatisticsComponent implements OnInit {
     currentlyReading: 0,
     wantToRead: 0
   };
+  yearlyGoal = 0;
+
+  yearlyGoalProgress = 0;
 
   /* =====================================================
       BOOKS CHART
@@ -441,7 +445,8 @@ export class StatisticsComponent implements OnInit {
   };
 
   constructor(
-    private statisticsService: StatisticsService
+    private statisticsService: StatisticsService,
+    private goalService: ReadingGoalService
   ) {}
 
   ngOnInit(): void {
@@ -480,6 +485,7 @@ export class StatisticsComponent implements OnInit {
     }
 
     this.loadDashboardData();
+    this.loadYearlyGoal();
   }
 
   /* =====================================================
@@ -513,7 +519,7 @@ export class StatisticsComponent implements OnInit {
           this.stats = data;
 
           this.goalChart.series = [
-            this.getGoalPercentage()
+            this.yearlyGoalProgress
           ];
 
           this.readingStatusChart.series = [
@@ -681,17 +687,71 @@ loadMonthlyStats(userId: number): void {
     });
 }
 
+
+loadYearlyGoal(): void {
+
+  this.goalService.getGoals()
+    .subscribe({
+
+      next: (goals: any[]) => {
+
+        // OBJECTIF ANNUEL LIVRES
+        const yearlyBookGoal = goals.find(
+
+          g =>
+
+            g.period === 'YEARLY' &&
+            g.metric === 'BOOKS'
+        );
+
+        if (yearlyBookGoal) {
+
+          this.yearlyGoal =
+            yearlyBookGoal.targetValue;
+
+          this.yearlyGoalProgress =
+            this.calculateGoalPercentage(
+              yearlyBookGoal
+            );
+
+          // UPDATE CHART
+          this.goalChart = {
+
+            ...this.goalChart,
+
+            series: [
+              this.yearlyGoalProgress
+            ]
+          };
+        }
+      },
+
+      error: (err) => {
+        console.error(err);
+      }
+
+    });
+}
   /* =====================================================
       GOAL %
   ===================================================== */
 
-  getGoalPercentage(): number {
+  calculateGoalPercentage(goal: any): number {
 
-    const percent =
-      (this.stats.totalBooksRead / 50) * 100;
-
-    return Math.min(Math.round(percent), 100);
+  if (!goal?.targetValue) {
+    return 0;
   }
+
+  const percent =
+
+    (goal.currentValue / goal.targetValue)
+    * 100;
+
+  return Math.min(
+    Math.round(percent),
+    100
+  );
+}
 
   /* =====================================================
       CHART JS DATA

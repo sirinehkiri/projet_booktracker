@@ -166,3 +166,79 @@
     font-size: 22px;
   }
 }
+.goal-info {
+
+  font-size: 14px;
+
+  color: #777;
+
+  margin-top: -10px;
+
+  margin-bottom: 10px;
+}
+.yearly-goal-card {
+
+  overflow: hidden;
+
+  position: relative;
+}
+
+.goal-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 16px;
+}
+
+.goal-label {
+
+  font-size: 15px;
+
+  color: #666;
+
+  font-weight: 500;
+}
+
+.goal-badge {
+
+  background: rgba(93, 135, 255, 0.12);
+
+  color: #5D87FF;
+
+  padding: 6px 12px;
+
+  border-radius: 30px;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.goal-books {
+
+  font-size: 34px;
+
+  font-weight: 700;
+
+  line-height: 1;
+
+  margin-bottom: 10px;
+}
+
+.goal-books span {
+
+  font-size: 15px;
+
+  font-weight: 500;
+
+  color: #777;
+}
+
+.goal-chart {
+
+  margin-top: -10px;
+}

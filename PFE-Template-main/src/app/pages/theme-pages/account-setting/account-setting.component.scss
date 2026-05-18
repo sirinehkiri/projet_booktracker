@@ -1,0 +1,156 @@
+.settings-page {
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 28px;
+}
+
+.page-header h1 {
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.page-header p {
+  color: #777;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns:
+    380px 1fr;
+  gap: 24px;
+}
+
+.profile-card {
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-cover {
+  height: 90px;
+  background:
+    linear-gradient(
+      135deg,
+      #5d87ff,
+      #7c4dff
+    );
+}
+
+.profile-content {
+  padding: 20px;
+  margin-top: -45px;
+}
+
+.image-section {
+  text-align: center;
+}
+.image-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: auto;
+}
+
+.profile-image {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.10);
+
+  transition: 0.3s;
+}
+
+.profile-image:hover {
+  transform: scale(1.05);
+}
+
+.edit-image-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.image-section h2 {
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.image-section p {
+  color: #777;
+}
+
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.details-card {
+  border-radius: 28px;
+}
+
+.card-header {
+  margin-bottom: 30px;
+}
+
+.card-header h2 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.card-header p {
+  color: #777;
+}
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-box {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #555;
+}
+
+.form-actions {
+  margin-top: 10px;
+}
+
+.save-btn {
+  height: 52px;
+  padding: 0 24px;
+  border-radius: 14px;
+}
+
+@media (max-width: 992px) {
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .settings-page {
+    padding: 14px;
+  }
+
+  .page-header h1 {
+    font-size: 28px;
+  }
+}

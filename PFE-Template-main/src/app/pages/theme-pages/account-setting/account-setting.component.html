@@ -1,96 +1,221 @@
-<div class="row">
-  <!-- Username -->
-  <div class="col-sm-6">
-    <mat-card class="cardWithShadow">
-      <mat-card-content class="p-24">
-        <mat-card-title>Personal Details</mat-card-title>
+<div class="settings-page">
 
-        <mat-card-subtitle class="mat-body-1">
-          Change your username here
-        </mat-card-subtitle>
+  <!-- HEADER -->
+  <div class="page-header">
 
-        <div class="m-t-24">
-          <mat-label class="mat-subtitle-2 f-w-600 m-b-8 d-block">
-            Username
-          </mat-label>
+    <div>
 
-          <mat-form-field
-            appearance="outline"
-            class="w-100"
-            color="primary"
-          >
-            <input
-              matInput
-              type="text"
-              [(ngModel)]="username"
-              placeholder="Enter username"
-            />
-          </mat-form-field>
+      <h1>
+        Account Settings
+      </h1>
+
+      <p>
+        Manage your profile information
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- GRID -->
+  <div class="settings-grid">
+
+    <!-- PROFILE CARD -->
+    <mat-card class="profile-card">
+
+      <div class="profile-cover"></div>
+
+      <div class="profile-content">
+
+        <!-- IMAGE -->
+        <div class="image-section">
+
+          <div class="image-wrapper">
+
+            <img
+              [src]="getProfileImage()"
+              class="profile-image">
+
+            <button
+              mat-mini-fab
+              color="primary"
+              class="edit-image-btn">
+
+              <label for="fileUpload">
+
+                <mat-icon>
+                  edit
+                </mat-icon>
+
+              </label>
+
+            </button>
+
+          </div>
+
+          <input
+            id="fileUpload"
+            type="file"
+            hidden
+            accept="image/*"
+            (change)="onFileSelected($event)">
+
+          <h2>
+
+            {{ profileForm.value.username }}
+
+          </h2>
+
+          <p>
+            Reader Profile
+          </p>
+
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="image-actions">
 
           <button
             mat-flat-button
             color="primary"
-            class="m-t-16"
             (click)="updateProfile()"
-          >
-            Save Username
+            [disabled]="saving">
+
+            Save Changes
+
           </button>
+
+          <button
+            mat-stroked-button
+            color="warn"
+            (click)="resetImage()">
+
+            Remove Image
+
+          </button>
+
         </div>
-      </mat-card-content>
+
+      </div>
+
     </mat-card>
-  </div>
 
-  <!-- Profile Photo -->
-  <div class="col-sm-6">
-    <mat-card class="cardWithShadow">
-      <mat-card-content class="p-24">
-        <mat-card-title>Profile Picture</mat-card-title>
+    <!-- DETAILS -->
+    <mat-card class="details-card">
 
-        <mat-card-subtitle class="mat-body-1">
-          Change your profile picture
-        </mat-card-subtitle>
+      <mat-card-content>
 
-        <div class="text-center m-t-24">
-          <img
-            [src]="getProfileImage()"
-            class="rounded-circle"
-            width="120"
-            height="120"
-            style="object-fit: cover;"
-          />
+        <div class="card-header">
 
-          <div class="m-t-24">
+          <div>
+
+            <h2>
+              Personal Information
+            </h2>
+
+            <p>
+              Update your username and profile
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- FORM -->
+        <form
+          [formGroup]="profileForm"
+          class="profile-form">
+
+          <!-- USERNAME -->
+          <mat-form-field
+            appearance="outline"
+            class="w-100">
+
+            <mat-label>
+              Username
+            </mat-label>
+
             <input
-              type="file"
-              hidden
-              #fileInput
-              (change)="onFileSelected($event)"
-              accept="image/*"
-            />
+              matInput
+              formControlName="username"
+              placeholder="Enter username">
+
+            <mat-icon matSuffix>
+              person
+            </mat-icon>
+
+            <mat-error
+              *ngIf="
+                profileForm
+                .get('username')
+                ?.hasError('required')
+              ">
+
+              Username is required
+
+            </mat-error>
+
+            <mat-error
+              *ngIf="
+                profileForm
+                .get('username')
+                ?.hasError('minlength')
+              ">
+
+              Minimum 3 characters
+
+            </mat-error>
+
+          </mat-form-field>
+
+          <!-- INFO -->
+          <div class="info-box">
+
+            <mat-icon>
+              info
+            </mat-icon>
+
+            <span>
+
+              Supported image formats:
+              JPG, PNG, GIF (max 5MB)
+
+            </span>
+
+          </div>
+
+          <!-- BUTTON -->
+          <div class="form-actions">
 
             <button
               mat-flat-button
               color="primary"
-              class="m-r-8"
-              (click)="fileInput.click()"
-            >
-              Upload
+              class="save-btn"
+              (click)="updateProfile()"
+              [disabled]="saving">
+
+              <span *ngIf="!saving">
+
+                Save Profile
+
+              </span>
+
+              <span *ngIf="saving">
+
+                Saving...
+
+              </span>
+
             </button>
 
-            <button
-              mat-stroked-button
-              color="warn"
-              (click)="resetImage()"
-            >
-              Reset
-            </button>
           </div>
 
-          <span class="f-s-14 m-t-16 d-block">
-            Allowed JPG, PNG or GIF
-          </span>
-        </div>
+        </form>
+
       </mat-card-content>
+
     </mat-card>
+
   </div>
+
 </div>

@@ -1,107 +1,293 @@
-import { Component } from '@angular/core';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from '@angular/core';
+
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
+
+import {
+  FormBuilder,
+  FormGroup,
+  Validators
+} from '@angular/forms';
+
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-account-setting',
   templateUrl: './account-setting.component.html',
+  styleUrls: ['./account-setting.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppAccountSettingComponent {
+export class AppAccountSettingComponent
+implements OnInit {
 
-  username: string = '';
+  profileForm!: FormGroup;
+
   previewImage: string | ArrayBuffer | null = null;
+
   selectedFile!: File;
 
-  constructor(private http: HttpClient) {}
-     private getHeaders(){
-        const token = localStorage.getItem("token");
-    
-        return {
-          headers: new HttpHeaders({
-            Authorization:`Bearer ${token}`
-          })
-        };
-      }
+  loading = false;
 
-  onFileSelected(event: any) {
+  saving = false;
+
+  user: any;
+
+  constructor(
+    private http: HttpClient,
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+
+    this.user = JSON.parse(
+      localStorage.getItem('user') || '{}'
+    );
+
+    this.initializeForm();
+  }
+
+  // ======================================================
+  // FORM
+  // ======================================================
+
+  initializeForm(): void {
+
+    this.profileForm = this.fb.group({
+
+      username: [
+        this.user?.username || '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(20)
+        ]
+      ]
+    });
+  }
+
+  // ======================================================
+  // HEADERS
+  // ======================================================
+
+  private getHeaders() {
+
+    const token =
+      localStorage.getItem('token');
+
+    return {
+
+      headers: new HttpHeaders({
+
+        Authorization:
+          `Bearer ${token}`
+      })
+    };
+  }
+
+  // ======================================================
+  // FILE SELECT
+  // ======================================================
+
+  onFileSelected(event: any): void {
 
     const file = event.target.files[0];
 
-    if (file) {
-
-      this.selectedFile = file;
-
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        this.previewImage = reader.result;
-      };
-
-      reader.readAsDataURL(file);
+    if (!file) {
+      return;
     }
+
+    // FILE VALIDATION
+    const allowedTypes = [
+      'image/png',
+      'image/jpeg',
+      'image/jpg',
+      'image/gif'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+
+      this.showMessage(
+        'Invalid image format'
+      );
+
+      return;
+    }
+
+    // 5MB MAX
+    if (file.size > 5 * 1024 * 1024) {
+
+      this.showMessage(
+        'Image must be less than 5MB'
+      );
+
+      return;
+    }
+
+    this.selectedFile = file;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+      this.previewImage = reader.result;
+
+      this.cdr.markForCheck();
+    };
+
+    reader.readAsDataURL(file);
   }
 
-  resetImage() {
+  // ======================================================
+  // RESET IMAGE
+  // ======================================================
+
+  resetImage(): void {
+
     this.previewImage = null;
+
+    this.selectedFile = null as any;
+
+    this.cdr.markForCheck();
   }
 
-  updateProfile() {
+  // ======================================================
+  // UPDATE PROFILE
+  // ======================================================
+
+  updateProfile(): void {
+
+    if (this.profileForm.invalid) {
+
+      this.profileForm.markAllAsTouched();
+
+      return;
+    }
+
+    this.saving = true;
 
     const formData = new FormData();
 
     formData.append(
+
       'data',
+
       new Blob(
-        [JSON.stringify({
-          username: this.username
-        })],
-        { type: 'application/json' }
+
+        [
+          JSON.stringify({
+
+            username:
+              this.profileForm.value.username
+          })
+        ],
+
+        {
+          type: 'application/json'
+        }
       )
     );
 
     if (this.selectedFile) {
-      formData.append('image', this.selectedFile);
+
+      formData.append(
+        'image',
+        this.selectedFile
+      );
     }
 
     this.http.put(
+
       'http://localhost:8081/api/users/profile',
-      formData,this.getHeaders()
+
+      formData,
+
+      this.getHeaders()
+
     ).subscribe({
 
       next: (res: any) => {
 
-        console.log(res);
+        this.saving = false;
 
-        alert('Profil mis à jour');
-
-        // mise à jour localStorage
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        // UPDATE LOCAL USER
+        const user = JSON.parse(
+          localStorage.getItem('user') || '{}'
+        );
 
         user.username = res.username;
+
         user.image = res.image;
 
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem(
+          'user',
+          JSON.stringify(user)
+        );
+
+        this.user = user;
+
+        this.showMessage(
+          'Profile updated successfully'
+        );
+
+        this.cdr.markForCheck();
       },
 
-      error: (err: any) => {
-        console.log(err);
-        alert('Erreur lors de la mise à jour');
+      error: (err) => {
+
+        console.error(err);
+
+        this.saving = false;
+
+        this.showMessage(
+          'Failed to update profile'
+        );
+
+        this.cdr.markForCheck();
       }
+
     });
   }
+
+  // ======================================================
+  // PROFILE IMAGE
+  // ======================================================
+
   getProfileImage(): string {
 
-  if (this.previewImage) {
-    return this.previewImage as string;
+    if (this.previewImage) {
+
+      return this.previewImage as string;
+    }
+
+    if (this.user?.image) {
+
+      return `http://localhost:8081/uploads/${this.user.image}`;
+    }
+
+    return '/assets/images/profile/user-1.jpg';
   }
 
-  const user = JSON.parse(
-    localStorage.getItem('user') || '{}'
-  );
+  // ======================================================
+  // HELPERS
+  // ======================================================
 
-  if (user.image) {
-    return `http://localhost:8081/uploads/${user.image}`;
+  showMessage(message: string): void {
+
+    this.snackBar.open(
+      message,
+      'Close',
+      {
+        duration: 3000
+      }
+    );
   }
-
-  return '/assets/images/profile/user-1.jpg';
-}
 }

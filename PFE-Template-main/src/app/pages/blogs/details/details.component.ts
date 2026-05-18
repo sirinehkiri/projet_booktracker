@@ -216,32 +216,32 @@ export class AppBlogDetailsComponent implements OnInit {
 
   vote(reviewId: number): void {
 
-    const review = this.book.reviews.find(
-      (r: any) => r.id === reviewId
-    );
+  const review = this.book.reviews.find(
+    (r: any) => r.id === reviewId
+  );
 
-    if (!review) {
-      return;
-    }
-
-    review.liked = !review.liked;
-
-    this.bookService.voteReview(reviewId)
-      .subscribe({
-
-        next: () => {
-          this.cdr.markForCheck();
-        },
-
-        error: (err) => {
-
-          review.liked = !review.liked;
-
-          this.handleError(err);
-        }
-
-      });
+  if (!review) {
+    return;
   }
+
+  this.bookService.voteReview(reviewId)
+    .subscribe({
+
+      next: (res: any) => {
+
+        review.liked = res.liked;
+
+        review.likesCount = res.likesCount;
+
+        this.cdr.markForCheck();
+      },
+
+      error: (err) => {
+        this.handleError(err);
+      }
+
+    });
+}
 
   // ======================================================
   // DELETE REVIEW

@@ -5,10 +5,16 @@ import com.booktracker.entity.ReviewVote;
 import com.booktracker.entity.User;
 import com.booktracker.repository.ReviewRepository;
 import com.booktracker.repository.ReviewVoteRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,28 +30,91 @@ public class ReviewVoteController {
     private ReviewRepository reviewRepository;
 
     @PostMapping("/{reviewId}")
-    public Map<String, String> vote(@PathVariable Long reviewId,
-                       @AuthenticationPrincipal User user) {
+    public ResponseEntity<Map<String, Object>> vote(
+            @PathVariable Long reviewId,
+            @AuthenticationPrincipal User user
+    ) {
 
-        Review review = reviewRepository.findById(reviewId)
-                .orElseThrow();
+        // =====================================================
+        // CHECK USER
+        // =====================================================
 
-        Optional<ReviewVote> existing =
-                voteRepository.findByUserAndReview(user, review);
+        if (user == null) {
 
-        // 🔥 TOGGLE (like/unlike)
-        if (existing.isPresent()) {
-            voteRepository.delete(existing.get());
-            return Map.of("status", "unliked");
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of(
+                            "message",
+                            "User not authenticated"
+                    ));
         }
 
+        // =====================================================
+        // FIND REVIEW
+        // =====================================================
+
+        Review review = reviewRepository
+                .findById(reviewId)
+                .orElseThrow(() ->
+                        new RuntimeException("Review not found")
+                );
+
+        // =====================================================
+        // CHECK EXISTING VOTE
+        // =====================================================
+
+        Optional<ReviewVote> existingVote =
+                voteRepository.findByUserAndReview(
+                        user,
+                        review
+                );
+
+        Map<String, Object> response =
+                new HashMap<>();
+
+        // =====================================================
+        // UNLIKE
+        // =====================================================
+
+        if (existingVote.isPresent()) {
+
+            voteRepository.delete(existingVote.get());
+
+            long totalLikes =
+                    voteRepository.countByReview(review);
+
+            response.put("status", "unliked");
+
+            response.put("liked", false);
+
+            response.put("likesCount", totalLikes);
+
+            return ResponseEntity.ok(response);
+        }
+
+        // =====================================================
+        // LIKE
+        // =====================================================
+
         ReviewVote vote = new ReviewVote();
+
         vote.setUser(user);
+
         vote.setReview(review);
+
         vote.setValue(1);
 
         voteRepository.save(vote);
 
-        return Map.of("status", "liked");
+        long totalLikes =
+                voteRepository.countByReview(review);
+
+        response.put("status", "liked");
+
+        response.put("liked", true);
+
+        response.put("likesCount", totalLikes);
+
+        return ResponseEntity.ok(response);
     }
 }
