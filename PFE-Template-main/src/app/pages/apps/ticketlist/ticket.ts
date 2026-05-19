@@ -1,9 +1,9 @@
-export interface Ticket {
+export interface BookElement {
   id: number;
   title: string;
-  subtext: string;
-  assignee: string;
-  imgSrc: string;
+  author: string;
+  genre: string;
+  pic: string;
   status: string;
-  date: string;
+  progress: number;
 }

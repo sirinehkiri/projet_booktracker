@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 
 import { AppChatComponent } from './chat/chat.component';
 import { ReadingGoalComponent } from './reading-goal/reading-goal.component';
-import { AppTicketlistComponent } from './ticketlist/ticketlist.component';
 import { AppContactComponent } from './contact/contact.component';
 import { AppEmployeeComponent } from './employee/employee.component';
 import { AppBlogsComponent } from '../blogs/blogs.component';
@@ -10,6 +9,7 @@ import { AppBlogDetailsComponent } from '../blogs/details/details.component';
 import { MyBookListsComponent } from './my-book-lists/my-book-lists.component';
 import { RecommendationsComponent } from './contact/recommendations.component';
 import { PreferencesComponent } from './preferences/preferences.component';
+import { MyBooksComponent } from './ticketlist/ticketlist.component';
 export const AppsRoutes: Routes = [
     {
         path: 'mes-listes',
@@ -36,7 +36,7 @@ export const AppsRoutes: Routes = [
       },
       {
         path: 'tickets',
-        component: AppTicketlistComponent,
+        component:MyBooksComponent,
         data: {
           title: 'Tickets',
           urls: [

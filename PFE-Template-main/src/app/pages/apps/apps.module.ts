@@ -34,10 +34,8 @@ import { AppAddEmployeeComponent } from './employee/add/add.component';
 
 import { AppsRoutes } from './apps.routing';
 import { MatNativeDateModule } from '@angular/material/core';
-import {
-  AppTicketlistComponent,
-  AppTicketDialogContentComponent,
-} from './ticketlist/ticketlist.component';
+
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 // blog
 import { AppBlogsComponent } from '../blogs/blogs.component';
 import { AppBlogDetailsComponent } from '../blogs/details/details.component';
@@ -48,9 +46,26 @@ import { ProfileComponent } from './profil/profile.component';
 // ---> LES IMPORTS JDOD LI ZEDNEHOM <---
 import { MyBookListsComponent } from './my-book-lists/my-book-lists.component';
 import { PreferencesComponent } from './preferences/preferences.component';
+
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MyBooksComponent } from './ticketlist/ticketlist.component';
 @NgModule({
   imports: [
     CommonModule,
+     MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatProgressBarModule,
     RouterModule.forChild(AppsRoutes),
     MaterialModule,
     FormsModule,
@@ -60,6 +75,7 @@ import { PreferencesComponent } from './preferences/preferences.component';
     TablerIconsModule.pick(TablerIcons),
     DragDropModule,
     NgxPaginationModule,
+    MatProgressBarModule,
     HttpClientModule,
     AngularEditorModule,
     CalendarModule.forRoot({
@@ -73,9 +89,8 @@ import { PreferencesComponent } from './preferences/preferences.component';
   exports: [TablerIconsModule],
   declarations: [
     AppChatComponent,
+    MyBooksComponent,
     ReadingGoalComponent,
-    AppTicketlistComponent,
-    AppTicketDialogContentComponent,
     AppContactComponent,
     AppContactDialogContentComponent,
     AppEmployeeComponent,
