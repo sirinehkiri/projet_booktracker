@@ -3,6 +3,15 @@ package com.booktracker.model.dto;
 public class ProgressRequest {
     private Long userBookId;
     private int pagesRead;
+    private Integer readingTime;
+
+    public Integer getReadingTime() {
+        return readingTime;
+    }
+
+    public void setReadingTime(Integer readingTime) {
+        this.readingTime = readingTime;
+    }
 
     public Long getUserBookId() {
         return userBookId;

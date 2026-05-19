@@ -1,8 +1,10 @@
 package com.booktracker.services;
 
 import com.booktracker.entity.User;
+import com.booktracker.model.dto.ChangePasswordRequest;
 import com.booktracker.model.dto.UpdateProfileRequest;
 import com.booktracker.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,9 +16,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User updateProfile(
@@ -53,5 +57,36 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+
+    public void changePassword(
+            String username,
+            ChangePasswordRequest request
+    ) {
+        System.out.println(username);
+
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow();
+
+        if (!passwordEncoder.matches(
+                request.getCurrentPassword(),
+                user.getPassword()
+        )) {
+
+            throw new RuntimeException(
+                    "Current password incorrect"
+            );
+        }
+
+        user.setPassword(
+
+                passwordEncoder.encode(
+                        request.getNewPassword()
+                )
+        );
+
+        userRepository.save(user);
     }
 }

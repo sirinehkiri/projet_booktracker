@@ -5,6 +5,7 @@ import com.booktracker.entity.UserBook;
 import com.booktracker.model.dto.MonthlyStatsDTO;
 import com.booktracker.model.dto.ReadingStatsDTO;
 import com.booktracker.model.dto.StatsLabelDTO;
+import com.booktracker.repository.ReadingProgressRepository;
 import com.booktracker.repository.UserBookRepository;
 
 import org.springframework.stereotype.Service;
@@ -18,9 +19,11 @@ import java.util.stream.Collectors;
 public class StatisticsService {
 
     private final UserBookRepository userBookRepository;
+    private final ReadingProgressRepository progressRepository;
 
-    public StatisticsService(UserBookRepository userBookRepository) {
+    public StatisticsService(UserBookRepository userBookRepository, ReadingProgressRepository progressRepository) {
         this.userBookRepository = userBookRepository;
+        this.progressRepository = progressRepository;
     }
 
     /* =====================================================
@@ -63,7 +66,15 @@ public class StatisticsService {
 
         dto.setTotalPagesRead(totalPages);
 
-        dto.setTotalReadingHours(totalPages / 30.0);
+        Integer totalMinutes =
+                progressRepository.getTotalReadingMinutes(userId);
+
+        double totalHours =
+                totalMinutes / 60.0;
+
+        dto.setTotalReadingHours(
+                Math.round(totalHours * 10.0) / 10.0
+        );
 
         /* =========================
            FAVORITE GENRE

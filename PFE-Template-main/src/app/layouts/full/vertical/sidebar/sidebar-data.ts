@@ -42,12 +42,4 @@ export const navItems: NavItem[] = [
     iconName: 'user-circle',
     route: 'theme-pages/account-setting',
   },
-  {
-    navCap: 'Auth',
-  },
-  {
-    displayName: 'Boxed Forgot Password',
-    iconName: 'point',
-    route: '/authentication/boxed-forgot-pwd',
-  },
 ];

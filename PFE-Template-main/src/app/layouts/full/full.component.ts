@@ -216,16 +216,22 @@ export class FullComponent implements OnInit {
   currentUsername = '';
 
 ngOnInit(): void {
+  this.getUsername()
+}
 
-  const userData = localStorage.getItem('user');
+  
+
+  getUsername():any{
+    const userData = localStorage.getItem('user');
 
   if (userData) {
 
     const user = JSON.parse(userData);
 
     this.currentUsername = user.username;
-  }
+    return this.currentUsername
 }
+  }
 
   ngOnDestroy() {
     this.layoutChangesSubscription.unsubscribe();

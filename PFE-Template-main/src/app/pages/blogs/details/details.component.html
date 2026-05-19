@@ -499,8 +499,24 @@
           type="number"
           min="1"
           [(ngModel)]="pagesRead">
+        </mat-form-field>
+        <mat-form-field
+            appearance="outline"
+            class="full-width">
 
-      </mat-form-field>
+            <mat-label>
+
+              Reading time (minutes)
+
+            </mat-label>
+
+            <input
+              matInput
+              type="number"
+              min="1"
+              [(ngModel)]="readingTime">
+
+        </mat-form-field>
 
       <div class="progress-preview">
 

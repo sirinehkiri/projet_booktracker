@@ -15,6 +15,20 @@ public class ReadingProgress {
 
     private LocalDate date;
 
+    private Integer readingTime;
+
+    public void setPagesRead(Integer pagesRead) {
+        this.pagesRead = pagesRead;
+    }
+
+    public Integer getReadingTime() {
+        return readingTime;
+    }
+
+    public void setReadingTime(Integer readingTime) {
+        this.readingTime = readingTime;
+    }
+
     @ManyToOne
     @JoinColumn(name = "user_book_id")
     private UserBook userBook;

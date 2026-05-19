@@ -38,6 +38,7 @@ implements OnInit {
   saving = false;
 
   user: any;
+  passwordForm!: FormGroup;
 
   constructor(
     private http: HttpClient,
@@ -72,6 +73,23 @@ implements OnInit {
         ]
       ]
     });
+
+    this.passwordForm = this.fb.group({
+
+  currentPassword: [
+    '',
+    Validators.required
+  ],
+
+  newPassword: [
+    '',
+    [
+      Validators.required,
+      Validators.minLength(6)
+    ]
+  ]
+
+});
   }
 
   // ======================================================
@@ -218,6 +236,11 @@ implements OnInit {
 
         this.saving = false;
 
+        localStorage.setItem(
+          'token',
+          res.token
+        );
+
         // UPDATE LOCAL USER
         const user = JSON.parse(
           localStorage.getItem('user') || '{}'
@@ -253,6 +276,7 @@ implements OnInit {
 
         this.cdr.markForCheck();
       }
+      
 
     });
   }
@@ -275,6 +299,49 @@ implements OnInit {
 
     return '/assets/images/profile/user-1.jpg';
   }
+
+
+  changePassword(): void {
+
+  if (this.passwordForm.invalid) {
+
+    this.passwordForm.markAllAsTouched();
+
+    return;
+  }
+
+  this.http.put(
+
+    'http://localhost:8081/api/users/change-password',
+
+    this.passwordForm.value,
+
+    this.getHeaders()
+
+  ).subscribe({
+
+    next: () => {
+
+      this.showMessage(
+        'Password updated successfully'
+      );
+
+      this.passwordForm.reset();
+
+      this.cdr.markForCheck();
+    },
+
+    error: (err) => {
+
+      console.error(err);
+
+      this.showMessage(
+        'Failed to update password'
+      );
+    }
+
+  });
+}
 
   // ======================================================
   // HELPERS

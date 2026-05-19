@@ -47,4 +47,11 @@ public class UserBookController {
 
         return service.getUserBook(user.getId(), bookId);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteBook(
+            @PathVariable Long id
+    ) {
+        service.deleteBook(id);
+    }
 }

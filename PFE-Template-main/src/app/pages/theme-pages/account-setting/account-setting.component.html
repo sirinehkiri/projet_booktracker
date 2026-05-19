@@ -1,6 +1,9 @@
 <div class="settings-page">
 
+  <!-- ===================================================== -->
   <!-- HEADER -->
+  <!-- ===================================================== -->
+
   <div class="page-header">
 
     <div>
@@ -10,211 +13,386 @@
       </h1>
 
       <p>
-        Manage your profile information
+        Manage your profile, security and preferences
       </p>
 
     </div>
 
   </div>
 
+  <!-- ===================================================== -->
   <!-- GRID -->
+  <!-- ===================================================== -->
+
   <div class="settings-grid">
 
-    <!-- PROFILE CARD -->
-    <mat-card class="profile-card">
+    <!-- ===================================================== -->
+    <!-- LEFT SIDE -->
+    <!-- ===================================================== -->
 
-      <div class="profile-cover"></div>
+    <div class="left-column">
 
-      <div class="profile-content">
+      <!-- PROFILE CARD -->
 
-        <!-- IMAGE -->
-        <div class="image-section">
+      <mat-card class="profile-card">
 
-          <div class="image-wrapper">
+        <div class="profile-cover"></div>
 
-            <img
-              [src]="getProfileImage()"
-              class="profile-image">
+        <div class="profile-content">
 
-            <button
-              mat-mini-fab
-              color="primary"
-              class="edit-image-btn">
+          <!-- IMAGE -->
 
-              <label for="fileUpload">
+          <div class="image-section">
 
-                <mat-icon>
-                  edit
-                </mat-icon>
+            <div class="image-wrapper">
 
-              </label>
+              <img
+                [src]="getProfileImage()"
+                class="profile-image"
+              >
 
-            </button>
+              <button
+                mat-mini-fab
+                color="primary"
+                class="edit-image-btn"
+              >
 
-          </div>
+                <label for="fileUpload">
 
-          <input
-            id="fileUpload"
-            type="file"
-            hidden
-            accept="image/*"
-            (change)="onFileSelected($event)">
+                  <mat-icon>
+                    edit
+                  </mat-icon>
 
-          <h2>
+                </label>
 
-            {{ profileForm.value.username }}
+              </button>
 
-          </h2>
+            </div>
 
-          <p>
-            Reader Profile
-          </p>
-
-        </div>
-
-        <!-- ACTIONS -->
-        <div class="image-actions">
-
-          <button
-            mat-flat-button
-            color="primary"
-            (click)="updateProfile()"
-            [disabled]="saving">
-
-            Save Changes
-
-          </button>
-
-          <button
-            mat-stroked-button
-            color="warn"
-            (click)="resetImage()">
-
-            Remove Image
-
-          </button>
-
-        </div>
-
-      </div>
-
-    </mat-card>
-
-    <!-- DETAILS -->
-    <mat-card class="details-card">
-
-      <mat-card-content>
-
-        <div class="card-header">
-
-          <div>
+            <input
+              id="fileUpload"
+              type="file"
+              hidden
+              accept="image/*"
+              (change)="onFileSelected($event)"
+            >
 
             <h2>
-              Personal Information
+              {{ profileForm.value.username }}
             </h2>
 
             <p>
-              Update your username and profile
+              Reader Profile
             </p>
 
           </div>
 
-        </div>
+          <!-- ACTIONS -->
 
-        <!-- FORM -->
-        <form
-          [formGroup]="profileForm"
-          class="profile-form">
-
-          <!-- USERNAME -->
-          <mat-form-field
-            appearance="outline"
-            class="w-100">
-
-            <mat-label>
-              Username
-            </mat-label>
-
-            <input
-              matInput
-              formControlName="username"
-              placeholder="Enter username">
-
-            <mat-icon matSuffix>
-              person
-            </mat-icon>
-
-            <mat-error
-              *ngIf="
-                profileForm
-                .get('username')
-                ?.hasError('required')
-              ">
-
-              Username is required
-
-            </mat-error>
-
-            <mat-error
-              *ngIf="
-                profileForm
-                .get('username')
-                ?.hasError('minlength')
-              ">
-
-              Minimum 3 characters
-
-            </mat-error>
-
-          </mat-form-field>
-
-          <!-- INFO -->
-          <div class="info-box">
-
-            <mat-icon>
-              info
-            </mat-icon>
-
-            <span>
-
-              Supported image formats:
-              JPG, PNG, GIF (max 5MB)
-
-            </span>
-
-          </div>
-
-          <!-- BUTTON -->
-          <div class="form-actions">
+          <div class="image-actions">
 
             <button
               mat-flat-button
               color="primary"
-              class="save-btn"
               (click)="updateProfile()"
-              [disabled]="saving">
+              [disabled]="saving"
+            >
 
-              <span *ngIf="!saving">
+              Save Changes
 
-                Save Profile
+            </button>
 
-              </span>
+            <button
+              mat-stroked-button
+              color="warn"
+              (click)="resetImage()"
+            >
 
-              <span *ngIf="saving">
-
-                Saving...
-
-              </span>
+              Remove Image
 
             </button>
 
           </div>
 
-        </form>
+        </div>
 
-      </mat-card-content>
+      </mat-card>
 
-    </mat-card>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- RIGHT SIDE -->
+    <!-- ===================================================== -->
+
+    <div class="right-column">
+
+      <!-- ===================================================== -->
+      <!-- PERSONAL INFO -->
+      <!-- ===================================================== -->
+
+      <mat-card class="details-card">
+
+        <mat-card-content>
+
+          <div class="card-header">
+
+            <div>
+
+              <h2>
+                Personal Information
+              </h2>
+
+              <p>
+                Update your username and profile image
+              </p>
+
+            </div>
+
+          </div>
+
+          <form
+            [formGroup]="profileForm"
+            class="profile-form"
+          >
+
+            <!-- USERNAME -->
+
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+            >
+
+              <mat-label>
+                Username
+              </mat-label>
+
+              <input
+                matInput
+                formControlName="username"
+              >
+
+              <mat-icon matSuffix>
+                person
+              </mat-icon>
+
+            </mat-form-field>
+
+            <!-- INFO -->
+
+            <div class="info-box">
+
+              <mat-icon>
+                info
+              </mat-icon>
+
+              <span>
+
+                Supported image formats:
+                JPG, PNG, GIF (max 5MB)
+
+              </span>
+
+            </div>
+
+            <!-- BUTTON -->
+
+            <div class="form-actions">
+
+              <button
+                mat-flat-button
+                color="primary"
+                class="save-btn"
+                (click)="updateProfile()"
+                [disabled]="saving"
+              >
+
+                <span *ngIf="!saving">
+                  Save Profile
+                </span>
+
+                <span *ngIf="saving">
+                  Saving...
+                </span>
+
+              </button>
+
+            </div>
+
+          </form>
+
+        </mat-card-content>
+
+      </mat-card>
+
+      <!-- ===================================================== -->
+      <!-- SECURITY -->
+      <!-- ===================================================== -->
+
+      <mat-card class="details-card">
+
+        <mat-card-content>
+
+          <div class="card-header">
+
+            <div>
+
+              <h2>
+                Security Settings
+              </h2>
+
+              <p>
+                Change your password securely
+              </p>
+
+            </div>
+
+          </div>
+
+          <form
+            [formGroup]="passwordForm"
+            class="profile-form"
+          >
+
+            <!-- CURRENT PASSWORD -->
+
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+            >
+
+              <mat-label>
+                Current Password
+              </mat-label>
+
+              <input
+                matInput
+                type="password"
+                formControlName="currentPassword"
+              >
+
+              <mat-icon matSuffix>
+                lock
+              </mat-icon>
+
+            </mat-form-field>
+
+            <!-- NEW PASSWORD -->
+
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+            >
+
+              <mat-label>
+                New Password
+              </mat-label>
+
+              <input
+                matInput
+                type="password"
+                formControlName="newPassword"
+              >
+
+              <mat-icon matSuffix>
+                vpn_key
+              </mat-icon>
+
+            </mat-form-field>
+
+            <!-- BUTTON -->
+
+            <div class="form-actions">
+
+              <button
+                mat-flat-button
+                color="accent"
+                class="save-btn"
+                (click)="changePassword()"
+              >
+
+                Update Password
+
+              </button>
+
+            </div>
+
+          </form>
+
+        </mat-card-content>
+
+      </mat-card>
+
+      <!-- ===================================================== -->
+      <!-- PREFERENCES -->
+      <!-- ===================================================== -->
+
+      <mat-card class="details-card">
+
+        <mat-card-content>
+
+          <div class="card-header">
+
+            <div>
+
+              <h2>
+                Preferences
+              </h2>
+
+              <p>
+                Customize your experience
+              </p>
+
+            </div>
+
+          </div>
+
+          <div class="preferences-list">
+
+            <div class="preference-item">
+
+              <div>
+
+                <h4>
+                  Email Notifications
+                </h4>
+
+                <p>
+                  Receive updates and reminders
+                </p>
+
+              </div>
+
+              <mat-slide-toggle checked>
+              </mat-slide-toggle>
+
+            </div>
+
+            <div class="preference-item">
+
+              <div>
+
+                <h4>
+                  Dark Mode
+                </h4>
+
+                <p>
+                  Switch application appearance
+                </p>
+
+              </div>
+
+              <mat-slide-toggle>
+              </mat-slide-toggle>
+
+            </div>
+
+          </div>
+
+        </mat-card-content>
+
+      </mat-card>
+
+    </div>
 
   </div>
 

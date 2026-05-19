@@ -1,117 +1,197 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTableDataSource, MatTable } from '@angular/material/table';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
+
 import { MatPaginator } from '@angular/material/paginator';
-import { MatDialog } from '@angular/material/dialog';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-export interface BookElement {
-  id: number;
-  title: string;
-  author: string;
-  genre: string;
-  pic: string;
-  status: string;
-  progress: number;
-}
-
-const books: BookElement[] = [
-  {
-    id: 1,
-    title: 'Atomic Habits',
-    author: 'James Clear',
-    genre: 'Self Development',
-    pic: '/assets/images/books/book1.jpg',
-    status: 'reading',
-    progress: 65,
-  },
-  {
-    id: 2,
-    title: 'Clean Code',
-    author: 'Robert C. Martin',
-    genre: 'Programming',
-    pic: '/assets/images/books/book2.jpg',
-    status: 'completed',
-    progress: 100,
-  },
-  {
-    id: 3,
-    title: 'The Psychology of Money',
-    author: 'Morgan Housel',
-    genre: 'Finance',
-    pic: '/assets/images/books/book3.jpg',
-    status: 'wishlist',
-    progress: 0,
-  },
-];
+import { UserBookService } from 'src/app/services/user-book.service';
+import { UserBook } from './ticket';
 
 @Component({
   selector: 'app-my-books',
   templateUrl: './ticketlist.component.html',
+  styleUrls: ['./ticketlist.component.scss'],
 })
-export class MyBooksComponent implements OnInit {
-
+export class MyBooksComponent
+  implements OnInit, AfterViewInit
+{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatTable) table!: MatTable<any>;
+
+  displayedColumns: string[] = [
+  'cover',
+  'title',
+  'genre',
+  'status',
+  'progress',
+  'pages',
+  'finishDate',
+  'action',
+];
+
+  dataSource = new MatTableDataSource<UserBook>([]);
+
+  books: UserBook[] = [];
 
   totalBooks = 0;
   readingBooks = 0;
   completedBooks = 0;
   wishlistBooks = 0;
 
-  displayedColumns: string[] = [
-    'cover',
-    'title',
-    'genre',
-    'status',
-    'progress',
-    'action',
-  ];
-
-  dataSource = new MatTableDataSource<BookElement>(books);
-
-  constructor(public dialog: MatDialog) {}
+  constructor(private userBookService: UserBookService ,
+  private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
-    this.totalBooks = books.length;
-
-    this.readingBooks = books.filter(
-      (b) => b.status === 'reading'
-    ).length;
-
-    this.completedBooks = books.filter(
-      (b) => b.status === 'completed'
-    ).length;
-
-    this.wishlistBooks = books.filter(
-      (b) => b.status === 'wishlist'
-    ).length;
-
+    this.loadBooks();
     this.dataSource.filterPredicate = (
-      data: BookElement,
-      filter: string
-    ) => {
-      return (
-        data.title.toLowerCase().includes(filter) ||
-        data.author.toLowerCase().includes(filter) ||
-        data.genre.toLowerCase().includes(filter)
-      );
-    };
-  }
+  data: UserBook,
+  filter: string
+): boolean => {
 
+  const search = `
+    ${data.book?.title}
+    ${data.book?.author}
+    ${data.book?.genre}
+    ${data.status}
+  `.toLowerCase();
+
+  return search.includes(filter);
+};
+  }
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
   }
 
+  loadBooks(): void {
+    const user = localStorage.getItem('user');
+
+  if (!user) {
+    console.error('User not found');
+    return;
+  }
+
+  const parsedUser = JSON.parse(user);
+
+  const userId = parsedUser.id;
+
+  if (!userId) {
+    console.error('User ID not found');
+    return;
+  }
+
+    this.userBookService
+      .getUserBooks(Number(userId))
+      .subscribe({
+        next: (response) => {
+          this.books = response.map((book) => {
+          const progress =
+            book.totalPages > 0
+              ? Math.min(
+                  (book.pagesRead / book.totalPages) * 100,
+                  100
+                )
+              : 0;
+
+          return {
+            ...book,
+            progress: Number(progress.toFixed(0)),
+          };
+        });
+
+        this.dataSource.data = this.books;
+          this.calculateStats();
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+      console.log(this.books)
+  }
+
+  calculateStats(): void {
+
+  this.totalBooks = this.books.length;
+
+  this.readingBooks = this.books.filter(
+    (b) => b.status === 'READING'
+  ).length;
+
+  this.completedBooks = this.books.filter(
+    (b) => b.status === 'READ'
+  ).length;
+
+  this.wishlistBooks = this.books.filter(
+    (b) => b.status === 'WANT_TO_READ'
+  ).length;
+}
+
   applyFilter(value: string): void {
-    this.dataSource.filter = value.trim().toLowerCase();
+    this.dataSource.filter = value
+      .trim()
+      .toLowerCase();
   }
 
   filterStatus(status: string): void {
     if (status === '') {
-      this.dataSource.data = books;
+       this.dataSource.data = this.books;
     } else {
-      this.dataSource.data = books.filter(
-        (b) => b.status === status
+      this.dataSource.data = this.books.filter(
+        (b) =>
+          b.status.toLowerCase() ===
+          status.toLowerCase()
       );
     }
+  }
+
+deleteBook(id: number): void {
+
+  if (!confirm('Delete this book ?')) {
+    return;
+  }
+
+  this.userBookService
+    .deleteBook(id)
+    .subscribe({
+
+      next: () => {
+
+        this.books = this.books.filter(
+          (b) => b.id !== id
+        );
+
+        this.dataSource.data = this.books;
+
+        this.calculateStats();
+
+        this.showMessage(
+          'Book deleted successfully'
+        );
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        this.showMessage(
+          'Error deleting book'
+        );
+      },
+
+    });
+}
+
+  showMessage(message: string): void {
+
+    this.snackBar.open(
+          message,
+          'Close',
+          {
+            duration: 3000
+          }
+        );
   }
 }

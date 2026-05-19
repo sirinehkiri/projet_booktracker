@@ -36,6 +36,7 @@ export class AppBlogDetailsComponent implements OnInit {
   showActivity = false;
 
   pagesRead: number = 0;
+  readingTime = 0;
 
   totalReadPages: number = 0;
 
@@ -385,7 +386,8 @@ export class AppBlogDetailsComponent implements OnInit {
 
     userBookId: this.book.userBookId,
 
-    pagesRead: pagesToAdd
+    pagesRead: pagesToAdd,
+    readingTime: this.readingTime
   };
 
   this.bookService.updateProgress(payload)

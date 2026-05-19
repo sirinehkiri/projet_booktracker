@@ -1,0 +1,402 @@
+/* =========================================================
+PAGE HEADER
+========================================================= */
+
+.icon-18 {
+  width: 18px;
+  height: 18px;
+}
+
+/* =========================================================
+STATISTICS CARDS
+========================================================= */
+
+.stats-card {
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+
+  mat-card-content {
+    padding: 28px;
+  }
+
+  h2 {
+    font-size: 34px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+
+  span {
+    font-size: 14px;
+    opacity: 0.95;
+  }
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* =========================================================
+STAT CARD COLORS
+========================================================= */
+
+.bg-total {
+  background: linear-gradient(
+    135deg,
+    #5b8def,
+    #3f6ad8
+  );
+}
+
+.bg-reading {
+  background: linear-gradient(
+    135deg,
+    #ffb648,
+    #ff8c00
+  );
+}
+
+.bg-completed {
+  background: linear-gradient(
+    135deg,
+    #34c38f,
+    #0ea76b
+  );
+}
+
+.bg-wishlist {
+  background: linear-gradient(
+    135deg,
+    #4facfe,
+    #00c6ff
+  );
+}
+
+/* =========================================================
+STAT ICON
+========================================================= */
+
+.stats-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  backdrop-filter: blur(6px);
+
+  i-tabler {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* =========================================================
+SEARCH CARD
+========================================================= */
+
+.cardWithShadow {
+  border-radius: 22px !important;
+  border: none !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* =========================================================
+TABLE
+========================================================= */
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.mat-mdc-header-row {
+  background: transparent !important;
+}
+
+.mat-mdc-header-cell {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+  border-bottom: none !important;
+}
+
+.mat-mdc-row {
+  background: white;
+  transition: all 0.25s ease;
+}
+
+.table-row:hover {
+  transform: scale(1.005);
+  background: #fafafa;
+}
+
+/* =========================================================
+TABLE CELLS
+========================================================= */
+
+.mat-mdc-cell {
+  border-bottom: none !important;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+/* =========================================================
+BOOK COVER
+========================================================= */
+
+.book-cover {
+  width: 65px;
+  height: 92px;
+  object-fit: cover;
+  border-radius: 14px;
+
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.12),
+    0 2px 6px rgba(0, 0, 0, 0.08);
+
+  transition: 0.3s;
+}
+
+.book-cover:hover {
+  transform: scale(1.04);
+}
+
+/* =========================================================
+BOOK INFO
+========================================================= */
+
+.book-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.book-info h6 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: #111827;
+}
+
+.book-info span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* =========================================================
+GENRE CHIP
+========================================================= */
+
+.genre-chip {
+  padding: 7px 14px;
+  border-radius: 40px;
+
+  background: #f3f4f6;
+
+  color: #374151;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  display: inline-flex;
+  align-items: center;
+}
+
+/* =========================================================
+STATUS BADGES
+========================================================= */
+
+.status-badge {
+  padding: 8px 14px;
+  border-radius: 50px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: capitalize;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 100px;
+}
+
+/* READING */
+
+.reading-badge {
+  background: rgba(255, 182, 72, 0.15);
+  color: #ff9800;
+}
+
+/* COMPLETED */
+
+.completed-badge {
+  background: rgba(52, 195, 143, 0.15);
+  color: #0ea76b;
+}
+
+/* WISHLIST */
+
+.wishlist-badge {
+  background: rgba(79, 172, 254, 0.15);
+  color: #2196f3;
+}
+
+/* =========================================================
+PROGRESS
+========================================================= */
+
+.progress-wrapper {
+  width: 150px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-wrapper small {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+mat-progress-bar {
+  height: 8px;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* =========================================================
+ACTION BUTTONS
+========================================================= */
+
+button[mat-icon-button] {
+  transition: 0.25s ease;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+}
+
+/* =========================================================
+EMPTY STATE
+========================================================= */
+
+.empty-state {
+  padding: 70px 20px;
+
+  text-align: center;
+
+  color: #9ca3af;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state i-tabler {
+  width: 70px;
+  height: 70px;
+
+  margin-bottom: 18px;
+
+  opacity: 0.7;
+}
+
+.empty-state h4 {
+  font-size: 20px;
+  font-weight: 700;
+
+  color: #374151;
+
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* =========================================================
+PAGINATOR
+========================================================= */
+
+mat-paginator {
+  margin-top: 24px;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* =========================================================
+MATERIAL INPUTS
+========================================================= */
+
+.mat-mdc-form-field {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: #e5e7eb !important;
+  }
+
+  &.mat-focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: #5b8def !important;
+    }
+  }
+}
+
+/* =========================================================
+RESPONSIVE
+========================================================= */
+
+@media (max-width: 992px) {
+  .progress-wrapper {
+    width: 120px;
+  }
+
+  .stats-card h2 {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 768px) {
+
+  .stats-card {
+    margin-bottom: 18px;
+  }
+
+  .book-cover {
+    width: 55px;
+    height: 78px;
+  }
+
+  .progress-wrapper {
+    width: 100px;
+  }
+
+  .status-badge {
+    min-width: auto;
+    padding: 7px 10px;
+  }
+
+  table {
+    min-width: 900px;
+  }
+}

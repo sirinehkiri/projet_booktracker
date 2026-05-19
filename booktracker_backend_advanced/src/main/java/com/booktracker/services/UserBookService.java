@@ -80,4 +80,13 @@ public class UserBookService {
         return repo.findByUserIdAndBookId(userId, bookId)
                 .orElse(null);
     }
+
+    public void deleteBook(Long id) {
+
+        UserBook book = repo.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Book not found"));
+
+        repo.delete(book);
+    }
 }

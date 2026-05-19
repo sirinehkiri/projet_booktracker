@@ -32,6 +32,7 @@ public class ReadingService {
         ReadingProgress progress = new ReadingProgress();
         progress.setDate(LocalDate.now());
         progress.setPagesRead(req.getPagesRead());
+        progress.setReadingTime(req.getReadingTime());
         progress.setUserBook(userBook);
 
         progressRepository.save(progress);

@@ -1,86 +1,267 @@
-<!-- Statistics -->
+<!-- ========================================================= -->
+<!-- PAGE HEADER -->
+<!-- ========================================================= -->
+
+<div
+  class="d-flex align-items-center justify-content-between m-b-24 flex-wrap gap-3"
+>
+  <div>
+    <h2 class="f-w-700 m-0">My Books</h2>
+
+    <span class="text-muted">
+      Manage and track your reading journey
+    </span>
+  </div>
+</div>
+
+<!-- ========================================================= -->
+<!-- STATISTICS -->
+<!-- ========================================================= -->
 
 <div class="row">
 
-  <div class="col-sm-6 col-lg-3">
-    <mat-card class="shadow-none">
-      <div
-        class="p-30 bg-light-primary rounded text-center cursor-pointer"
-        (click)="filterStatus('')"
-      >
-        <h2 class="text-primary f-w-700">{{ totalBooks }}</h2>
-        <p class="m-0 text-primary">Total Books</p>
-      </div>
-    </mat-card>
-  </div>
+  <!-- TOTAL -->
 
   <div class="col-sm-6 col-lg-3">
-    <mat-card class="shadow-none">
-      <div
-        class="p-30 bg-light-warning rounded text-center cursor-pointer"
-        (click)="filterStatus('reading')"
-      >
-        <h2 class="text-warning f-w-700">{{ readingBooks }}</h2>
-        <p class="m-0 text-warning">Reading</p>
-      </div>
+
+    <mat-card
+      class="stats-card bg-total"
+      (click)="filterStatus('')"
+    >
+
+      <mat-card-content>
+
+        <div
+          class="d-flex align-items-center justify-content-between"
+        >
+
+          <div>
+
+            <h2>{{ totalBooks }}</h2>
+
+            <span>Total Books</span>
+
+          </div>
+
+          <div class="stats-icon">
+
+            <i-tabler name="books"></i-tabler>
+
+          </div>
+
+        </div>
+
+      </mat-card-content>
+
     </mat-card>
+
   </div>
 
-  <div class="col-sm-6 col-lg-3">
-    <mat-card class="shadow-none">
-      <div
-        class="p-30 bg-light-success rounded text-center cursor-pointer"
-        (click)="filterStatus('completed')"
-      >
-        <h2 class="text-success f-w-700">{{ completedBooks }}</h2>
-        <p class="m-0 text-success">Completed</p>
-      </div>
-    </mat-card>
-  </div>
+  <!-- READING -->
 
   <div class="col-sm-6 col-lg-3">
-    <mat-card class="shadow-none">
-      <div
-        class="p-30 bg-light-info rounded text-center cursor-pointer"
-        (click)="filterStatus('wishlist')"
-      >
-        <h2 class="text-info f-w-700">{{ wishlistBooks }}</h2>
-        <p class="m-0 text-info">Wishlist</p>
-      </div>
+
+    <mat-card
+      class="stats-card bg-reading"
+      (click)="filterStatus('READING')"
+    >
+
+      <mat-card-content>
+
+        <div
+          class="d-flex align-items-center justify-content-between"
+        >
+
+          <div>
+
+            <h2>{{ readingBooks }}</h2>
+
+            <span>Reading</span>
+
+          </div>
+
+          <div class="stats-icon">
+
+            <i-tabler name="book"></i-tabler>
+
+          </div>
+
+        </div>
+
+      </mat-card-content>
+
     </mat-card>
+
+  </div>
+
+  <!-- COMPLETED -->
+
+  <div class="col-sm-6 col-lg-3">
+
+    <mat-card
+      class="stats-card bg-completed"
+      (click)="filterStatus('READ')"
+    >
+
+      <mat-card-content>
+
+        <div
+          class="d-flex align-items-center justify-content-between"
+        >
+
+          <div>
+
+            <h2>{{ completedBooks }}</h2>
+
+            <span>Completed</span>
+
+          </div>
+
+          <div class="stats-icon">
+
+            <i-tabler name="circle-check"></i-tabler>
+
+          </div>
+
+        </div>
+
+      </mat-card-content>
+
+    </mat-card>
+
+  </div>
+
+  <!-- WISHLIST -->
+
+  <div class="col-sm-6 col-lg-3">
+
+    <mat-card
+      class="stats-card bg-wishlist"
+      (click)="filterStatus('WANT_TO_READ')"
+    >
+
+      <mat-card-content>
+
+        <div
+          class="d-flex align-items-center justify-content-between"
+        >
+
+          <div>
+
+            <h2>{{ wishlistBooks }}</h2>
+
+            <span>Wishlist</span>
+
+          </div>
+
+          <div class="stats-icon">
+
+            <i-tabler name="heart"></i-tabler>
+
+          </div>
+
+        </div>
+
+      </mat-card-content>
+
+    </mat-card>
+
   </div>
 
 </div>
 
-<!-- Search -->
+<!-- ========================================================= -->
+<!-- SEARCH + FILTER -->
+<!-- ========================================================= -->
 
-<mat-card class="cardWithShadow">
+<mat-card class="cardWithShadow m-b-24">
+
   <mat-card-content>
 
-    <div class="row justify-content-between">
+    <div class="row align-items-center">
 
-      <div class="col-sm-4">
+      <!-- SEARCH -->
 
-        <mat-form-field appearance="outline" class="w-100">
+      <div class="col-md-5">
+
+        <mat-form-field
+          appearance="outline"
+          class="w-100"
+        >
+
+          <mat-label>Search books</mat-label>
 
           <input
             matInput
-            placeholder="Search Books..."
+            placeholder="Title, author, genre..."
             (keyup)="applyFilter($any($event.target).value)"
           />
 
           <mat-icon matSuffix>
+
             <i-tabler name="search"></i-tabler>
+
           </mat-icon>
 
         </mat-form-field>
 
       </div>
 
-      <div class="col-sm-4 text-end">
+      <!-- STATUS FILTER -->
 
-        <button mat-flat-button color="primary">
-          Add Book
+      <div class="col-md-3">
+
+        <mat-form-field
+          appearance="outline"
+          class="w-100"
+        >
+
+          <mat-label>Status</mat-label>
+
+          <mat-select
+            (selectionChange)="filterStatus($event.value)"
+          >
+
+            <mat-option value="">
+              All
+            </mat-option>
+
+            <mat-option value="READING">
+              Reading
+            </mat-option>
+
+            <mat-option value="READ">
+              Completed
+            </mat-option>
+
+            <mat-option value="WANT_TO_READ">
+              Want To Read
+            </mat-option>
+
+          </mat-select>
+
+        </mat-form-field>
+
+      </div>
+
+      <!-- REFRESH -->
+
+      <div class="col-md-4 text-end">
+
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="loadBooks()"
+        >
+
+          <i-tabler
+            name="refresh"
+            class="icon-18 m-r-4"
+          >
+          </i-tabler>
+
+          Refresh
+
         </button>
 
       </div>
@@ -88,159 +269,383 @@
     </div>
 
   </mat-card-content>
+
 </mat-card>
 
-<!-- Table -->
+<!-- ========================================================= -->
+<!-- TABLE -->
+<!-- ========================================================= -->
 
 <mat-card class="cardWithShadow">
+
   <mat-card-content>
 
     <div class="table-responsive">
 
-      <table mat-table [dataSource]="dataSource" class="w-100">
+      <table
+        mat-table
+        [dataSource]="dataSource"
+        class="w-100"
+      >
 
-        <!-- Cover -->
+        <!-- ================================================= -->
+        <!-- COVER -->
+        <!-- ================================================= -->
 
         <ng-container matColumnDef="cover">
-          <th mat-header-cell *matHeaderCellDef>Cover</th>
 
-          <td mat-cell *matCellDef="let book">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Cover
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let book"
+          >
 
             <img
-              [src]="book.pic"
-              width="60"
-              height="85"
-              class="rounded shadow"
-              style="object-fit: cover;"
+              [src]="
+                book.book?.pic
+              "
+              class="book-cover"
             />
 
           </td>
+
         </ng-container>
 
-        <!-- Title -->
+        <!-- ================================================= -->
+        <!-- TITLE -->
+        <!-- ================================================= -->
 
         <ng-container matColumnDef="title">
 
-          <th mat-header-cell *matHeaderCellDef>
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
             Book
           </th>
 
-          <td mat-cell *matCellDef="let book">
+          <td
+            mat-cell
+            *matCellDef="let book"
+          >
 
-            <h6 class="f-w-600 m-b-4">
-              {{ book.title }}
-            </h6>
+            <div class="book-info">
 
-            <span class="text-muted">
-              {{ book.author }}
+              <h6 class="m-b-4">
+
+                {{ book.book?.title }}
+
+              </h6>
+
+              <span class="text-muted">
+
+                {{ book.book?.author }}
+
+              </span>
+
+            </div>
+
+          </td>
+
+        </ng-container>
+
+        <!-- ================================================= -->
+        <!-- GENRE -->
+        <!-- ================================================= -->
+
+        <ng-container matColumnDef="genre">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Genre
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let book"
+          >
+
+            <span class="genre-chip">
+
+              {{ book.book?.genre }}
+
             </span>
 
           </td>
 
         </ng-container>
 
-        <!-- Genre -->
-
-        <ng-container matColumnDef="genre">
-
-          <th mat-header-cell *matHeaderCellDef>
-            Genre
-          </th>
-
-          <td mat-cell *matCellDef="let book">
-            {{ book.genre }}
-          </td>
-
-        </ng-container>
-
-        <!-- Status -->
+        <!-- ================================================= -->
+        <!-- STATUS -->
+        <!-- ================================================= -->
 
         <ng-container matColumnDef="status">
 
-          <th mat-header-cell *matHeaderCellDef>
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
             Status
           </th>
 
-          <td mat-cell *matCellDef="let book">
+          <td
+            mat-cell
+            *matCellDef="let book"
+          >
 
-            @if(book.status == 'reading') {
-              <span class="bg-light-warning p-x-12 p-y-4 rounded-pill">
-                Reading
-              </span>
-            }
+            <span
+              class="status-badge"
+              [ngClass]="{
+                'reading-badge':
+                  book.status === 'READING',
 
-            @if(book.status == 'completed') {
-              <span class="bg-light-success p-x-12 p-y-4 rounded-pill">
-                Completed
-              </span>
-            }
+                'completed-badge':
+                  book.status === 'READ',
 
-            @if(book.status == 'wishlist') {
-              <span class="bg-light-info p-x-12 p-y-4 rounded-pill">
-                Wishlist
-              </span>
-            }
+                'wishlist-badge':
+                  book.status === 'WANT_TO_READ'
+              }"
+            >
+
+              {{
+                book.status === 'READING'
+                  ? 'Reading'
+                  : book.status === 'READ'
+                  ? 'Completed'
+                  : book.status === 'WANT_TO_READ'
+                  ? 'Want To Read'
+                  : book.status
+              }}
+
+            </span>
 
           </td>
 
         </ng-container>
 
-        <!-- Progress -->
+        <!-- ================================================= -->
+        <!-- PROGRESS -->
+        <!-- ================================================= -->
 
         <ng-container matColumnDef="progress">
 
-          <th mat-header-cell *matHeaderCellDef>
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
             Progress
           </th>
 
-          <td mat-cell *matCellDef="let book">
+          <td
+            mat-cell
+            *matCellDef="let book"
+          >
 
-            <mat-progress-bar
-              mode="determinate"
-              [value]="book.progress"
-            >
-            </mat-progress-bar>
+            <div class="progress-wrapper">
 
-            <small>{{ book.progress }}%</small>
+              <mat-progress-bar
+                mode="determinate"
+                [value]="book.progress"
+              >
+              </mat-progress-bar>
+
+              <small class="f-w-600">
+
+                {{ book.progress }}%
+
+              </small>
+
+            </div>
 
           </td>
 
         </ng-container>
 
-        <!-- Action -->
+        <!-- ================================================= -->
+        <!-- PAGES -->
+        <!-- ================================================= -->
+
+        <ng-container matColumnDef="pages">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Pages
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let book"
+          >
+
+            <span class="f-w-600">
+
+              {{
+                book.pagesRead > book.totalPages
+                  ? book.totalPages
+                  : book.pagesRead
+              }}
+
+            </span>
+
+            /
+
+            {{ book.totalPages || 0 }}
+
+          </td>
+
+        </ng-container>
+
+        <!-- ================================================= -->
+        <!-- FINISH DATE -->
+        <!-- ================================================= -->
+
+        <ng-container matColumnDef="finishDate">
+
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
+            Finished
+          </th>
+
+          <td
+            mat-cell
+            *matCellDef="let book"
+          >
+
+            <span *ngIf="book.finishDate">
+
+              {{ book.finishDate | date:'mediumDate' }}
+
+            </span>
+
+            <span
+              *ngIf="!book.finishDate"
+              class="text-muted"
+            >
+
+              -
+
+            </span>
+
+          </td>
+
+        </ng-container>
+
+        <!-- ================================================= -->
+        <!-- ACTION -->
+        <!-- ================================================= -->
 
         <ng-container matColumnDef="action">
 
-          <th mat-header-cell *matHeaderCellDef>
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+          >
             Action
           </th>
 
-          <td mat-cell *matCellDef="let book">
+          <td
+            mat-cell
+            *matCellDef="let book"
+          >
 
-            <button mat-icon-button color="primary">
+            <!-- EDIT -->
+
+            <button
+              mat-icon-button
+              color="accent"
+              matTooltip="Edit Book"
+              [routerLink]="[
+                '/apps/blog/detail',
+                book.book.id
+              ]"
+            >
+
               <i-tabler name="edit"></i-tabler>
+
             </button>
 
-            <button mat-icon-button color="warn">
+            <!-- DELETE -->
+
+            <button
+              mat-icon-button
+              color="warn"
+              matTooltip="Delete Book"
+              (click)="deleteBook(book.id)"
+            >
+
               <i-tabler name="trash"></i-tabler>
+
             </button>
 
           </td>
 
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <!-- ================================================= -->
+        <!-- TABLE ROWS -->
+        <!-- ================================================= -->
 
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        <tr
+          mat-header-row
+          *matHeaderRowDef="displayedColumns"
+        >
+        </tr>
+
+        <tr
+          mat-row
+          *matRowDef="
+            let row;
+            columns: displayedColumns
+          "
+          class="table-row"
+        >
+        </tr>
 
       </table>
 
+      <!-- ================================================= -->
+      <!-- EMPTY STATE -->
+      <!-- ================================================= -->
+
+      <div
+        class="empty-state"
+        *ngIf="dataSource.data.length === 0"
+      >
+
+        <i-tabler name="book-off"></i-tabler>
+
+        <h4>No books found</h4>
+
+        <p>
+          Try changing your filters or adding books.
+        </p>
+
+      </div>
+
     </div>
 
+    <!-- ================================================= -->
+    <!-- PAGINATOR -->
+    <!-- ================================================= -->
+
     <mat-paginator
-      [pageSizeOptions]="[5,10,20]"
-      showFirstLastButtons>
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+    >
     </mat-paginator>
 
   </mat-card-content>
+
 </mat-card>
