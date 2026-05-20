@@ -1,6 +1,7 @@
 package com.booktracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ public class Review {
          cascade = CascadeType.ALL,
          orphanRemoval = true
  )
+ @JsonManagedReference
  private List<Reply> replies = new ArrayList<>();
 
  public long getLikesCount() {

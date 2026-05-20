@@ -319,22 +319,47 @@
           </span>
 
         </div>
-        <!-- REPLIES -->
+       <!-- REPLIES -->
 <div class="replies">
 
   <div
     class="reply"
     *ngFor="let rep of r.replies">
 
+    <!-- HEADER -->
     <div class="reply-header">
 
-      <strong>
-        {{ rep.user?.username }}
-      </strong>
+      <div class="reply-user">
 
+        <!-- AVATAR -->
+        <div class="reply-avatar">
+
+          {{ rep.user?.username?.charAt(0) }}
+
+        </div>
+
+        <div>
+
+          <div class="reply-username">
+
+            {{ rep.user?.username }}
+
+          </div>
+
+          <div class="reply-date">
+
+            {{ rep.date | date:'mediumDate' }}
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- DELETE -->
       <button
         *ngIf="rep.user?.id === currentUserId"
-        class="icon-btn danger"
+        class="reply-delete"
         (click)="deleteReply(rep.id, r)">
 
         <i class="fa-regular fa-trash-can"></i>
@@ -343,9 +368,12 @@
 
     </div>
 
-    <p>
+    <!-- CONTENT -->
+    <div class="reply-content">
+
       {{ rep.content }}
-    </p>
+
+    </div>
 
   </div>
 
@@ -356,23 +384,22 @@
 
   <textarea
     [(ngModel)]="r.replyContent"
-    placeholder="Reply...">
+    placeholder="Write your reply...">
   </textarea>
 
-  <button
-    class="btn small primary"
-    (click)="addReply(r)">
+  <div class="reply-actions">
 
-    Reply
+    <button
+      class="reply-btn"
+      (click)="addReply(r)">
 
-  </button>
+      Reply
+
+    </button>
+
+  </div>
 
 </div>
-
-      </div>
-
-    </div>
-
     <!-- QUOTES -->
     <h2 class="section-title">
 

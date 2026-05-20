@@ -1,5 +1,6 @@
 package com.booktracker.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,8 @@ public class Reply {
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "review_id")
+    @JsonBackReference
     private Review review;
 
     public Long getId() {
