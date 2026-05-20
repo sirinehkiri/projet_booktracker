@@ -40,6 +40,9 @@ export class AppBlogDetailsComponent implements OnInit {
 
   totalReadPages: number = 0;
 
+  editingQuoteId: number | null = null;
+  editingQuoteContent = '';
+
   constructor(
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
@@ -508,6 +511,151 @@ export class AppBlogDetailsComponent implements OnInit {
       },
 
       error: (err) => {
+        this.handleError(err);
+      }
+
+    });
+}
+
+editQuote(q: any): void {
+
+  this.editingQuoteId = q.id;
+
+  this.editingQuoteContent = q.content;
+}
+
+saveQuote(q: any): void {
+
+  if (!this.editingQuoteContent.trim()) {
+    return;
+  }
+
+  const payload = {
+    content: this.editingQuoteContent
+  };
+
+  this.bookService
+    .updateQuote(q.id, payload)
+    .subscribe({
+
+      next: (res: any) => {
+
+        q.content = res.content;
+
+        this.editingQuoteId = null;
+
+        this.editingQuoteContent = '';
+
+        this.showMessage('Quote updated');
+
+        this.cdr.markForCheck();
+      },
+
+      error: (err:any) => {
+        this.handleError(err);
+      }
+
+    });
+}
+
+cancelEditQuote(): void {
+
+  this.editingQuoteId = null;
+
+  this.editingQuoteContent = '';
+}
+
+deleteQuote(id: number): void {
+
+  const confirmDelete = confirm(
+    'Delete this quote ?'
+  );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  this.bookService
+    .deleteQuote(id)
+    .subscribe({
+
+      next: () => {
+
+        this.book.quotes =
+          this.book.quotes.filter(
+            (q: any) => q.id !== id
+          );
+
+        this.showMessage('Quote deleted');
+
+        this.cdr.markForCheck();
+      },
+
+      error: (err:any) => {
+        this.handleError(err);
+      }
+
+    });
+}
+
+addReply(review: any): void {
+
+  if (!review.replyContent?.trim()) {
+    return;
+  }
+
+  const payload = {
+    content: review.replyContent
+  };
+
+  this.bookService
+    .addReply(review.id, payload)
+    .subscribe({
+
+      next: (res: any) => {
+
+        if (!review.replies) {
+          review.replies = [];
+        }
+
+        review.replies.push(res);
+
+        review.replyContent = '';
+
+        this.showMessage('Reply added');
+
+        this.cdr.markForCheck();
+      },
+
+      error: (err:any) => {
+        this.handleError(err);
+      }
+
+    });
+}
+
+deleteReply(
+  replyId: number,
+  review: any
+): void {
+
+  this.bookService
+    .deleteReply(replyId)
+    .subscribe({
+
+      next: () => {
+
+        review.replies =
+          review.replies.filter(
+            (r: any) => r.id !== replyId
+          );
+
+        this.showMessage('Reply deleted');
+
+        this.cdr.markForCheck();
+      },
+
+      error: (err:any) => {
         this.handleError(err);
       }
 

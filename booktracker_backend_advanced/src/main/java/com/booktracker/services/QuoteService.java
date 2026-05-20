@@ -2,6 +2,7 @@ package com.booktracker.services;
 
 import com.booktracker.entity.Quote;
 import com.booktracker.entity.User;
+import com.booktracker.model.dto.QuoteRequest;
 import com.booktracker.repository.QuoteRepository;
 import org.springframework.stereotype.Service;
 
@@ -63,5 +64,48 @@ public class QuoteService {
         );
 
         return response;
+    }
+
+
+    public Quote updateQuote(
+            Long id,
+            QuoteRequest request,
+            String username
+    ) {
+        System.out.println(username);
+
+        Quote quote = quoteRepository
+                .findById(id)
+                .orElseThrow();
+
+        if (!quote.getUser()
+                .getUsername()
+                .equals(username)) {
+
+            throw new RuntimeException("Unauthorized");
+        }
+
+        quote.setContent(request.getContent());
+
+        return quoteRepository.save(quote);
+    }
+
+    public void deleteQuote(
+            Long id,
+            String username
+    ) {
+
+        Quote quote = quoteRepository
+                .findById(id)
+                .orElseThrow();
+
+        if (!quote.getUser()
+                .getUsername()
+                .equals(username)) {
+
+            throw new RuntimeException("Unauthorized");
+        }
+
+        quoteRepository.delete(quote);
     }
 }

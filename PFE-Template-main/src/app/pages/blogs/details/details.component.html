@@ -319,6 +319,55 @@
           </span>
 
         </div>
+        <!-- REPLIES -->
+<div class="replies">
+
+  <div
+    class="reply"
+    *ngFor="let rep of r.replies">
+
+    <div class="reply-header">
+
+      <strong>
+        {{ rep.user?.username }}
+      </strong>
+
+      <button
+        *ngIf="rep.user?.id === currentUserId"
+        class="icon-btn danger"
+        (click)="deleteReply(rep.id, r)">
+
+        <i class="fa-regular fa-trash-can"></i>
+
+      </button>
+
+    </div>
+
+    <p>
+      {{ rep.content }}
+    </p>
+
+  </div>
+
+</div>
+
+<!-- ADD REPLY -->
+<div class="reply-box">
+
+  <textarea
+    [(ngModel)]="r.replyContent"
+    placeholder="Reply...">
+  </textarea>
+
+  <button
+    class="btn small primary"
+    (click)="addReply(r)">
+
+    Reply
+
+  </button>
+
+</div>
 
       </div>
 
@@ -340,23 +389,84 @@
     </div>
 
     <div
-      class="quote card"
-      *ngFor="
-        let q of book.quotes;
-        trackBy: trackByQuote
-      ">
+  class="quote card"
+  *ngFor="
+    let q of book.quotes;
+    trackBy: trackByQuote
+  ">
 
-      <strong>
+  <!-- HEADER -->
+  <div class="review-header">
 
+    <div class="user-info">
+
+      <strong class="username">
         {{ q.user?.username }}
-
       </strong>
 
-      <p>
+    </div>
 
-        "{{ q.content }}"
+    <!-- ACTIONS -->
+    <div
+      class="actions"
+      *ngIf="q.user?.id === currentUserId">
 
-      </p>
+      <button
+        class="icon-btn"
+        (click)="editQuote(q)">
+
+        <i class="fa-solid fa-pen"></i>
+
+      </button>
+
+      <button
+        class="icon-btn danger"
+        (click)="deleteQuote(q.id)">
+
+        <i class="fa-regular fa-trash-can"></i>
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- CONTENT -->
+  <!-- VIEW -->
+<p *ngIf="editingQuoteId !== q.id">
+
+  "{{ q.content }}"
+
+</p>
+
+<!-- EDIT -->
+<div *ngIf="editingQuoteId === q.id">
+
+  <textarea
+    [(ngModel)]="editingQuoteContent">
+  </textarea>
+
+  <div class="edit-actions">
+
+    <button
+      class="btn primary"
+      (click)="saveQuote(q)">
+
+      Save
+
+    </button>
+
+    <button
+      class="btn secondary"
+      (click)="cancelEditQuote()">
+
+      Cancel
+
+    </button>
+
+  </div>
+
+</div>
       <div class="footer-actions">
 
   <button

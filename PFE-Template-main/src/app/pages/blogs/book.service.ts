@@ -311,5 +311,35 @@ voteQuote(id: number) {
     {},this.getHeaders()
   );
 }
+
+updateQuote(id: number, payload: any) {
+
+  return this.http.put(
+    `http://localhost:8081/quotes/${id}`,
+    payload,this.getHeaders()
+  );
+}
+
+deleteQuote(id: number) {
+
+  return this.http.delete(
+    `http://localhost:8081/quotes/${id}`,
+    this.getHeaders()
+  );
+}
+addReply(reviewId: number, payload: any) {
+
+  return this.http.post(
+    `http://localhost:8081/replies/${reviewId}`,
+    payload,this.getHeaders()
+  );
+}
+
+deleteReply(id: number) {
+
+  return this.http.delete(
+    `http://localhost:8081/replies/${id}` ,this.getHeaders()
+  );
+}
   
 }

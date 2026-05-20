@@ -3,6 +3,7 @@ package com.booktracker.controller;
 import com.booktracker.entity.Book;
 import com.booktracker.entity.Quote;
 import com.booktracker.entity.User;
+import com.booktracker.model.dto.QuoteRequest;
 import com.booktracker.repository.BookRepository;
 import com.booktracker.repository.QuoteRepository;
 import com.booktracker.repository.UserRepository;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/quotes")
@@ -60,6 +63,32 @@ public class QuoteController {
 
         return ResponseEntity.ok(
                 quoteService.voteQuote(id, user)
+        );
+    }
+
+    @PutMapping("/{id}")
+    public Quote updateQuote(
+            @PathVariable Long id,
+            @RequestBody QuoteRequest request,
+            Authentication authentication
+    ) {
+
+        return quoteService.updateQuote(
+                id,
+                request,
+                ((User) authentication.getPrincipal()).getUsername()
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteQuote(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+
+        quoteService.deleteQuote(
+                id,
+                ((User) authentication.getPrincipal()).getUsername()
         );
     }
 }

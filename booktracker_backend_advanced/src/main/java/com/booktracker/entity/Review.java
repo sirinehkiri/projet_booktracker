@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,12 @@ public class Review {
 
  @Transient
  private long likesCount;
+ @OneToMany(
+         mappedBy = "review",
+         cascade = CascadeType.ALL,
+         orphanRemoval = true
+ )
+ private List<Reply> replies = new ArrayList<>();
 
  public long getLikesCount() {
   return likesCount;
