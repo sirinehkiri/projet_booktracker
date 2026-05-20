@@ -30,26 +30,23 @@ public class UserBookService {
 
         if (existing != null) {
 
-            ReadingStatus oldStatus = existing.getStatus(); // 🔥 important
-
             existing.setStatus(status);
 
             if (status == ReadingStatus.READ) {
                 existing.setFinishDate(now);
-
-                // 🔥 mise à jour automatique des goals
-                if (oldStatus != ReadingStatus.READ) {
-                    readingGoalService.updateGoalsOnBookFinished(user, now);
-                }
-
             } else {
                 existing.setFinishDate(null);
             }
 
-            return repo.save(existing);
+            UserBook saved = repo.save(existing);
+
+            readingGoalService.recalculateBookGoals(user);
+
+            return saved;
         }
 
         UserBook ub = new UserBook();
+
         ub.setUser(user);
         ub.setBook(book);
         ub.setStatus(status);
@@ -57,12 +54,13 @@ public class UserBookService {
 
         if (status == ReadingStatus.READ) {
             ub.setFinishDate(now);
-
-            // 🔥 update goals immédiat
-            readingGoalService.updateGoalsOnBookFinished(user, now);
         }
 
-        return repo.save(ub);
+        UserBook saved = repo.save(ub);
+
+        readingGoalService.recalculateBookGoals(user);
+
+        return saved;
     }
 
     public List<UserBook> getUserBooks(Long userId) {
@@ -87,6 +85,11 @@ public class UserBookService {
                 .orElseThrow(() ->
                         new RuntimeException("Book not found"));
 
+        User user = book.getUser();
+
         repo.delete(book);
+
+        // 🔥 recalcul automatique
+        readingGoalService.recalculateBookGoals(user);
     }
 }

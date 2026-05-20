@@ -484,4 +484,4 @@ export class AppBlogDetailsComponent implements OnInit {
       'Something went wrong'
     );
   }
-}
+} 

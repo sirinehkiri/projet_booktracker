@@ -5,7 +5,11 @@ import com.booktracker.entity.Quote;
 import com.booktracker.entity.User;
 import com.booktracker.repository.BookRepository;
 import com.booktracker.repository.QuoteRepository;
+import com.booktracker.repository.UserRepository;
+import com.booktracker.services.QuoteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +23,14 @@ public class QuoteController {
 
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private final UserRepository userRepository;
+    private final QuoteService quoteService;
+
+    public QuoteController(UserRepository userRepository, QuoteService quoteService) {
+        this.userRepository = userRepository;
+        this.quoteService = quoteService;
+    }
 
     @PostMapping("/{bookId}")
     public Quote addQuote(@PathVariable Long bookId,
@@ -31,5 +43,23 @@ public class QuoteController {
         quote.setUser(user);
 
         return quoteRepository.save(quote);
+    }
+
+    @PostMapping("/{id}/vote")
+    public ResponseEntity<?> voteQuote(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+
+        User user =
+                userRepository
+                        .findByUsername(
+                                authentication.getName()
+                        )
+                        .orElseThrow();
+
+        return ResponseEntity.ok(
+                quoteService.voteQuote(id, user)
+        );
     }
 }

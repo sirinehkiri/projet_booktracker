@@ -136,33 +136,6 @@ public class ReadingGoalService {
 
         return goalRepository.save(goal);
     }
-
-    // =========================
-    // BOOKS AUTO UPDATE (IMPORTANT)
-    // =========================
-    public void updateGoalsOnBookFinished(User user, LocalDate finishedDate) {
-
-        List<ReadingGoal> goals = goalRepository.findByUser(user);
-
-        for (ReadingGoal goal : goals) {
-
-            if (goal.getMetric() == GoalMetric.BOOKS
-                    && !goal.isCompleted()
-                    && !finishedDate.isBefore(goal.getStartDate())
-                    && !finishedDate.isAfter(goal.getEndDate())) {
-
-                int updated = goal.getCurrentValue() + 1;
-                goal.setCurrentValue(updated);
-
-                if (updated >= goal.getTargetValue()) {
-                    goal.setCompleted(true);
-                }
-            }
-        }
-
-        goalRepository.saveAll(goals);
-    }
-
     // =========================
     // PROGRESS PERCENTAGE
     // =========================
@@ -283,5 +256,34 @@ public class ReadingGoalService {
 
             notificationRepository.save(notification);
         }
+    }
+
+
+    public void recalculateBookGoals(User user) {
+
+        List<ReadingGoal> goals = goalRepository.findByUser(user);
+
+        long totalBooksRead =
+                userBookRepository.countByUserIdAndStatus(
+                        user.getId(),
+                        ReadingStatus.READ
+                );
+
+        for (ReadingGoal goal : goals) {
+
+            if (goal.getMetric() == GoalMetric.BOOKS) {
+
+                int value = (int) totalBooksRead;
+
+                // ne jamais dépasser target
+                goal.setCurrentValue(value);
+
+                goal.setCompleted(
+                        value >= goal.getTargetValue()
+                );
+            }
+        }
+
+        goalRepository.saveAll(goals);
     }
 }

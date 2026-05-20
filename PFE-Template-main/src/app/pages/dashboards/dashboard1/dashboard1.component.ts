@@ -335,4 +335,4 @@ export class StatisticsComponent implements OnInit {
       }
     });
   }
-}
+}  
