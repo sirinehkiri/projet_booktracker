@@ -303,5 +303,13 @@ export class BookService {
       this.getHeaders()
     );
   }
+
+voteQuote(id: number) {
+
+  return this.http.post(
+    `http://localhost:8081/quotes/${id}/vote`,
+    {},this.getHeaders()
+  );
+}
   
 }

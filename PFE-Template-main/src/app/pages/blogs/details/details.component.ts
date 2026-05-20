@@ -484,4 +484,33 @@ export class AppBlogDetailsComponent implements OnInit {
       'Something went wrong'
     );
   }
+
+  voteQuote(quoteId: number): void {
+
+  const quote = this.book.quotes.find(
+    (q: any) => q.id === quoteId
+  );
+
+  if (!quote) {
+    return;
+  }
+
+  this.bookService.voteQuote(quoteId)
+    .subscribe({
+
+      next: (res: any) => {
+
+        quote.liked = res.liked;
+
+        quote.likesCount = res.likesCount;
+
+        this.cdr.markForCheck();
+      },
+
+      error: (err) => {
+        this.handleError(err);
+      }
+
+    });
+}
 } 

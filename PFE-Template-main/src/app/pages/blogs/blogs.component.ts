@@ -294,4 +294,6 @@ export class AppBlogsComponent implements OnInit {
   goToAdd(): void {
     this.router.navigate(['/admin/add-book']);
   }
+
+  
 }

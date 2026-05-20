@@ -357,6 +357,38 @@
         "{{ q.content }}"
 
       </p>
+      <div class="footer-actions">
+
+  <button
+    class="btn small like-btn"
+    (click)="voteQuote(q.id)">
+
+    <i
+      class="fa"
+      [ngClass]="
+        q.liked
+          ? 'fa-solid fa-heart'
+          : 'fa-regular fa-heart'
+      ">
+    </i>
+
+    <span>
+      {{ q.liked ? 'Liked' : 'Like' }}
+    </span>
+
+  </button>
+
+  <div class="likes-counter">
+
+    <i class="fa-solid fa-heart"></i>
+
+    <span>
+      {{ q.likesCount || 0 }}
+    </span>
+
+  </div>
+
+</div>
 
     </div>
 

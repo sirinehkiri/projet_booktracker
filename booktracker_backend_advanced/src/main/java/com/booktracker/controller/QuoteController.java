@@ -54,7 +54,7 @@ public class QuoteController {
         User user =
                 userRepository
                         .findByUsername(
-                                authentication.getName()
+                                ((User) authentication.getPrincipal()).getUsername()
                         )
                         .orElseThrow();
 
