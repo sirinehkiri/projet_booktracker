@@ -212,6 +212,7 @@
 
     </div>
 
+    <!-- REVIEW CARD -->
     <div
       class="review card"
       *ngFor="
@@ -285,6 +286,7 @@
       <!-- FOOTER -->
       <div class="footer-actions">
 
+        <!-- LIKE -->
         <button
           class="btn small like-btn"
           (click)="vote(r.id)">
@@ -319,36 +321,62 @@
           </span>
 
         </div>
-       <!-- REPLIES -->
-<div class="replies">
 
-  <div
-    class="reply"
-    *ngFor="let rep of r.replies">
+      </div>
 
-    <!-- HEADER -->
-    <div class="reply-header">
+      <!-- REPLIES -->
+      <div class="replies">
 
-      <div class="reply-user">
+        <div
+          class="reply"
+          *ngFor="let rep of r.replies">
 
-        <!-- AVATAR -->
-        <div class="reply-avatar">
+          <!-- HEADER -->
+          <div class="reply-header">
 
-          {{ rep.user?.username?.charAt(0) }}
+            <div class="reply-user">
 
-        </div>
+              <!-- AVATAR -->
+              <div class="reply-avatar">
 
-        <div>
+                {{ rep.user?.username?.charAt(0) }}
 
-          <div class="reply-username">
+              </div>
 
-            {{ rep.user?.username }}
+              <div>
+
+                <div class="reply-username">
+
+                  {{ rep.user?.username }}
+
+                </div>
+
+                <div class="reply-date">
+
+                  {{ rep.date | date:'mediumDate' }}
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- DELETE -->
+            <button
+              *ngIf="rep.user?.id === currentUserId"
+              class="reply-delete"
+              (click)="deleteReply(rep.id, r)">
+
+              <i class="fa-regular fa-trash-can"></i>
+
+            </button>
 
           </div>
 
-          <div class="reply-date">
+          <!-- CONTENT -->
+          <div class="reply-content">
 
-            {{ rep.date | date:'mediumDate' }}
+            {{ rep.content }}
 
           </div>
 
@@ -356,50 +384,30 @@
 
       </div>
 
-      <!-- DELETE -->
-      <button
-        *ngIf="rep.user?.id === currentUserId"
-        class="reply-delete"
-        (click)="deleteReply(rep.id, r)">
+      <!-- ADD REPLY -->
+      <div class="reply-box">
 
-        <i class="fa-regular fa-trash-can"></i>
+        <textarea
+          [(ngModel)]="r.replyContent"
+          placeholder="Write your reply...">
+        </textarea>
 
-      </button>
+        <div class="reply-actions">
+
+          <button
+            class="reply-btn"
+            (click)="addReply(r)">
+
+            Reply
+
+          </button>
+
+        </div>
+
+      </div>
 
     </div>
 
-    <!-- CONTENT -->
-    <div class="reply-content">
-
-      {{ rep.content }}
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- ADD REPLY -->
-<div class="reply-box">
-
-  <textarea
-    [(ngModel)]="r.replyContent"
-    placeholder="Write your reply...">
-  </textarea>
-
-  <div class="reply-actions">
-
-    <button
-      class="reply-btn"
-      (click)="addReply(r)">
-
-      Reply
-
-    </button>
-
-  </div>
-
-</div>
     <!-- QUOTES -->
     <h2 class="section-title">
 
@@ -415,117 +423,125 @@
 
     </div>
 
+    <!-- QUOTE CARD -->
     <div
-  class="quote card"
-  *ngFor="
-    let q of book.quotes;
-    trackBy: trackByQuote
-  ">
+      class="quote card"
+      *ngFor="
+        let q of book.quotes;
+        trackBy: trackByQuote
+      ">
 
-  <!-- HEADER -->
-  <div class="review-header">
+      <!-- HEADER -->
+      <div class="review-header">
 
-    <div class="user-info">
+        <div class="user-info">
 
-      <strong class="username">
-        {{ q.user?.username }}
-      </strong>
+          <strong class="username">
 
-    </div>
+            {{ q.user?.username }}
 
-    <!-- ACTIONS -->
-    <div
-      class="actions"
-      *ngIf="q.user?.id === currentUserId">
+          </strong>
 
-      <button
-        class="icon-btn"
-        (click)="editQuote(q)">
+        </div>
 
-        <i class="fa-solid fa-pen"></i>
+        <!-- ACTIONS -->
+        <div
+          class="actions"
+          *ngIf="q.user?.id === currentUserId">
 
-      </button>
+          <button
+            class="icon-btn"
+            (click)="editQuote(q)">
 
-      <button
-        class="icon-btn danger"
-        (click)="deleteQuote(q.id)">
+            <i class="fa-solid fa-pen"></i>
 
-        <i class="fa-regular fa-trash-can"></i>
+          </button>
 
-      </button>
+          <button
+            class="icon-btn danger"
+            (click)="deleteQuote(q.id)">
 
-    </div>
+            <i class="fa-regular fa-trash-can"></i>
 
-  </div>
+          </button>
 
-  <!-- CONTENT -->
-  <!-- VIEW -->
-<p *ngIf="editingQuoteId !== q.id">
+        </div>
 
-  "{{ q.content }}"
+      </div>
 
-</p>
+      <!-- VIEW -->
+      <p *ngIf="editingQuoteId !== q.id">
 
-<!-- EDIT -->
-<div *ngIf="editingQuoteId === q.id">
+        "{{ q.content }}"
 
-  <textarea
-    [(ngModel)]="editingQuoteContent">
-  </textarea>
+      </p>
 
-  <div class="edit-actions">
+      <!-- EDIT -->
+      <div *ngIf="editingQuoteId === q.id">
 
-    <button
-      class="btn primary"
-      (click)="saveQuote(q)">
+        <textarea
+          [(ngModel)]="editingQuoteContent">
+        </textarea>
 
-      Save
+        <div class="edit-actions">
 
-    </button>
+          <button
+            class="btn primary"
+            (click)="saveQuote(q)">
 
-    <button
-      class="btn secondary"
-      (click)="cancelEditQuote()">
+            Save
 
-      Cancel
+          </button>
 
-    </button>
+          <button
+            class="btn secondary"
+            (click)="cancelEditQuote()">
 
-  </div>
+            Cancel
 
-</div>
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
       <div class="footer-actions">
 
-  <button
-    class="btn small like-btn"
-    (click)="voteQuote(q.id)">
+        <button
+          class="btn small like-btn"
+          (click)="voteQuote(q.id)">
 
-    <i
-      class="fa"
-      [ngClass]="
-        q.liked
-          ? 'fa-solid fa-heart'
-          : 'fa-regular fa-heart'
-      ">
-    </i>
+          <i
+            class="fa"
+            [ngClass]="
+              q.liked
+                ? 'fa-solid fa-heart'
+                : 'fa-regular fa-heart'
+            ">
+          </i>
 
-    <span>
-      {{ q.liked ? 'Liked' : 'Like' }}
-    </span>
+          <span>
 
-  </button>
+            {{ q.liked ? 'Liked' : 'Like' }}
 
-  <div class="likes-counter">
+          </span>
 
-    <i class="fa-solid fa-heart"></i>
+        </button>
 
-    <span>
-      {{ q.likesCount || 0 }}
-    </span>
+        <div class="likes-counter">
 
-  </div>
+          <i class="fa-solid fa-heart"></i>
 
-</div>
+          <span>
+
+            {{ q.likesCount || 0 }}
+
+          </span>
+
+        </div>
+
+      </div>
 
     </div>
 
@@ -542,177 +558,6 @@
         (click)="addQuote()">
 
         Add Quote
-
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- STATUS MODAL -->
-<div
-  *ngIf="showStatusModal"
-  class="modal-backdrop"
-  (click)="closeStatusModal()">
-</div>
-
-<div
-  *ngIf="showStatusModal"
-  class="modal">
-
-  <div
-    class="modal-content"
-    (click)="$event.stopPropagation()">
-
-    <div class="modal-header">
-
-      <h3>
-        Update Reading Status
-      </h3>
-
-      <button
-        class="close-btn"
-        (click)="closeStatusModal()">
-
-        ✖
-
-      </button>
-
-    </div>
-
-    <div class="modal-body">
-
-      <button
-        class="status-btn"
-        (click)="setStatus('READ')">
-
-        Read
-
-      </button>
-
-      <button
-        class="status-btn"
-        (click)="setStatus('READING')">
-
-        Currently Reading
-
-      </button>
-
-      <button
-        class="status-btn"
-        (click)="setStatus('WANT_TO_READ')">
-
-        Want to Read
-
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- ACTIVITY MODAL -->
-<div
-  *ngIf="showActivity"
-  class="modal-backdrop"
-  (click)="closeActivity()">
-</div>
-
-<div
-  *ngIf="showActivity"
-  class="modal">
-
-  <div
-    class="modal-content"
-    (click)="$event.stopPropagation()">
-
-    <div class="modal-header">
-
-      <h3>
-        Update Reading Progress
-      </h3>
-
-      <button
-        class="close-btn"
-        (click)="closeActivity()">
-
-        ✖
-
-      </button>
-
-    </div>
-
-    <div class="modal-body">
-
-      <p class="book-title">
-
-        {{ book.title }}
-
-      </p>
-
-      <mat-form-field
-        appearance="outline"
-        class="full-width">
-
-        <mat-label>
-
-          Pages read today
-
-        </mat-label>
-
-        <input
-          matInput
-          type="number"
-          min="1"
-          [(ngModel)]="pagesRead">
-        </mat-form-field>
-        <mat-form-field
-            appearance="outline"
-            class="full-width">
-
-            <mat-label>
-
-              Reading time (minutes)
-
-            </mat-label>
-
-            <input
-              matInput
-              type="number"
-              min="1"
-              [(ngModel)]="readingTime">
-
-        </mat-form-field>
-
-      <div class="progress-preview">
-
-        Current:
-        {{ totalReadPages }}
-        /
-        {{ book.total_pages }}
-
-      </div>
-
-    </div>
-
-    <div class="modal-footer">
-
-      <button
-        class="btn secondary"
-        (click)="closeActivity()">
-
-        Cancel
-
-      </button>
-
-      <button
-        class="btn primary"
-        (click)="updateProgress()">
-
-        Save Progress
 
       </button>
 
