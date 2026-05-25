@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders
+} from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -8,15 +11,16 @@ import { Observable } from 'rxjs';
 export class ProfileService {
 
   private apiUrl =
-    'http://localhost:8081/api/profile';
+      'http://localhost:8081/api/profile';
 
   private booksApiUrl =
-    'http://localhost:8081/books';
+      'http://localhost:8081/books';
 
   constructor(private http: HttpClient) {}
 
   private getHeaders() {
     const token = localStorage.getItem('token');
+
     return {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`
@@ -29,24 +33,21 @@ export class ProfileService {
   // =====================================================
 
   getProfile(userId: number): Observable<any> {
-    const token = localStorage.getItem('token');
     return this.http.get<any>(
       `${this.apiUrl}/${userId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
+      this.getHeaders()
     );
   }
 
   // =====================================================
-  // ✅ GET RECOMMENDATIONS
+  // GET RECOMMENDATIONS BY USER ID
   // =====================================================
 
-  getRecommendations(): Observable<any[]> {
+  getRecommendations(
+    userId: number
+  ): Observable<any[]> {
     return this.http.get<any[]>(
-      `${this.booksApiUrl}/recommendations`,
+      `${this.booksApiUrl}/recommendations/${userId}`,
       this.getHeaders()
     );
   }

@@ -15,8 +15,7 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final UserBookRepository userBookRepository;
     private final ReviewRepository reviewRepository;
-    private final FollowRequestRepository
-            followRequestRepository;
+    private final FollowRequestRepository followRequestRepository;
 
     public UserProfileService(
             UserRepository userRepository,
@@ -27,23 +26,18 @@ public class UserProfileService {
         this.userRepository = userRepository;
         this.userBookRepository = userBookRepository;
         this.reviewRepository = reviewRepository;
-        this.followRequestRepository =
-                followRequestRepository;
+        this.followRequestRepository = followRequestRepository;
     }
 
     // =====================================================
     // GET USER PROFILE
     // =====================================================
 
-    public UserProfileResponse getUserProfile(
-            Long userId
-    ) {
+    public UserProfileResponse getUserProfile(Long userId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new RuntimeException(
-                                "User not found"
-                        )
+                        new RuntimeException("User not found")
                 );
 
         UserProfileResponse response =
@@ -58,22 +52,26 @@ public class UserProfileService {
         // 1. STATS
         // =====================================================
 
-        // ✅ Followers - eli ytebs3ouh
+        // Followers
         response.setFollowersCount(
                 followRequestRepository
                         .countByReceiverIdAndStatus(
-                                userId,
-                                "ACCEPTED"
+                                userId, "ACCEPTED"
                         )
         );
 
-        // Following - eli howa ytebs3hom
+        // Following -
         response.setFollowingCount(
                 followRequestRepository
                         .countBySenderIdAndStatus(
-                                userId,
-                                "ACCEPTED"
+                                userId, "ACCEPTED"
                         )
+        );
+
+        // ✅ FRIENDS -
+        response.setFriendsCount(
+                followRequestRepository
+                        .countFriendsByUserId(userId)
         );
 
         // Books read count
@@ -113,13 +111,16 @@ public class UserProfileService {
 
         List<Review> reviews =
                 reviewRepository
-                        .findByUserIdOrderByDateDesc(userId);
+                        .findByUserIdOrderByDateDesc(
+                                userId
+                        );
 
         response.setReviews(
                 reviews.stream()
                         .map(r -> {
                             ReviewSummaryDto dto =
                                     new ReviewSummaryDto();
+
                             dto.setId(r.getId());
                             dto.setBookId(
                                     r.getBook().getId()
@@ -133,6 +134,7 @@ public class UserProfileService {
                             dto.setRating(r.getRating());
                             dto.setComment(r.getComment());
                             dto.setDate(r.getDate());
+
                             return dto;
                         })
                         .collect(Collectors.toList())
@@ -152,8 +154,7 @@ public class UserProfileService {
             List<Review> friendsTopReviews =
                     reviewRepository
                             .findByUserIdInAndRatingGreaterThanEqual(
-                                    friendsIds,
-                                    4
+                                    friendsIds, 4
                             );
 
             List<BookSummaryDto> recommendations =

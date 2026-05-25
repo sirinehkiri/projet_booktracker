@@ -1,18 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { SocialService } from './social.service';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { MaterialModule } from 'src/app/material.module';
-import { RouterModule } from '@angular/router';
-import { TablerIconsModule } from 'angular-tabler-icons';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 @Component({
   templateUrl: './contact.component.html',
 })
 export class AppContactComponent implements OnInit {
-
   contacts: any[] = [];
   allContacts: any[] = [];
   requests: any[] = [];
@@ -38,11 +33,9 @@ export class AppContactComponent implements OnInit {
   loadContacts(): void {
     this.socialService.getContacts().subscribe({
       next: (data: any[]) => {
-
         this.allContacts = data;
         this.contacts = data;
 
-        // ✅ Load flows lkol contact
         this.contacts.forEach((contact: any) => {
           this.loadUserFlows(contact);
         });
@@ -54,31 +47,26 @@ export class AppContactComponent implements OnInit {
   }
 
   // =====================================================
-  // ✅ LOAD FLOWS COUNT
+  // LOAD FLOWS COUNT
   // =====================================================
 
   loadUserFlows(contact: any): void {
-    this.socialService
-      .getUserFlowsCount(contact.id)
-      .subscribe({
-        next: (flows: any) => {
-          contact.followersCount =
-            flows.followers || 0;
-          contact.followingCount =
-            flows.following || 0;
-          contact.totalFlows =
-            flows.total || 0;
-        },
-        error: () => {
-          contact.followersCount = 0;
-          contact.followingCount = 0;
-          contact.totalFlows = 0;
-        }
-      });
+    this.socialService.getUserFlowsCount(contact.id).subscribe({
+      next: (flows: any) => {
+        contact.followersCount = flows.followers || 0;
+        contact.followingCount = flows.following || 0;
+        contact.totalFlows = flows.total || 0;
+      },
+      error: () => {
+        contact.followersCount = 0;
+        contact.followingCount = 0;
+        contact.totalFlows = 0;
+      }
+    });
   }
 
   // =====================================================
-  // LOAD REQUESTS
+  // LOAD REQUESTS RECEIVED
   // =====================================================
 
   loadRequests(): void {
@@ -129,49 +117,33 @@ export class AppContactComponent implements OnInit {
   openDialog(): void {
     const dialogRef = this.dialog.open(
       AppContactDialogContentComponent,
-      { width: '600px' }
-    );
-
-    dialogRef.afterClosed().subscribe(
-      (selectedUser: any) => {
-        if (selectedUser) {
-          this.followUser(selectedUser.id);
-        }
+      {
+        width: '650px'
       }
     );
+
+    dialogRef.afterClosed().subscribe((changed: boolean) => {
+      if (changed) {
+        this.loadContacts();
+        this.loadRequests();
+        this.loadSentRequests();
+        this.loadNotifications();
+      }
+    });
   }
 
   // =====================================================
-  // FILTER
+  // FILTER CONTACTS
   // =====================================================
 
   applyFilter(event: Event): void {
-    const filterValue =
-      (event.target as HTMLInputElement)
-        .value.toLowerCase();
-    this.contacts = this.allContacts.filter(
-      (x: any) =>
-        x.username?.toLowerCase()
-          .includes(filterValue)
+    const filterValue = (event.target as HTMLInputElement)
+      .value
+      .toLowerCase();
+
+    this.contacts = this.allContacts.filter((x: any) =>
+      x.username?.toLowerCase().includes(filterValue)
     );
-  }
-
-  // =====================================================
-  // FOLLOW USER
-  // =====================================================
-
-  followUser(userId: number): void {
-    this.socialService
-      .sendFollowRequest(userId)
-      .subscribe({
-        next: () => {
-          this.loadSentRequests();
-          this.loadNotifications();
-        },
-        error: (err: any) => {
-          console.error('Error follow', err);
-        }
-      });
   }
 
   // =====================================================
@@ -184,6 +156,7 @@ export class AppContactComponent implements OnInit {
         this.requests = this.requests.filter(
           (req: any) => req.id !== id
         );
+
         this.loadContacts();
         this.loadNotifications();
         this.loadSentRequests();
@@ -204,6 +177,7 @@ export class AppContactComponent implements OnInit {
         this.requests = this.requests.filter(
           (req: any) => req.id !== id
         );
+
         this.loadNotifications();
         this.loadSentRequests();
       },
@@ -213,21 +187,23 @@ export class AppContactComponent implements OnInit {
     });
   }
 
-  getContactImage(contact: any): string | null {
+  // =====================================================
+  // IMAGE / INITIAL
+  // =====================================================
 
-  if (contact.image) {
-    return `http://localhost:8081/uploads/${contact.image}`;
+  getContactImage(contact: any): string | null {
+    if (contact?.image) {
+      return `http://localhost:8081/uploads/${contact.image}`;
+    }
+
+    return null;
   }
 
-  return null;
-}
-
-getContactInitial(contact: any): string {
-
-  return contact?.username
-    ? contact.username.charAt(0).toUpperCase()
-    : 'U';
-}
+  getContactInitial(contact: any): string {
+    return contact?.username
+      ? contact.username.charAt(0).toUpperCase()
+      : 'U';
+  }
 }
 
 // =====================================================
@@ -238,16 +214,14 @@ getContactInitial(contact: any): string {
   selector: 'app-dialog-content',
   templateUrl: 'contact-dialog-content.html',
 })
-export class AppContactDialogContentComponent
-  implements OnInit {
-
+export class AppContactDialogContentComponent implements OnInit {
   users: any[] = [];
   searchText: string = '';
+  changed: boolean = false;
+  loading: boolean = false;
 
   constructor(
-    public dialogRef: MatDialogRef<
-      AppContactDialogContentComponent
-    >,
+    public dialogRef: MatDialogRef<AppContactDialogContentComponent>,
     private socialService: SocialService,
     private router: Router
   ) {}
@@ -256,79 +230,163 @@ export class AppContactDialogContentComponent
     this.loadUsers();
   }
 
+  // =====================================================
+  // FILTERED USERS
+  // =====================================================
+
   get filteredUsers(): any[] {
     if (!this.searchText.trim()) {
       return this.users;
     }
-    return this.users.filter(
-      (u: any) =>
-        u.username.toLowerCase()
-          .includes(this.searchText.toLowerCase()) ||
-        u.email.toLowerCase()
-          .includes(this.searchText.toLowerCase())
+
+    const value = this.searchText.toLowerCase();
+
+    return this.users.filter((u: any) =>
+      u.username?.toLowerCase().includes(value) ||
+      u.email?.toLowerCase().includes(value)
     );
   }
 
+  // =====================================================
+  // ADD ID SAFELY
+  // =====================================================
+
+  private addIdToSet(set: Set<number>, value: any): void {
+    const id = Number(value);
+
+    if (id > 0 && !Number.isNaN(id)) {
+      set.add(id);
+    }
+  }
+
+  // =====================================================
+  // LOAD USERS BUT EXCLUDE:
+  // - current user
+  // - existing contacts/friends
+  // - sent requests
+  // - received requests
+  // =====================================================
+
   loadUsers(): void {
-    this.socialService.getUsers().subscribe({
-      next: (data: any[]) => {
-        const currentUserId =
-          +localStorage.getItem('userId')!;
-        this.users = data
-          .filter(u => u.id !== currentUserId)
-          .map(u => ({
-            ...u,
+    this.loading = true;
+
+    forkJoin({
+      users: this.socialService.getUsers(),
+      contacts: this.socialService.getContacts(),
+      sentRequests: this.socialService.getSentRequests(),
+      receivedRequests: this.socialService.getRequests()
+    }).subscribe({
+      next: ({
+        users,
+        contacts,
+        sentRequests,
+        receivedRequests
+      }) => {
+        const excludedIds = new Set<number>();
+
+        // current user
+        const currentUserId = Number(localStorage.getItem('userId'));
+        this.addIdToSet(excludedIds, currentUserId);
+
+        // existing contacts/friends
+        contacts.forEach((contact: any) => {
+          this.addIdToSet(excludedIds, contact.id);
+        });
+
+        // users you already sent request to
+        sentRequests.forEach((req: any) => {
+          this.addIdToSet(
+            excludedIds,
+            req.receiver?.id ?? req.receiverId
+          );
+        });
+
+        // users who already sent you request
+        receivedRequests.forEach((req: any) => {
+          this.addIdToSet(
+            excludedIds,
+            req.sender?.id ?? req.senderId
+          );
+        });
+
+        // keep only users not excluded
+        this.users = users
+          .filter((user: any) => !excludedIds.has(Number(user.id)))
+          .map((user: any) => ({
+            ...user,
             requestSent: false
           }));
+
+        this.loading = false;
       },
       error: (err: any) => {
         console.error('Error users', err);
+        this.loading = false;
       }
     });
   }
 
+  // =====================================================
+  // MESSAGE USER
+  // =====================================================
+
   messageUser(user: any): void {
-    this.dialogRef.close();
+    this.dialogRef.close(this.changed);
+
     this.router.navigate(
       ['/apps/chat'],
-      { queryParams: { userId: user.id } }
+      {
+        queryParams: {
+          userId: user.id
+        }
+      }
     );
   }
 
+  // =====================================================
+  // ADD FRIEND / SEND FOLLOW REQUEST
+  // =====================================================
+
   addFriend(user: any): void {
-    this.socialService
-      .sendFollowRequest(user.id)
-      .subscribe({
-        next: () => {
-          user.requestSent = true;
-        },
-        error: (err: any) => {
-          console.error(
-            'Error sending request',
-            err
-          );
-        }
-      });
+    user.requestSent = true;
+
+    this.socialService.sendFollowRequest(user.id).subscribe({
+      next: () => {
+        this.changed = true;
+
+        // remove from list after sending request
+        this.users = this.users.filter((u: any) => u.id !== user.id);
+      },
+      error: (err: any) => {
+        user.requestSent = false;
+        console.error('Error sending request', err);
+      }
+    });
   }
+
+  // =====================================================
+  // CLOSE DIALOG
+  // =====================================================
 
   closeDialog(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(this.changed);
   }
+
+  // =====================================================
+  // IMAGE / INITIAL
+  // =====================================================
 
   getContactImage(user: any): string | null {
+    if (user?.image) {
+      return `http://localhost:8081/uploads/${user.image}`;
+    }
 
-  if (user.image) {
-    return `http://localhost:8081/uploads/${user.image}`;
+    return null;
   }
 
-  return null;
-}
-
-getContactInitial(user: any): string {
-
-  return user?.username
-    ? user.username.charAt(0).toUpperCase()
-    : 'U';
-}
-  
+  getContactInitial(user: any): string {
+    return user?.username
+      ? user.username.charAt(0).toUpperCase()
+      : 'U';
+  }
 }

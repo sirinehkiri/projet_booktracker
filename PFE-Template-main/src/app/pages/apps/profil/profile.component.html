@@ -1,10 +1,6 @@
 @if (isLoading) {
   <div
-    class="
-      d-flex
-      justify-content-center
-      align-items-center
-    "
+    class="d-flex justify-content-center align-items-center"
     style="height: 60vh;"
   >
     <mat-spinner></mat-spinner>
@@ -21,43 +17,45 @@
     <div class="col-12 m-b-24">
       <mat-card class="cardWithShadow profile-header-card">
         <mat-card-content
-          class="
-            p-30
-            d-flex
-            align-items-center
-            gap-4
-            flex-wrap
-          "
+          class="p-30 d-flex align-items-center gap-4 flex-wrap"
         >
 
           <!-- AVATAR -->
           <div class="avatar-wrapper">
 
-          <!-- Si image existe -->
-          <img
-            *ngIf="getContactImage(); else initialBlock"
+            <!-- Si image existe -->
+            <img
+              *ngIf="getContactImage(); else initialBlock"
               [src]="getContactImage()!"
-            class="rounded-circle contact-image"
-            width="84"
-            height="84"
-          />
+              class="rounded-circle contact-image"
+              width="84"
+              height="84"
+              alt="profile image"
+            />
 
-          <!-- Sinon afficher initial -->
-          <ng-template #initialBlock>
-            <div
-              class="rounded-circle d-flex align-items-center justify-content-center contact-image"
-              style="
-                width: 84px;
-                height: 84px;
-                background-color: #1976d2;
-                color: white;
-                font-size: 30px;
-                font-weight: bold;
-              "
-            >
-              {{ getContactInitial() }}
-            </div>
-          </ng-template>
+            <!-- Sinon afficher initial -->
+            <ng-template #initialBlock>
+              <div
+                class="
+                  rounded-circle
+                  d-flex
+                  align-items-center
+                  justify-content-center
+                  contact-image
+                "
+                style="
+                  width: 84px;
+                  height: 84px;
+                  background-color: #1976d2;
+                  color: white;
+                  font-size: 30px;
+                  font-weight: bold;
+                "
+              >
+                {{ getContactInitial() }}
+              </div>
+            </ng-template>
+
           </div>
 
           <div class="flex-1">
@@ -81,16 +79,16 @@
               {{ profile.email }}
             </p>
 
-            <!-- ✅ STATS -->
+            <!-- STATS -->
             <div class="d-flex gap-4 stats-container">
 
-              <!-- FRIEND FLOWS -->
+              <!-- ✅ FRIENDS -->
               <div class="stat-box">
                 <span class="stat-number">
-                  {{ profile.followingCount || 0 }}
+                  {{ profile.friendsCount || 0 }}
                 </span>
                 <span class="stat-label">
-                  🫂💖 Friend Flows
+                  🫂💖 Friends
                 </span>
               </div>
 
@@ -103,18 +101,6 @@
                 </span>
                 <span class="stat-label">
                   ✨📖 Books Read
-                </span>
-              </div>
-
-              <!-- ✅ CONTACTS COUNT -->
-              <div class="stat-box">
-                <span
-                  class="stat-number text-success"
-                >
-                  {{ profile.followersCount || 0 }}
-                </span>
-                <span class="stat-label">
-                  👥 Followers
                 </span>
               </div>
 
@@ -142,8 +128,7 @@
           <!-- ============================================ -->
 
           <mat-tab
-            label="📘✨ Completed Reads
-              ({{profile.readBooks?.length || 0}})"
+            label="📘✨ Completed Reads ({{ profile.readBooks?.length || 0 }})"
           >
             <div class="p-24">
               <div class="row">
@@ -161,13 +146,17 @@
                     "
                   >
                     <mat-card class="book-card h-100">
+
                       <img
                         mat-card-image
-                        [src]="book.pic ||
-                          'assets/images/default-book.png'"
+                        [src]="
+                          book.pic ||
+                          'assets/images/default-book.png'
+                        "
                         alt="book cover"
                         class="book-cover"
                       />
+
                       <mat-card-content class="p-16">
                         <h4
                           class="
@@ -179,17 +168,26 @@
                         >
                           {{ book.title }}
                         </h4>
+
                         <p
-                          class="text-muted f-s-12 m-b-0"
+                          class="
+                            text-muted
+                            f-s-12
+                            m-b-0
+                          "
                         >
                           {{ book.author }}
                         </p>
                       </mat-card-content>
+
                     </mat-card>
                   </div>
                 }
 
-                @if (profile.readBooks?.length === 0) {
+                @if (
+                  !profile.readBooks ||
+                  profile.readBooks.length === 0
+                ) {
                   <p
                     class="
                       text-muted
@@ -211,8 +209,7 @@
           <!-- ============================================ -->
 
           <mat-tab
-            label="🌟📣 Feedback & Reviews
-              ({{profile.reviews?.length || 0}})"
+            label="🌟📣 Feedback & Reviews ({{ profile.reviews?.length || 0 }})"
           >
             <div class="p-24">
 
@@ -226,17 +223,23 @@
                   <mat-card-content
                     class="p-16 d-flex gap-3"
                   >
+
                     <img
-                      [src]="review.bookPic ||
-                        'assets/images/default-book.png'"
+                      [src]="
+                        review.bookPic ||
+                        'assets/images/default-book.png'
+                      "
                       class="review-book-img rounded"
                       width="60"
                       height="90"
+                      alt="review book image"
                     />
+
                     <div>
                       <h4 class="f-w-600 m-b-4">
                         {{ review.bookTitle }}
                       </h4>
+
                       <div
                         class="
                           d-flex
@@ -260,21 +263,34 @@
                           ></i-tabler>
                           {{ review.rating }} / 5
                         </span>
+
                         <span
-                          class="text-muted f-s-12 m-l-12"
+                          class="
+                            text-muted
+                            f-s-12
+                            m-l-12
+                          "
                         >
-                          {{ review.date | date:'mediumDate' }}
+                          {{
+                            review.date
+                              | date : 'mediumDate'
+                          }}
                         </span>
                       </div>
+
                       <p class="m-b-0 text-dark">
                         {{ review.comment }}
                       </p>
                     </div>
+
                   </mat-card-content>
                 </mat-card>
               }
 
-              @if (profile.reviews?.length === 0) {
+              @if (
+                !profile.reviews ||
+                profile.reviews.length === 0
+              ) {
                 <p
                   class="
                     text-muted
@@ -291,10 +307,11 @@
           </mat-tab>
 
           <!-- ============================================ -->
-          <!-- ✅ TAB 3: FOR YOU RECOMMENDATIONS -->
+          <!-- TAB 3: RECOMMENDATIONS -->
           <!-- ============================================ -->
 
           
+
         </mat-tab-group>
       </mat-card>
     </div>

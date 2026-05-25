@@ -21,7 +21,6 @@ export class UserBookService {
       Authorization: `Bearer ${token}`,
     });
   }
-
   getUserBooks(
     userId: number
   ): Observable<UserBook[]> {

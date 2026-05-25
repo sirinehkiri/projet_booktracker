@@ -627,4 +627,36 @@ public class ChatService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
     }
+    // =====================================================
+// ✅ GET MY FRIENDS (accepted follow requests)
+// =====================================================
+    @Transactional(readOnly = true)
+    public List<MemberDto> getMyFriends() {
+
+        User currentUser = getCurrentUser();
+
+        List<User> friends = followRequestRepository.findAll()
+                .stream()
+                .filter(req -> "ACCEPTED".equals(req.getStatus()))
+                .filter(req ->
+                        req.getSender().getId().equals(currentUser.getId())
+                                || req.getReceiver().getId().equals(currentUser.getId())
+                )
+                .map(req ->
+                        req.getSender().getId().equals(currentUser.getId())
+                                ? req.getReceiver()
+                                : req.getSender()
+                )
+                .distinct()
+                .collect(Collectors.toList());
+
+        return friends.stream()
+                .map(u -> new MemberDto(
+                        u.getId(),
+                        u.getUsername(),
+                        u.getEmail(),
+                        u.getImage()
+                ))
+                .collect(Collectors.toList());
+    }
 }

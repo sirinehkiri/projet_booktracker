@@ -63,6 +63,16 @@ public class ChatController {
     }
 
     // =====================================================
+    // ✅ GET FRIENDS
+    // =====================================================
+
+    @GetMapping("/friends")
+    public ResponseEntity<List<MemberDto>> getFriends() {
+        // Récupère tes amis acceptés (followers + following confirmés)
+        return ResponseEntity.ok(chatService.getMyFriends());
+    }
+
+    // =====================================================
     // GROUP CHAT
     // =====================================================
 
@@ -100,7 +110,7 @@ public class ChatController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/groups/{groupId}/leave")
+    @DeleteMapping("/groups/{groupId}/leave")  // Correction: c'est DELETE pas POST pour leave
     public ResponseEntity<Map<String, String>> leaveGroup(@PathVariable Long groupId) {
         try {
             return ResponseEntity.ok(chatService.leaveGroup(groupId));
@@ -109,7 +119,6 @@ public class ChatController {
         }
     }
 
-    // endpoint متاعك الأصلي
     @PostMapping("/groups/{groupId}/rejoin")
     public ResponseEntity<Map<String, String>> rejoinGroup(@PathVariable Long groupId) {
         try {
@@ -119,7 +128,6 @@ public class ChatController {
         }
     }
 
-    // ✅ alias باش إذا الfront يستعمل /join زادة يخدم
     @PostMapping("/groups/{groupId}/join")
     public ResponseEntity<Map<String, String>> joinGroupAlias(@PathVariable Long groupId) {
         try {
@@ -130,16 +138,14 @@ public class ChatController {
     }
 
     // =====================================================
-    // ✅ USERS FROM DB (SEARCH)
+    // USERS & MEMBERS
     // =====================================================
+
     @GetMapping("/users")
     public ResponseEntity<List<MemberDto>> searchUsers(@RequestParam(required = false) String q) {
         return ResponseEntity.ok(chatService.searchUsers(q));
     }
 
-    // =====================================================
-    // ✅ ADD MEMBER TO GROUP (كان ناقص)
-    // =====================================================
     @PostMapping("/groups/{groupId}/add-member/{userId}")
     public ResponseEntity<Map<String, String>> addMemberToGroup(
             @PathVariable Long groupId,

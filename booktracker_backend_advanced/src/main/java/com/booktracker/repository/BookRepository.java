@@ -12,7 +12,7 @@ public interface BookRepository
         extends JpaRepository<Book, Long> {
 
     // =====================================================
-    // ALL BOOKS - jdid loul
+    // ALL BOOKS
     // =====================================================
 
     @Query("""

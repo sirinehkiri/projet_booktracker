@@ -6,13 +6,13 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SocialService {
-
   private apiUrl = 'http://localhost:8081/api/social';
 
   constructor(private http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
+
     return new HttpHeaders({
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -45,9 +45,7 @@ export class SocialService {
   // SEND FOLLOW REQUEST
   // =====================================================
 
-  sendFollowRequest(
-    receiverId: number
-  ): Observable<any> {
+  sendFollowRequest(receiverId: number): Observable<any> {
     return this.http.post(
       `${this.apiUrl}/follow`,
       { receiverId },
@@ -56,7 +54,7 @@ export class SocialService {
   }
 
   // =====================================================
-  // GET REQUESTS
+  // GET REQUESTS RECEIVED
   // =====================================================
 
   getRequests(): Observable<any[]> {
@@ -113,12 +111,10 @@ export class SocialService {
   }
 
   // =====================================================
-  // ✅ GET FLOWS COUNT
+  // GET FLOWS COUNT
   // =====================================================
 
-  getUserFlowsCount(
-    userId: number
-  ): Observable<any> {
+  getUserFlowsCount(userId: number): Observable<any> {
     return this.http.get<any>(
       `${this.apiUrl}/users/${userId}/flows`,
       { headers: this.getHeaders() }

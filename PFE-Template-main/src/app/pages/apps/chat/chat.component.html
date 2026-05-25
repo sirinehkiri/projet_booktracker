@@ -15,13 +15,25 @@
       (open)="sidePanelOpened = true"
       (close)="sidePanelOpened = false"
     >
-      <ng-scrollbar class="position-relative" style="height: 100%">
+      <ng-scrollbar
+        class="position-relative"
+        style="height: 100%"
+      >
 
         <!-- HEADER -->
-        <div class="p-24 d-flex align-items-center justify-content-between">
-          <h4 class="mat-subtitle-1 f-s-18 f-w-600 m-b-0">Messages</h4>
+        <div
+          class="p-24 d-flex align-items-center justify-content-between"
+        >
+          <h4
+            class="mat-subtitle-1 f-s-18 f-w-600 m-b-0"
+          >
+            Messages
+          </h4>
 
-          <div class="d-flex align-items-center" style="gap: 4px;">
+          <div
+            class="d-flex align-items-center"
+            style="gap: 4px;"
+          >
             <!-- JOIN GROUP BTN -->
             <button
               mat-icon-button
@@ -32,11 +44,11 @@
               <mat-icon>group</mat-icon>
             </button>
 
-            <!-- CREATE GROUP BTN -->
+            <!-- ✅ CREATE GROUP BTN -->
             <button
               mat-icon-button
               color="primary"
-              (click)="showCreateGroupForm = !showCreateGroupForm"
+              (click)="toggleCreateGroupForm()"
               matTooltip="Create a group"
             >
               <mat-icon>group_add</mat-icon>
@@ -46,17 +58,30 @@
 
         <!-- SEARCH -->
         <div class="p-x-24">
-          <mat-form-field appearance="outline" class="w-100">
-            <input matInput placeholder="Search chats..." [(ngModel)]="searchText" />
+          <mat-form-field
+            appearance="outline"
+            class="w-100"
+          >
+            <input
+              matInput
+              placeholder="Search chats..."
+              [(ngModel)]="searchText"
+            />
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
         </div>
 
-        <!-- CREATE GROUP FORM -->
-        <div *ngIf="showCreateGroupForm" class="p-x-24 p-b-16">
+        <!-- ✅ CREATE GROUP FORM (uses FRIENDS not contacts) -->
+        <div
+          *ngIf="showCreateGroupForm"
+          class="p-x-24 p-b-16"
+        >
           <div class="group-create-box">
 
-            <mat-form-field appearance="outline" class="w-100">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+            >
               <mat-label>Group name</mat-label>
               <input
                 matInput
@@ -65,15 +90,104 @@
               />
             </mat-form-field>
 
-            <div class="m-b-12 f-w-600">Select Members</div>
+            <div class="m-b-12 f-w-600">
+              Select Friends to Add
+            </div>
 
+            <!-- ✅ FRIENDS LIST (not contacts) -->
             <div class="members-box">
-              @for(contact of contacts; track contact.id) {
+
+              <!-- No friends message -->
+              <div
+                *ngIf="friends.length === 0"
+                class="text-muted text-center p-y-12"
+              >
+                😔 You have no friends yet.
+                Add friends first!
+              </div>
+
+              @for(
+                friend of friends;
+                track friend.id
+              ) {
                 <mat-checkbox
-                  [checked]="selectedMemberIds.includes(contact.id)"
-                  (change)="toggleMember(contact.id, $event.checked)"
+                  [checked]="
+                    selectedMemberIds.includes(
+                      friend.id
+                    )
+                  "
+                  (change)="
+                    toggleMember(
+                      friend.id,
+                      $event.checked
+                    )
+                  "
                 >
-                  {{ contact.username }}
+                  <div
+                    class="d-flex align-items-center"
+                    style="gap: 8px;"
+                  >
+                    <!-- FRIEND AVATAR -->
+                    <div
+                      class="
+                        rounded-circle
+                        overflow-hidden
+                        d-flex
+                        align-items-center
+                        justify-content-center
+                      "
+                      style="
+                        width: 28px;
+                        height: 28px;
+                        min-width: 28px;
+                      "
+                    >
+                      <img
+                        *ngIf="
+                          friend.image;
+                          else friendInitial
+                        "
+                        [src]="
+                          'http://localhost:8081/uploads/' +
+                          friend.image
+                        "
+                        width="28"
+                        height="28"
+                        style="object-fit: cover;"
+                      />
+
+                      <ng-template #friendInitial>
+                        <div
+                          class="
+                            w-100
+                            h-100
+                            d-flex
+                            align-items-center
+                            justify-content-center
+                            text-white
+                            f-w-600
+                          "
+                          style="font-size: 12px;"
+                          [ngStyle]="{
+                            background: getMemberColor(
+                              friend.username
+                            )
+                          }"
+                        >
+                          {{
+                            friend.username
+                              ?.charAt(0)
+                              | uppercase
+                          }}
+                        </div>
+                      </ng-template>
+                    </div>
+
+                    <!-- FRIEND NAME -->
+                    <span>
+                      {{ friend.username }}
+                    </span>
+                  </div>
                 </mat-checkbox>
               }
             </div>
@@ -99,7 +213,10 @@
             <h5 class="m-0">Direct Messages</h5>
           </div>
 
-          @for(contact of filteredContacts; track contact.id) {
+          @for(
+            contact of filteredContacts;
+            track contact.id
+          ) {
             <mat-list-item
               role="listitem"
               (click)="onSelect(contact)"
@@ -110,55 +227,99 @@
               lines="2"
             >
               <div
-                class="d-flex align-items-center justify-content-between w-100 p-x-16 p-b-4 h-100"
+                class="
+                  d-flex
+                  align-items-center
+                  justify-content-between
+                  w-100
+                  p-x-16
+                  p-b-4
+                  h-100
+                "
                 matListItemTitle
               >
                 <div class="d-flex align-items-center">
                   <!-- AVATAR -->
-                 <div class="avatar-wrapper">
+                  <div class="avatar-wrapper">
+                    <img
+                      *ngIf="
+                        getUserImage(contact);
+                        else contactInitial
+                      "
+                      [src]="getUserImage(contact)!"
+                      class="rounded-circle"
+                      width="42"
+                      height="42"
+                      style="object-fit: cover;"
+                    />
 
-                  <!-- IMAGE -->
-                  <img
-                    *ngIf="getUserImage(contact); else contactInitial"
-                    [src]="getUserImage(contact)!"
-                    class="rounded-circle"
-                    width="42"
-                    height="42"
-                    style="object-fit: cover;"
-                  />
-
-                  <!-- INITIAL -->
-                  <ng-template #contactInitial>
-                    <div
-                      class="rounded-circle d-flex align-items-center justify-content-center bg-light-primary text-primary f-w-600"
-                      style="width: 42px; height: 42px;"
-                    >
-                      {{ getUserInitial(contact) }}
-                    </div>
-                  </ng-template>
-
-                </div>
+                    <ng-template #contactInitial>
+                      <div
+                        class="
+                          rounded-circle
+                          d-flex
+                          align-items-center
+                          justify-content-center
+                          bg-light-primary
+                          text-primary
+                          f-w-600
+                        "
+                        style="
+                          width: 42px;
+                          height: 42px;
+                        "
+                      >
+                        {{ getUserInitial(contact) }}
+                      </div>
+                    </ng-template>
+                  </div>
 
                   <!-- INFO -->
                   <div class="m-l-16">
-                    <h3 class="f-w-600 mat-subtitle-1 f-s-16 lh-sm m-b-4">
+                    <h3
+                      class="
+                        f-w-600
+                        mat-subtitle-1
+                        f-s-16
+                        lh-sm
+                        m-b-4
+                      "
+                    >
                       {{ contact.username }}
                     </h3>
 
                     <div class="chat-preview">
-                      <span class="preview-sender" *ngIf="contact.lastSenderName">
+                      <span
+                        class="preview-sender"
+                        *ngIf="contact.lastSenderName"
+                      >
                         {{ contact.lastSenderName }}:
                       </span>
-                      <span class="preview-message">{{ contact.lastMessage }}</span>
+                      <span class="preview-message">
+                        {{ contact.lastMessage }}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <!-- UNREAD BADGE -->
                 <span
-                  *ngIf="getUnreadCount(contact.id) > 0"
-                  class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                  style="width: 22px; height: 22px; font-size: 11px;"
+                  *ngIf="
+                    getUnreadCount(contact.id) > 0
+                  "
+                  class="
+                    bg-primary
+                    text-white
+                    rounded-circle
+                    d-flex
+                    align-items-center
+                    justify-content-center
+                  "
+                  style="
+                    width: 22px;
+                    height: 22px;
+                    font-size: 11px;
+                  "
                 >
                   {{ getUnreadCount(contact.id) }}
                 </span>
@@ -175,7 +336,10 @@
             <h5 class="m-0">Groups</h5>
           </div>
 
-          @for(group of filteredGroups; track group.id) {
+          @for(
+            group of filteredGroups;
+            track group.id
+          ) {
             <mat-list-item
               role="listitem"
               (click)="onSelectGroup(group)"
@@ -186,77 +350,165 @@
               lines="2"
             >
               <div
-                class="d-flex align-items-center justify-content-between w-100 p-x-16 p-b-4 h-100"
+                class="
+                  d-flex
+                  align-items-center
+                  justify-content-between
+                  w-100
+                  p-x-16
+                  p-b-4
+                  h-100
+                "
                 matListItemTitle
               >
                 <!-- LEFT -->
                 <div class="d-flex align-items-center">
                   <!-- GROUP AVATAR -->
                   <div
-                    class="rounded-circle d-flex align-items-center justify-content-center bg-purple text-white f-w-600"
-                    style="width: 42px; height: 42px;"
+                    class="
+                      rounded-circle
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                      bg-purple
+                      text-white
+                      f-w-600
+                    "
+                    style="
+                      width: 42px;
+                      height: 42px;
+                    "
                   >
-                    {{ group.name?.charAt(0) | uppercase }}
+                    {{
+                      group.name?.charAt(0)
+                        | uppercase
+                    }}
                   </div>
 
                   <!-- GROUP INFO -->
                   <div class="m-l-16 group-info">
-                    <h3 class="f-w-600 mat-subtitle-1 f-s-16 lh-sm m-b-4">
+                    <h3
+                      class="
+                        f-w-600
+                        mat-subtitle-1
+                        f-s-16
+                        lh-sm
+                        m-b-4
+                      "
+                    >
                       {{ group.name }}
                     </h3>
 
                     <!-- MEMBERS AVATARS -->
                     <div class="group-members-list">
-                      @for(member of group.members?.slice(0, 4); track member.id) {
+                      @for(
+                        member of group.members?.slice(
+                          0,
+                          4
+                        );
+                        track member.id
+                      ) {
                         <div
-                          class="member-mini-avatar overflow-hidden"
-                          [matTooltip]="member.username"
+                          class="
+                            member-mini-avatar
+                            overflow-hidden
+                          "
+                          [matTooltip]="
+                            member.username
+                          "
                         >
-
-                          <!-- IMAGE -->
                           <img
-                            *ngIf="member.image; else memberInitial"
-                            [src]="'http://localhost:8081/uploads/' + member.image"
+                            *ngIf="
+                              member.image;
+                              else memberInitial
+                            "
+                            [src]="
+                              'http://localhost:8081/uploads/' +
+                              member.image
+                            "
                             width="100%"
                             height="100%"
                             style="object-fit: cover;"
                           />
 
-                          <!-- INITIAL -->
-                          <ng-template #memberInitial>
+                          <ng-template
+                            #memberInitial
+                          >
                             <div
-                              class="w-100 h-100 d-flex align-items-center justify-content-center text-white f-w-600"
-                              [ngStyle]="{ 'background': getMemberColor(member.username) }"
+                              class="
+                                w-100
+                                h-100
+                                d-flex
+                                align-items-center
+                                justify-content-center
+                                text-white
+                                f-w-600
+                              "
+                              [ngStyle]="{
+                                background:
+                                  getMemberColor(
+                                    member.username
+                                  )
+                              }"
                             >
-                              {{ member.username?.charAt(0) | uppercase }}
+                              {{
+                                member.username?.charAt(
+                                  0
+                                ) | uppercase
+                              }}
                             </div>
                           </ng-template>
-
                         </div>
                       }
 
-                      <span class="more-members" *ngIf="group.members?.length > 4">
-                        +{{ group.members.length - 4 }}
+                      <span
+                        class="more-members"
+                        *ngIf="
+                          group.members?.length > 4
+                        "
+                      >
+                        +{{
+                          group.members.length - 4
+                        }}
                       </span>
                     </div>
 
                     <!-- LAST MESSAGE -->
                     <div class="chat-preview">
-                      <span class="preview-sender" *ngIf="group.lastSenderName">
+                      <span
+                        class="preview-sender"
+                        *ngIf="group.lastSenderName"
+                      >
                         {{ group.lastSenderName }}:
                       </span>
-                      <span class="preview-message">{{ group.lastMessage }}</span>
+                      <span class="preview-message">
+                        {{ group.lastMessage }}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <!-- RIGHT -->
-                <div class="d-flex align-items-center" style="gap: 6px;">
+                <div
+                  class="d-flex align-items-center"
+                  style="gap: 6px;"
+                >
                   <!-- UNREAD BADGE -->
                   <span
                     *ngIf="group.unreadCount > 0"
-                    class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                    style="width: 22px; height: 22px; font-size: 11px;"
+                    class="
+                      bg-primary
+                      text-white
+                      rounded-circle
+                      d-flex
+                      align-items-center
+                      justify-content-center
+                    "
+                    style="
+                      width: 22px;
+                      height: 22px;
+                      font-size: 11px;
+                    "
                   >
                     {{ group.unreadCount }}
                   </span>
@@ -267,9 +519,18 @@
                     mat-icon-button
                     class="leave-group-btn"
                     matTooltip="Leave group"
-                    (click)="confirmLeaveGroup($event, group)"
+                    (click)="
+                      confirmLeaveGroup($event, group)
+                    "
                   >
-                    <mat-icon style="font-size: 18px; width: 18px; height: 18px; color: #e53935;">
+                    <mat-icon
+                      style="
+                        font-size: 18px;
+                        width: 18px;
+                        height: 18px;
+                        color: #e53935;
+                      "
+                    >
                       exit_to_app
                     </mat-icon>
                   </button>
@@ -288,80 +549,164 @@
     <div class="w-100">
 
       <!-- TOOLBAR -->
-      <mat-toolbar class="no-shadow chat-right-panel bg-white d-flex align-items-center p-y-8 b-b-1">
-        <button (click)="chatnav.toggle()" class="m-r-10" mat-icon-button>
+      <mat-toolbar
+        class="
+          no-shadow
+          chat-right-panel
+          bg-white
+          d-flex
+          align-items-center
+          p-y-8
+          b-b-1
+        "
+      >
+        <button
+          (click)="chatnav.toggle()"
+          class="m-r-10"
+          mat-icon-button
+        >
           <mat-icon>short_text</mat-icon>
         </button>
 
-        <div class="d-flex align-items-center" *ngIf="selectedChat">
+        <div
+          class="d-flex align-items-center"
+          *ngIf="selectedChat"
+        >
           <div
-            class="rounded-circle d-flex align-items-center justify-content-center bg-light-primary text-primary f-w-600"
+            class="
+              rounded-circle
+              d-flex
+              align-items-center
+              justify-content-center
+              bg-light-primary
+              text-primary
+              f-w-600
+            "
             style="width: 40px; height: 40px;"
           >
-            {{ getSelectedTitle()?.charAt(0) | uppercase }}
+            {{
+              getSelectedTitle()?.charAt(0)
+                | uppercase
+            }}
           </div>
 
           <div class="m-l-16">
-            <div class="mat-subtitle-1 f-s-16 f-w-600 m-b-0">
+            <div
+              class="
+                mat-subtitle-1
+                f-s-16
+                f-w-600
+                m-b-0
+              "
+            >
               {{ getSelectedTitle() }}
             </div>
 
             <!-- MEMBERS TRIGGER -->
             <div
               class="group-members-trigger"
-              *ngIf="selectedChat?.type === 'group'"
+              *ngIf="
+                selectedChat?.type === 'group'
+              "
               [matMenuTriggerFor]="membersMenu"
             >
-              <mat-icon class="group-icon">group</mat-icon>
-              <span>{{ selectedChat?.data?.membersCount }} members</span>
+              <mat-icon class="group-icon">
+                group
+              </mat-icon>
+              <span>
+                {{
+                  selectedChat?.data?.membersCount
+                }}
+                members
+              </span>
             </div>
 
             <!-- MEMBERS MENU -->
-            <mat-menu #membersMenu="matMenu" class="members-menu">
+            <mat-menu
+              #membersMenu="matMenu"
+              class="members-menu"
+            >
+              <div class="members-menu-header">
+                Group Members
+              </div>
 
-              <div class="members-menu-header">Group Members</div>
-
-              <div *ngIf="!selectedChat?.data?.members?.length" class="members-empty">
+              <div
+                *ngIf="
+                  !selectedChat?.data?.members
+                    ?.length
+                "
+                class="members-empty"
+              >
                 No members found
               </div>
 
-              @for(member of selectedChat?.data?.members || []; track member.id) {
+              @for(
+                member of selectedChat?.data
+                  ?.members || [];
+                track member.id
+              ) {
                 <div class="member-item">
-                  <div class="member-avatar overflow-hidden p-0">
-                    <!-- IMAGE -->
+                  <div
+                    class="
+                      member-avatar
+                      overflow-hidden
+                      p-0
+                    "
+                  >
                     <img
-                      *ngIf="member.image; else memberMenuInitial"
-                      [src]="'http://localhost:8081/uploads/' + member.image"
+                      *ngIf="
+                        member.image;
+                        else memberMenuInitial
+                      "
+                      [src]="
+                        'http://localhost:8081/uploads/' +
+                        member.image
+                      "
                       width="100%"
                       height="100%"
                       style="object-fit: cover;"
                     />
 
-                    <!-- INITIAL -->
-                    <ng-template #memberMenuInitial>
+                    <ng-template
+                      #memberMenuInitial
+                    >
                       <div
-                        class="w-100 h-100 d-flex align-items-center justify-content-center"
+                        class="
+                          w-100
+                          h-100
+                          d-flex
+                          align-items-center
+                          justify-content-center
+                        "
                       >
-                        {{ member.username?.charAt(0) | uppercase }}
+                        {{
+                          member.username?.charAt(0)
+                            | uppercase
+                        }}
                       </div>
                     </ng-template>
-
                   </div>
+
                   <div class="member-info">
-                    <div class="member-name">{{ member.username }}</div>
-                    <div class="member-email">{{ member.email }}</div>
+                    <div class="member-name">
+                      {{ member.username }}
+                    </div>
+                    <div class="member-email">
+                      {{ member.email }}
+                    </div>
                   </div>
                 </div>
               }
 
               <mat-divider></mat-divider>
 
-              <!-- ✅ BUTTON Add member -->
-              <button mat-menu-item (click)="openAddMemberPanel()">
+              <button
+                mat-menu-item
+                (click)="openAddMemberPanel()"
+              >
                 <mat-icon>person_add</mat-icon>
                 Add member
               </button>
-
             </mat-menu>
           </div>
         </div>
@@ -373,14 +718,23 @@
         class="position-relative"
         #scrollContainer
       >
-        <mat-card-content class="chat-middle-box p-24">
-
+        <mat-card-content
+          class="chat-middle-box p-24"
+        >
           <!-- EMPTY STATE -->
-          <div *ngIf="!selectedChat" class="empty-chat-state">
-            <mat-icon class="empty-chat-icon">chat_bubble_outline</mat-icon>
-            <h3 class="empty-chat-title">No Conversation Selected</h3>
+          <div
+            *ngIf="!selectedChat"
+            class="empty-chat-state"
+          >
+            <mat-icon class="empty-chat-icon">
+              chat_bubble_outline
+            </mat-icon>
+            <h3 class="empty-chat-title">
+              No Conversation Selected
+            </h3>
             <p class="empty-chat-subtitle">
-              Select a contact or group from the left to start chatting
+              Select a contact or group from the
+              left to start chatting
             </p>
           </div>
 
@@ -389,73 +743,160 @@
             @if(isMine(c)) {
               <div class="message-row sent">
                 <div class="message-wrapper">
-                  <div class="message-sender text-right">You</div>
-                  <div class="message-bubble sent-bubble">{{ c.content }}</div>
-                  <div class="message-time text-right">
-                    {{ c.sentAt | date:'shortTime' }}
-                    <button class="delete-btn" (click)="deleteMessage(c.id)" matTooltip="Delete message">
-                      <mat-icon style="font-size: 14px; width: 14px; height: 14px;">close</mat-icon>
+                  <div
+                    class="
+                      message-sender
+                      text-right
+                    "
+                  >
+                    You
+                  </div>
+                  <div
+                    class="message-bubble sent-bubble"
+                  >
+                    {{ c.content }}
+                  </div>
+                  <div
+                    class="message-time text-right"
+                  >
+                    {{
+                      c.sentAt | date : 'shortTime'
+                    }}
+                    <button
+                      class="delete-btn"
+                      (click)="deleteMessage(c.id)"
+                      matTooltip="Delete message"
+                    >
+                      <mat-icon
+                        style="
+                          font-size: 14px;
+                          width: 14px;
+                          height: 14px;
+                        "
+                      >
+                        close
+                      </mat-icon>
                     </button>
                   </div>
                 </div>
-                <div class="message-avatar me-avatar">
-
-                  <div class="avatar-circle avatar-me p-0 overflow-hidden">
-
-                    <!-- IMAGE -->
+                <div
+                  class="message-avatar me-avatar"
+                >
+                  <div
+                    class="
+                      avatar-circle
+                      avatar-me
+                      p-0
+                      overflow-hidden
+                    "
+                  >
                     <img
-                      *ngIf="currentUserImage; else myInitial"
-                      [src]="'http://localhost:8081/uploads/' + currentUserImage"
+                      *ngIf="
+                        currentUserImage;
+                        else myInitial
+                      "
+                      [src]="
+                        'http://localhost:8081/uploads/' +
+                        currentUserImage
+                      "
                       width="100%"
                       height="100%"
                       style="object-fit: cover;"
                     />
 
-                    <!-- INITIAL -->
                     <ng-template #myInitial>
                       <div
-                        class="w-100 h-100 d-flex align-items-center justify-content-center"
+                        class="
+                          w-100
+                          h-100
+                          d-flex
+                          align-items-center
+                          justify-content-center
+                        "
                       >
-                        {{ currentUsername?.charAt(0) | uppercase }}
+                        {{
+                          currentUsername?.charAt(0)
+                            | uppercase
+                        }}
                       </div>
                     </ng-template>
-
                   </div>
-
                 </div>
               </div>
             }
 
             @if(!isMine(c)) {
               <div class="message-row received">
-                <div class="avatar-circle avatar-other p-0 overflow-hidden">
-
-                  <!-- IMAGE -->
+                <div
+                  class="
+                    avatar-circle
+                    avatar-other
+                    p-0
+                    overflow-hidden
+                  "
+                >
                   <img
-                    *ngIf="c.senderImage; else senderInitial"
-                    [src]="'http://localhost:8081/uploads/' + c.senderImage"
+                    *ngIf="
+                      c.senderImage;
+                      else senderInitial
+                    "
+                    [src]="
+                      'http://localhost:8081/uploads/' +
+                      c.senderImage
+                    "
                     width="100%"
                     height="100%"
                     style="object-fit: cover;"
                   />
 
-                  <!-- INITIAL -->
                   <ng-template #senderInitial>
                     <div
-                      class="w-100 h-100 d-flex align-items-center justify-content-center"
+                      class="
+                        w-100
+                        h-100
+                        d-flex
+                        align-items-center
+                        justify-content-center
+                      "
                     >
-                      {{ c.senderName?.charAt(0) | uppercase }}
+                      {{
+                        c.senderName?.charAt(0)
+                          | uppercase
+                      }}
                     </div>
                   </ng-template>
-
                 </div>
+
                 <div class="message-wrapper">
-                  <div class="message-sender">{{ getSenderName(c) }}</div>
-                  <div class="message-bubble received-bubble">{{ c.content }}</div>
+                  <div class="message-sender">
+                    {{ getSenderName(c) }}
+                  </div>
+                  <div
+                    class="
+                      message-bubble
+                      received-bubble
+                    "
+                  >
+                    {{ c.content }}
+                  </div>
                   <div class="message-time">
-                    {{ c.sentAt | date:'shortTime' }}
-                    <button class="delete-btn" (click)="deleteMessage(c.id)" matTooltip="Delete message">
-                      <mat-icon style="font-size: 14px; width: 14px; height: 14px;">close</mat-icon>
+                    {{
+                      c.sentAt | date : 'shortTime'
+                    }}
+                    <button
+                      class="delete-btn"
+                      (click)="deleteMessage(c.id)"
+                      matTooltip="Delete message"
+                    >
+                      <mat-icon
+                        style="
+                          font-size: 14px;
+                          width: 14px;
+                          height: 14px;
+                        "
+                      >
+                        close
+                      </mat-icon>
                     </button>
                   </div>
                 </div>
@@ -470,15 +911,26 @@
       <!-- INPUT -->
       <mat-divider></mat-divider>
       <div class="p-t-20 p-l-30 p-r-30 p-b-20">
-        <mat-form-field appearance="outline" class="w-100">
+        <mat-form-field
+          appearance="outline"
+          class="w-100"
+        >
           <mat-label>
-            {{ selectedChat?.type === 'group' ? 'Message the group' : 'Send a message' }}
+            {{
+              selectedChat?.type === 'group'
+                ? 'Message the group'
+                : 'Send a message'
+            }}
           </mat-label>
 
           <input
             matInput
             #myInput
-            [placeholder]="selectedChat?.type === 'group' ? 'Type a group message...' : 'Type a message...'"
+            [placeholder]="
+              selectedChat?.type === 'group'
+                ? 'Type a group message...'
+                : 'Type a message...'
+            "
             [(ngModel)]="msg"
             (keyup.enter)="OnAddMsg()"
             [disabled]="!selectedChat"
@@ -489,35 +941,58 @@
             matSuffix
             color="primary"
             (click)="OnAddMsg()"
-            [disabled]="!msg.trim() || !selectedChat"
+            [disabled]="
+              !msg.trim() || !selectedChat
+            "
             matTooltip="Send message"
           >
             <mat-icon>send</mat-icon>
           </button>
         </mat-form-field>
       </div>
-
     </div>
   </mat-sidenav-container>
 </mat-card>
 
 <!-- ================================================ -->
-<!-- LEAVE GROUP CONFIRM DIALOG -->
+<!-- LEAVE GROUP CONFIRM -->
 <!-- ================================================ -->
-<div class="leave-overlay" *ngIf="showLeaveConfirm" (click)="cancelLeave()">
-  <div class="leave-dialog" (click)="$event.stopPropagation()">
+<div
+  class="leave-overlay"
+  *ngIf="showLeaveConfirm"
+  (click)="cancelLeave()"
+>
+  <div
+    class="leave-dialog"
+    (click)="$event.stopPropagation()"
+  >
     <div class="leave-icon">🚪</div>
 
     <h3 class="leave-title">Leave Group?</h3>
 
     <p class="leave-message">
-      Are you sure you want to leave <strong>{{ leaveGroupTarget?.name }}</strong>?
-      You will no longer receive messages from this group.
+      Are you sure you want to leave
+      <strong>
+        {{ leaveGroupTarget?.name }}
+      </strong>
+      ? You will no longer receive messages from
+      this group.
     </p>
 
     <div class="leave-actions">
-      <button mat-stroked-button (click)="cancelLeave()">Cancel</button>
-      <button mat-raised-button color="warn" (click)="leaveGroup()">Leave Group</button>
+      <button
+        mat-stroked-button
+        (click)="cancelLeave()"
+      >
+        Cancel
+      </button>
+      <button
+        mat-raised-button
+        color="warn"
+        (click)="leaveGroup()"
+      >
+        Leave Group
+      </button>
     </div>
   </div>
 </div>
@@ -525,8 +1000,15 @@
 <!-- ================================================ -->
 <!-- JOIN GROUP PANEL -->
 <!-- ================================================ -->
-<div class="join-overlay" *ngIf="showJoinGroupPanel" (click)="closeJoinPanel()">
-  <div class="join-panel" (click)="$event.stopPropagation()">
+<div
+  class="join-overlay"
+  *ngIf="showJoinGroupPanel"
+  (click)="closeJoinPanel()"
+>
+  <div
+    class="join-panel"
+    (click)="$event.stopPropagation()"
+  >
 
     <div class="join-panel-header">
       <div class="join-panel-title">
@@ -534,60 +1016,113 @@
         <span>Join a Group</span>
       </div>
 
-      <button mat-icon-button (click)="closeJoinPanel()" matTooltip="Close">
+      <button
+        mat-icon-button
+        (click)="closeJoinPanel()"
+        matTooltip="Close"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
 
     <div class="join-search">
-      <mat-form-field appearance="outline" class="w-100">
-        <input matInput placeholder="Search available groups..." [(ngModel)]="joinSearchText" />
+      <mat-form-field
+        appearance="outline"
+        class="w-100"
+      >
+        <input
+          matInput
+          placeholder="Search available groups..."
+          [(ngModel)]="joinSearchText"
+        />
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
     </div>
 
-    <div *ngIf="filteredAvailableGroups.length === 0" class="join-empty">
+    <div
+      *ngIf="
+        filteredAvailableGroups.length === 0
+      "
+      class="join-empty"
+    >
       <mat-icon>search_off</mat-icon>
       <p>No groups available to join</p>
     </div>
 
     <div class="join-groups-list">
-      @for(group of filteredAvailableGroups; track group.id) {
+      @for(
+        group of filteredAvailableGroups;
+        track group.id
+      ) {
         <div class="join-group-item">
 
           <div class="d-flex align-items-center">
-            <div class="join-group-avatar" [ngStyle]="{ 'background': getMemberColor(group.name) }">
-              {{ group.name?.charAt(0) | uppercase }}
+            <div
+              class="join-group-avatar"
+              [ngStyle]="{
+                background: getMemberColor(
+                  group.name
+                )
+              }"
+            >
+              {{
+                group.name?.charAt(0) | uppercase
+              }}
             </div>
 
             <div class="join-group-info">
-              <div class="join-group-name">{{ group.name }}</div>
+              <div class="join-group-name">
+                {{ group.name }}
+              </div>
 
               <div class="join-group-meta">
-                <mat-icon style="font-size:14px;width:14px;height:14px;">people</mat-icon>
-                <span>{{ group.membersCount }} members</span>
-                <span class="join-admin">· Created by {{ group.createdByUsername }}</span>
+                <mat-icon
+                  style="
+                    font-size: 14px;
+                    width: 14px;
+                    height: 14px;
+                  "
+                >
+                  people
+                </mat-icon>
+                <span>
+                  {{ group.membersCount }} members
+                </span>
+                <span class="join-admin">
+                  · Created by
+                  {{ group.createdByUsername }}
+                </span>
               </div>
             </div>
           </div>
 
-          <button mat-raised-button color="primary" class="join-btn" (click)="rejoinGroup(group)">
+          <button
+            mat-raised-button
+            color="primary"
+            class="join-btn"
+            (click)="rejoinGroup(group)"
+          >
             <mat-icon>login</mat-icon>
             Join
           </button>
-
         </div>
       }
     </div>
-
   </div>
 </div>
 
 <!-- ================================================ -->
-<!-- ADD MEMBER PANEL (FROM DB) -->
+<!-- ADD MEMBER PANEL -->
 <!-- ================================================ -->
-<div class="join-overlay" *ngIf="showAddMemberPanel" (click)="closeAddMemberPanel()">
-  <div class="join-panel" (click)="$event.stopPropagation()">
+<div
+  class="join-overlay"
+  *ngIf="showAddMemberPanel"
+  (click)="closeAddMemberPanel()"
+>
+  <div
+    class="join-panel"
+    (click)="$event.stopPropagation()"
+  >
 
     <div class="join-panel-header">
       <div class="join-panel-title">
@@ -595,16 +1130,23 @@
         <span>Add member</span>
       </div>
 
-      <button mat-icon-button (click)="closeAddMemberPanel()" matTooltip="Close">
+      <button
+        mat-icon-button
+        (click)="closeAddMemberPanel()"
+        matTooltip="Close"
+      >
         <mat-icon>close</mat-icon>
       </button>
     </div>
 
     <div class="join-search">
-      <mat-form-field appearance="outline" class="w-100">
+      <mat-form-field
+        appearance="outline"
+        class="w-100"
+      >
         <input
           matInput
-          placeholder="Search users from database..."
+          placeholder="Search users..."
           [(ngModel)]="addMemberSearchText"
           (keyup)="loadDbUsers()"
         />
@@ -612,60 +1154,114 @@
       </mat-form-field>
     </div>
 
-    <div *ngIf="loadingDbUsers" class="join-empty">
+    <div
+      *ngIf="loadingDbUsers"
+      class="join-empty"
+    >
       <mat-icon>hourglass_top</mat-icon>
       <p>Loading users...</p>
     </div>
 
-    <div *ngIf="!loadingDbUsers && addableUsers.length === 0" class="join-empty">
+    <div
+      *ngIf="
+        !loadingDbUsers &&
+        addableUsers.length === 0
+      "
+      class="join-empty"
+    >
       <mat-icon>person_off</mat-icon>
       <p>No users to add</p>
     </div>
 
-    <div class="join-groups-list" *ngIf="!loadingDbUsers && addableUsers.length > 0">
-      @for(user of addableUsers; track user.id) {
+    <div
+      class="join-groups-list"
+      *ngIf="
+        !loadingDbUsers &&
+        addableUsers.length > 0
+      "
+    >
+      @for(
+        user of addableUsers;
+        track user.id
+      ) {
         <div class="join-group-item">
 
           <div class="d-flex align-items-center">
-            <div class="join-group-avatar overflow-hidden p-0">
-              <!-- IMAGE -->
+            <div
+              class="
+                join-group-avatar
+                overflow-hidden
+                p-0
+              "
+            >
               <img
-                *ngIf="user.image; else addUserInitial"
-                [src]="'http://localhost:8081/uploads/' + user.image"
+                *ngIf="
+                  user.image;
+                  else addUserInitial
+                "
+                [src]="
+                  'http://localhost:8081/uploads/' +
+                  user.image
+                "
                 width="100%"
                 height="100%"
                 style="object-fit: cover;"
               />
 
-              <!-- INITIAL -->
               <ng-template #addUserInitial>
                 <div
-                  class="w-100 h-100 d-flex align-items-center justify-content-center text-white"
-                  [ngStyle]="{ 'background': getMemberColor(user.username) }"
+                  class="
+                    w-100
+                    h-100
+                    d-flex
+                    align-items-center
+                    justify-content-center
+                    text-white
+                  "
+                  [ngStyle]="{
+                    background: getMemberColor(
+                      user.username
+                    )
+                  }"
                 >
-                  {{ user.username?.charAt(0) | uppercase }}
+                  {{
+                    user.username?.charAt(0)
+                      | uppercase
+                  }}
                 </div>
               </ng-template>
-
             </div>
 
             <div class="join-group-info">
-              <div class="join-group-name">{{ user.username }}</div>
+              <div class="join-group-name">
+                {{ user.username }}
+              </div>
               <div class="join-group-meta">
-                <mat-icon style="font-size:14px;width:14px;height:14px;">mail</mat-icon>
+                <mat-icon
+                  style="
+                    font-size: 14px;
+                    width: 14px;
+                    height: 14px;
+                  "
+                >
+                  mail
+                </mat-icon>
                 <span>{{ user.email }}</span>
               </div>
             </div>
           </div>
 
-          <button mat-raised-button color="primary" class="join-btn" (click)="addMember(user)">
+          <button
+            mat-raised-button
+            color="primary"
+            class="join-btn"
+            (click)="addMember(user)"
+          >
             <mat-icon>add</mat-icon>
             Add
           </button>
-
         </div>
       }
     </div>
-
   </div>
 </div>
