@@ -225,18 +225,37 @@
       <div class="review-header">
 
         <div class="user-info">
+          <div class="user-avatar">
+            <!-- IMAGE -->
+            <img
+              *ngIf="getUserProfileImage(r.user)"
+              [src]="getUserProfileImage(r.user)"
+              alt="avatar">
 
-          <strong class="username">
+            <!-- LETTER -->
+            <span *ngIf="!getUserProfileImage(r.user)">
 
-            {{ r.user?.username }}
+              {{ getUserInitial(r.user) }}
 
-          </strong>
+            </span>
 
-          <span class="date">
+          </div>
 
-            {{ r.date | date:'mediumDate' }}
+          <div class="user-meta">
 
-          </span>
+            <strong class="username">
+
+              {{ r.user?.username }}
+
+            </strong>
+
+            <span class="date">
+
+              {{ r.date | date:'mediumDate' }}
+
+            </span>
+
+          </div>
 
         </div>
 
@@ -335,16 +354,28 @@
           <!-- HEADER -->
           <div class="reply-header">
 
-            <div class="reply-user">
+           <div class="reply-user">
 
               <!-- AVATAR -->
-              <div class="reply-avatar">
+              <div class="user-avatar">
 
-                {{ rep.user?.username?.charAt(0) }}
+                <!-- IMAGE -->
+                <img
+                  *ngIf="getUserProfileImage(rep.user)"
+                  [src]="getUserProfileImage(rep.user)"
+                  alt="avatar">
+
+                <!-- LETTER -->
+                <span *ngIf="!getUserProfileImage(rep.user)">
+
+                  {{ getUserInitial(rep.user) }}
+
+                </span>
 
               </div>
 
-              <div>
+              <!-- INFO -->
+              <div class="reply-meta">
 
                 <div class="reply-username">
 
@@ -436,6 +467,22 @@
       <div class="review-header">
 
         <div class="user-info">
+          <div class="user-avatar">
+
+          <!-- IMAGE -->
+          <img
+            *ngIf="getUserProfileImage(q.user)"
+            [src]="getUserProfileImage(q.user)"
+            alt="avatar">
+
+          <!-- LETTER -->
+          <span *ngIf="!getUserProfileImage(q.user)">
+
+            {{ getUserInitial(q.user) }}
+
+          </span>
+
+        </div>
 
           <strong class="username">
 
@@ -609,6 +656,66 @@
       Cancel
 
     </button>
+
+  </div>
+
+</div>
+
+<!-- ACTIVITY MODAL -->
+<div
+  class="activity-modal-backdrop"
+  *ngIf="showActivity">
+
+  <div class="activity-modal">
+
+    <h3>Update Reading Activity</h3>
+
+    <!-- PAGES -->
+    <div class="form-group">
+
+      <label>Pages Read</label>
+
+      <input
+        type="number"
+        [(ngModel)]="pagesRead"
+        min="1"
+        placeholder="Enter pages read">
+
+    </div>
+
+    <!-- TIME -->
+    <div class="form-group">
+
+      <label>Reading Time (minutes)</label>
+
+      <input
+        type="number"
+        [(ngModel)]="readingTime"
+        min="0"
+        placeholder="Enter reading time">
+
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="activity-actions">
+
+      <button
+        class="btn primary"
+        (click)="updateProgress()">
+
+        Save
+
+      </button>
+
+      <button
+        class="btn secondary"
+        (click)="closeActivity()">
+
+        Cancel
+
+      </button>
+
+    </div>
 
   </div>
 

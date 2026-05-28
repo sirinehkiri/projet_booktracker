@@ -661,4 +661,24 @@ deleteReply(
 
     });
 }
+
+getUserProfileImage(user: any): string | null {
+
+  if (user?.image) {
+
+    return `http://localhost:8081/uploads/${user.image}`;
+  }
+
+  return null;
+}
+
+getUserInitial(user: any): string {
+
+  if (user?.username) {
+
+    return user.username.charAt(0).toUpperCase();
+  }
+
+  return 'U';
+}
 } 

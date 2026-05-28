@@ -85,22 +85,17 @@
 
       <!-- COUNTER -->
       <div class="counter">
-
         {{ comment.length }}/1000
-
       </div>
 
     </div>
 
     <!-- ACTIONS -->
     <div class="actions">
-
       <button
         class="btn-cancel"
-        routerLink="/apps/blogs">
-
+        (click)="goBack()">
         Cancel
-
       </button>
 
       <button
@@ -111,19 +106,14 @@
           !comment.trim() ||
           saving
         ">
-
         <span *ngIf="!saving">
-
           {{ isEditMode
             ? 'Update Review'
             : 'Publish Review' }}
-
         </span>
 
         <span *ngIf="saving">
-
           Saving...
-
         </span>
 
       </button>

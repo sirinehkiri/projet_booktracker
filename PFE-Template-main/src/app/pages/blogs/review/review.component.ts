@@ -13,6 +13,8 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { BookService } from '../book.service';
+import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-review',
@@ -49,7 +51,8 @@ export class ReviewComponent implements OnInit {
     private router: Router,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
-    private bookService: BookService
+    private bookService: BookService,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -200,4 +203,8 @@ export class ReviewComponent implements OnInit {
       }
     );
   }
+
+  goBack(): void {
+    this.location.back();
+}
 }
