@@ -16,6 +16,85 @@
   </div>
 
   <!-- ================================================ -->
+  <!-- CATEGORIES TABS (BUTTONS) - FOU9 -->
+  <!-- ================================================ -->
+
+  <div
+    class="categories-section"
+    *ngIf="!searched"
+  >
+
+    <div class="tabs">
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'all'"
+        (click)="scrollToSection('allBooksSection', 'all')"
+      >
+        📚 All Books
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'trending'"
+        (click)="scrollToSection('trendingSection', 'trending')"
+      >
+        🔥 Trending
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'recent'"
+        (click)="scrollToSection('recentSection', 'recent')"
+      >
+        🆕 Recently Added
+      </button>
+
+      <button
+        class="tab-btn"
+        [class.active]="activeTab === 'genre'"
+        (click)="setTab('genre')"
+      >
+        🏷️ By Genre
+      </button>
+
+      <button
+        class="tab-btn tab-recommended"
+        [class.active]="activeTab === 'recommended'"
+        (click)="scrollToSection('recommendedSection', 'recommended')"
+      >
+        ✨ For You
+      </button>
+
+    </div>
+
+    <!-- GENRES CHIPS -->
+    <div
+      class="genres-list"
+      *ngIf="activeTab === 'genre'"
+    >
+
+      <button
+        class="genre-chip"
+        *ngFor="let g of genres"
+        [class.active]="selectedGenre === g"
+        (click)="onGenreSelect(g)"
+      >
+        {{ g }}
+      </button>
+
+      <div
+        class="no-genre-selected"
+        *ngIf="!selectedGenre"
+      >
+        👆 Select a genre to explore
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ================================================ -->
   <!-- SEARCH SECTION -->
   <!-- ================================================ -->
 
@@ -163,281 +242,410 @@
   </div>
 
   <!-- ================================================ -->
-  <!-- CATEGORIES TABS -->
+  <!-- SEARCH RESULTS -->
   <!-- ================================================ -->
 
-  <div
-    class="categories-section"
-    *ngIf="!searched"
-  >
+  <div *ngIf="searched">
 
-    <div class="tabs">
+    <div class="section-title">
+      🔍 Search Results
+      <small>({{ displayedBooks.length }})</small>
+    </div>
+
+    <div class="scroll-container">
 
       <button
-        class="tab-btn"
-        [class.active]="activeTab === 'all'"
-        (click)="setTab('all')"
+        class="scroll-arrow scroll-left"
+        (click)="scrollLeft('searchRow')"
       >
+        ◀
+      </button>
+
+      <div class="book-row" id="searchRow">
+        <div
+          class="book-card"
+          *ngFor="let book of displayedBooks"
+        >
+          <div
+            class="cover clickable"
+            (click)="goToDetail(book)"
+          >
+            <img
+              [src]="book.pic"
+              (error)="book.pic = 'assets/no-book.png'"
+              alt="Book"
+            />
+            <div
+              class="book-badge badge-genre"
+              *ngIf="book.genre"
+            >
+              {{ book.genre }}
+            </div>
+          </div>
+
+          <div
+            class="book-title clickable"
+            (click)="goToDetail(book)"
+          >
+            {{ book.title }}
+          </div>
+
+          <div class="author">{{ book.author }}</div>
+
+          <div
+            class="book-rating"
+            *ngIf="book.averageRating && book.averageRating > 0"
+          >
+            ⭐ {{ book.averageRating | number:'1.1-1' }}
+            <span class="reviews-count">
+              ({{ book.reviews?.length || 0 }})
+            </span>
+          </div>
+
+          <div
+            class="actions"
+            *ngIf="authService.isAdmin()"
+          >
+            <button (click)="editBook(book.id)">Edit</button>
+            <button (click)="deleteBook(book.id)">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <button
+        class="scroll-arrow scroll-right"
+        (click)="scrollRight('searchRow')"
+      >
+        ▶
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- ================================================ -->
+  <!-- SECTIONS (ila ma kanch search) -->
+  <!-- ================================================ -->
+
+  <div *ngIf="!searched">
+
+    <!-- ============ ALL BOOKS ============ -->
+    <div class="section-block" id="allBooksSection">
+
+      <div class="section-title">
         📚 All Books
-      </button>
+        <small>({{ books.length }})</small>
+      </div>
 
-      <button
-        class="tab-btn"
-        [class.active]="activeTab === 'trending'"
-        (click)="setTab('trending')"
-      >
-        🔥 Trending
-      </button>
+      <div class="scroll-container">
 
-      <button
-        class="tab-btn"
-        [class.active]="activeTab === 'recent'"
-        (click)="setTab('recent')"
+        <button
+          class="scroll-arrow scroll-left"
+          (click)="scrollLeft('allBooksRow')"
+        >
+          ◀
+        </button>
+
+        <div class="book-row" id="allBooksRow">
+          <div
+            class="book-card"
+            *ngFor="let book of books"
+          >
+            <div
+              class="cover clickable"
+              (click)="goToDetail(book)"
+            >
+              <img
+                [src]="book.pic"
+                (error)="book.pic = 'assets/no-book.png'"
+                alt="Book"
+              />
+            </div>
+
+            <div
+              class="book-title clickable"
+              (click)="goToDetail(book)"
+            >
+              {{ book.title }}
+            </div>
+
+            <div class="author">{{ book.author }}</div>
+
+            <div
+              class="book-rating"
+              *ngIf="book.averageRating && book.averageRating > 0"
+            >
+              ⭐ {{ book.averageRating | number:'1.1-1' }}
+              <span class="reviews-count">
+                ({{ book.reviews?.length || 0 }})
+              </span>
+            </div>
+
+            <div
+              class="actions"
+              *ngIf="authService.isAdmin()"
+            >
+              <button (click)="editBook(book.id)">Edit</button>
+              <button (click)="deleteBook(book.id)">Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="scroll-arrow scroll-right"
+          (click)="scrollRight('allBooksRow')"
+        >
+          ▶
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- ============ TRENDING ============ -->
+    <div class="section-block" id="trendingSection">
+
+      <div class="section-title">
+        🔥 Trending Books
+        <small>({{ trendingBooks.length }})</small>
+      </div>
+
+      <div
+        class="trending-empty"
+        *ngIf="trendingBooks.length === 0"
       >
+        <span class="empty-emoji">⭐</span>
+        <p>No trending books yet</p>
+        <small>Books with ratings will appear here</small>
+      </div>
+
+      <div class="scroll-container" *ngIf="trendingBooks.length > 0">
+
+        <button
+          class="scroll-arrow scroll-left"
+          (click)="scrollLeft('trendingRow')"
+        >
+          ◀
+        </button>
+
+        <div class="book-row" id="trendingRow">
+          <div
+            class="book-card"
+            *ngFor="let book of trendingBooks"
+          >
+            <div
+              class="cover clickable"
+              (click)="goToDetail(book)"
+            >
+              <img
+                [src]="book.pic"
+                (error)="book.pic = 'assets/no-book.png'"
+                alt="Book"
+              />
+              <div class="book-badge badge-trending">
+                🔥 Trending
+              </div>
+            </div>
+
+            <div
+              class="book-title clickable"
+              (click)="goToDetail(book)"
+            >
+              {{ book.title }}
+            </div>
+
+            <div class="author">{{ book.author }}</div>
+
+            <div
+              class="book-rating"
+              *ngIf="book.averageRating && book.averageRating > 0"
+            >
+              ⭐ {{ book.averageRating | number:'1.1-1' }}
+              <span class="reviews-count">
+                ({{ book.reviews?.length || 0 }})
+              </span>
+            </div>
+
+            <div
+              class="actions"
+              *ngIf="authService.isAdmin()"
+            >
+              <button (click)="editBook(book.id)">Edit</button>
+              <button (click)="deleteBook(book.id)">Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="scroll-arrow scroll-right"
+          (click)="scrollRight('trendingRow')"
+        >
+          ▶
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- ============ RECENTLY ADDED ============ -->
+    <div class="section-block" id="recentSection">
+
+      <div class="section-title">
         🆕 Recently Added
-      </button>
+        <small>({{ recentBooks.length }})</small>
+      </div>
 
-      <button
-        class="tab-btn"
-        [class.active]="activeTab === 'genre'"
-        (click)="setTab('genre')"
-      >
-        🏷️ By Genre
-      </button>
+      <div class="scroll-container">
 
-      <!-- ✅ FOR YOU TAB -->
-      <button
-        class="tab-btn tab-recommended"
-        [class.active]="activeTab === 'recommended'"
-        (click)="setTab('recommended')"
-      >
-        ✨ For You
-      </button>
+        <button
+          class="scroll-arrow scroll-left"
+          (click)="scrollLeft('recentRow')"
+        >
+          ◀
+        </button>
+
+        <div class="book-row" id="recentRow">
+          <div
+            class="book-card"
+            *ngFor="let book of recentBooks"
+          >
+            <div
+              class="cover clickable"
+              (click)="goToDetail(book)"
+            >
+              <img
+                [src]="book.pic"
+                (error)="book.pic = 'assets/no-book.png'"
+                alt="Book"
+              />
+              <div class="book-badge badge-new">
+                ✨ New
+              </div>
+            </div>
+
+            <div
+              class="book-title clickable"
+              (click)="goToDetail(book)"
+            >
+              {{ book.title }}
+            </div>
+
+            <div class="author">{{ book.author }}</div>
+
+            <div
+              class="book-rating"
+              *ngIf="book.averageRating && book.averageRating > 0"
+            >
+              ⭐ {{ book.averageRating | number:'1.1-1' }}
+              <span class="reviews-count">
+                ({{ book.reviews?.length || 0 }})
+              </span>
+            </div>
+
+            <div
+              class="actions"
+              *ngIf="authService.isAdmin()"
+            >
+              <button (click)="editBook(book.id)">Edit</button>
+              <button (click)="deleteBook(book.id)">Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="scroll-arrow scroll-right"
+          (click)="scrollRight('recentRow')"
+        >
+          ▶
+        </button>
+
+      </div>
 
     </div>
 
-    <!-- GENRES CHIPS -->
-    <div
-      class="genres-list"
-      *ngIf="activeTab === 'genre'"
-    >
+    <!-- ============ FOR YOU ============ -->
+    <div class="section-block" id="recommendedSection">
 
-      <button
-        class="genre-chip"
-        *ngFor="let g of genres"
-        [class.active]="selectedGenre === g"
-        (click)="onGenreSelect(g)"
-      >
-        {{ g }}
-      </button>
-
-      <div
-        class="no-genre-selected"
-        *ngIf="!selectedGenre"
-      >
-        👆 Select a genre to explore
+      <div class="section-title">
+        ✨ Recommended For You
+        <small>({{ recommendedBooks.length }})</small>
       </div>
 
-    </div>
-
-  </div>
-
-  <!-- ================================================ -->
-  <!-- SECTION TITLE -->
-  <!-- ================================================ -->
-
-  <div
-    class="section-title"
-    *ngIf="!searched"
-  >
-
-    <span *ngIf="activeTab === 'all'">
-      📚 All Books
-      <small>({{ books.length }})</small>
-    </span>
-
-    <span *ngIf="activeTab === 'trending'">
-      🔥 Trending Books
-      <small>({{ trendingBooks.length }})</small>
-    </span>
-
-    <span *ngIf="activeTab === 'recent'">
-      🆕 Recently Added
-      <small>({{ recentBooks.length }})</small>
-    </span>
-
-    <span
-      *ngIf="
-        activeTab === 'genre' &&
-        selectedGenre
-      "
-    >
-      🏷️ {{ selectedGenre }}
-      <small>({{ genreBooks.length }})</small>
-    </span>
-
-    <span
-      *ngIf="
-        activeTab === 'genre' &&
-        !selectedGenre
-      "
-    >
-      🏷️ Browse by Genre
-    </span>
-
-    <!-- ✅ RECOMMENDED TITLE -->
-    <span *ngIf="activeTab === 'recommended'">
-      ✨ Recommended For You
-      <small>({{ recommendedBooks.length }})</small>
-    </span>
-
-  </div>
-
-  <!-- ================================================ -->
-  <!-- TRENDING EMPTY STATE -->
-  <!-- ================================================ -->
-
-  <div
-    class="trending-empty"
-    *ngIf="
-      activeTab === 'trending' &&
-      !searched &&
-      trendingBooks.length === 0 &&
-      !loading
-    "
-  >
-    <span class="empty-emoji">⭐</span>
-    <p>No trending books yet</p>
-    <small>Books with ratings will appear here</small>
-  </div>
-
-  <!-- ================================================ -->
-  <!-- RECOMMENDED EMPTY STATE -->
-  <!-- ================================================ -->
-
-  <div
-    class="recommended-empty"
-    *ngIf="
-      activeTab === 'recommended' &&
-      !searched &&
-      recommendedBooks.length === 0
-    "
-  >
-    <span class="empty-emoji">📖</span>
-    <p>No recommendations yet</p>
-    <small>
-      Read and rate books to get
-      personalized recommendations
-    </small>
-  </div>
-
-  <!-- ================================================ -->
-  <!-- BOOKS GRID -->
-  <!-- ================================================ -->
-
-  <div class="book-row">
-
-    <div
-      class="book-card"
-      *ngFor="let book of displayedBooks"
-    >
-
-      <!-- IMAGE -->
       <div
-        class="cover clickable"
-        (click)="goToDetail(book)"
+        class="recommended-empty"
+        *ngIf="recommendedBooks.length === 0"
       >
+        <span class="empty-emoji">📖</span>
+        <p>No recommendations yet</p>
+        <small>
+          Read and rate books to get personalized recommendations
+        </small>
+      </div>
 
-        <img
-          [src]="book.pic"
-          (error)="book.pic = 'assets/no-book.png'"
-          alt="Book"
-        />
+      <div class="scroll-container" *ngIf="recommendedBooks.length > 0">
 
-        <!-- BADGE TRENDING -->
-        <div
-          class="book-badge badge-trending"
-          *ngIf="
-            activeTab === 'trending' &&
-            !searched
-          "
+        <button
+          class="scroll-arrow scroll-left"
+          (click)="scrollLeft('recommendedRow')"
         >
-          🔥 Trending
-        </div>
-
-        <!-- BADGE NEW -->
-        <div
-          class="book-badge badge-new"
-          *ngIf="
-            activeTab === 'recent' &&
-            !searched
-          "
-        >
-          ✨ New
-        </div>
-
-        <!-- BADGE GENRE -->
-        <div
-          class="book-badge badge-genre"
-          *ngIf="
-            (activeTab === 'genre' || searched) &&
-            book.genre
-          "
-        >
-          {{ book.genre }}
-        </div>
-
-        <!-- ✅ BADGE RECOMMENDED -->
-        <div
-          class="book-badge badge-recommended"
-          *ngIf="
-            activeTab === 'recommended' &&
-            !searched
-          "
-        >
-          ✨ For You
-        </div>
-
-      </div>
-
-      <!-- TITLE -->
-      <div
-        class="book-title clickable"
-        (click)="goToDetail(book)"
-      >
-        {{ book.title }}
-      </div>
-
-      <!-- AUTHOR -->
-      <div class="author">
-        {{ book.author }}
-      </div>
-
-      <!-- RATING -->
-      <div
-        class="book-rating"
-        *ngIf="
-          book.averageRating &&
-          book.averageRating > 0
-        "
-      >
-        ⭐ {{ book.averageRating | number:'1.1-1' }}
-        <span class="reviews-count">
-          ({{ book.reviews?.length || 0 }})
-        </span>
-      </div>
-
-      <!-- ADMIN ACTIONS -->
-      <div
-        class="actions"
-        *ngIf="authService.isAdmin()"
-      >
-        <button (click)="editBook(book.id)">
-          Edit
+          ◀
         </button>
-        <button (click)="deleteBook(book.id)">
-          Delete
+
+        <div class="book-row" id="recommendedRow">
+          <div
+            class="book-card"
+            *ngFor="let book of recommendedBooks"
+          >
+            <div
+              class="cover clickable"
+              (click)="goToDetail(book)"
+            >
+              <img
+                [src]="book.pic"
+                (error)="book.pic = 'assets/no-book.png'"
+                alt="Book"
+              />
+              <div class="book-badge badge-recommended">
+                ✨ For You
+              </div>
+            </div>
+
+            <div
+              class="book-title clickable"
+              (click)="goToDetail(book)"
+            >
+              {{ book.title }}
+            </div>
+
+            <div class="author">{{ book.author }}</div>
+
+            <div
+              class="book-rating"
+              *ngIf="book.averageRating && book.averageRating > 0"
+            >
+              ⭐ {{ book.averageRating | number:'1.1-1' }}
+              <span class="reviews-count">
+                ({{ book.reviews?.length || 0 }})
+              </span>
+            </div>
+
+            <div
+              class="actions"
+              *ngIf="authService.isAdmin()"
+            >
+              <button (click)="editBook(book.id)">Edit</button>
+              <button (click)="deleteBook(book.id)">Delete</button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="scroll-arrow scroll-right"
+          (click)="scrollRight('recommendedRow')"
+        >
+          ▶
         </button>
+
       </div>
 
     </div>

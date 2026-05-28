@@ -26,8 +26,6 @@ export class PreferencesComponent implements OnInit {
   selectedGenres: string[] = [];
   selectedLanguages: string[] = [];
   favoriteAuthors: string = '';
-  monthlyGoal: number = 0;
-  socialRecommendations: boolean = false;
 
   constructor(private prefsService: PreferencesService) {}
 
@@ -42,8 +40,6 @@ export class PreferencesComponent implements OnInit {
         this.selectedGenres = data.preferredGenres || [];
         this.selectedLanguages = data.preferredLanguages || [];
         this.favoriteAuthors = (data.favoriteAuthors || []).join(', ');
-        this.monthlyGoal = data.monthlyReadingGoal || 0;
-        this.socialRecommendations = data.socialRecommendations || false;
         this.loading = false;
       },
       error: (err) => {
@@ -73,10 +69,6 @@ export class PreferencesComponent implements OnInit {
     return this.selectedLanguages.includes(language);
   }
 
-  toggleSocialRecommendations(): void {
-    this.socialRecommendations = !this.socialRecommendations;
-  }
-
   savePreferences(): void {
     this.saving = true;
 
@@ -88,9 +80,7 @@ export class PreferencesComponent implements OnInit {
     const data = {
       preferredGenres: this.selectedGenres,
       preferredLanguages: this.selectedLanguages,
-      favoriteAuthors: authors,
-      monthlyReadingGoal: Number(this.monthlyGoal),
-      socialRecommendations: this.socialRecommendations
+      favoriteAuthors: authors
     };
 
     console.log('💾 Saving preferences:', data);

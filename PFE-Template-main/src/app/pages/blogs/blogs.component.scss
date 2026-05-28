@@ -519,3 +519,117 @@
     transform: translateY(0);
   }
 }
+// =====================================================
+// SECTION BLOCK (kol section separée)
+// =====================================================
+
+.section-block {
+  margin-bottom: 48px;
+
+  &:last-child { margin-bottom: 0; }
+}
+// =====================================================
+// SECTION BLOCK
+// =====================================================
+
+.section-block {
+  margin-bottom: 48px;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+// =====================================================
+// SCROLL CONTAINER & ARROWS
+// =====================================================
+
+.scroll-container {
+  position: relative;
+  width: 100%;
+}
+
+// =====================================================
+// BOOK ROW (horizontal scroll)
+// =====================================================
+
+.book-row {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 20px;
+  padding: 10px 50px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+// =====================================================
+// SCROLL ARROWS
+// =====================================================
+
+.scroll-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  font-size: 16px;
+  color: #1877f2;
+  z-index: 10;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #1877f2;
+    color: white;
+    transform: translateY(-50%) scale(1.1);
+  }
+}
+
+.scroll-left { left: 0; }
+.scroll-right { right: 0; }
+
+// =====================================================
+// BOOK CARD
+// =====================================================
+
+.book-card {
+  flex: 0 0 auto;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+
+  &:hover { transform: translateY(-4px); }
+}
+
+.cover {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  margin-bottom: 10px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img { transform: scale(1.05); }
+}
+
+.clickable { cursor: pointer; }

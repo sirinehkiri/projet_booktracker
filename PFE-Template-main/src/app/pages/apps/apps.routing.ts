@@ -7,7 +7,7 @@ import { AppEmployeeComponent } from './employee/employee.component';
 import { AppBlogsComponent } from '../blogs/blogs.component';
 import { AppBlogDetailsComponent } from '../blogs/details/details.component';
 import { MyBookListsComponent } from './my-book-lists/my-book-lists.component';
-import { RecommendationsComponent } from './contact/recommendations.component';
+import { ProfileComponent } from './profil/profile.component';
 import { PreferencesComponent } from './preferences/preferences.component';
 import { MyBooksComponent } from './ticketlist/ticketlist.component';
 export const AppsRoutes: Routes = [
@@ -89,16 +89,23 @@ export const AppsRoutes: Routes = [
           ],
         },
       },
-       {
-        path: 'recommendations', 
-        component: RecommendationsComponent,
-        data: { title: 'Recommendations' }
-      },
+       
        {
         path: 'preferences',  
         component: PreferencesComponent,
         data: { title: 'Preferences' }
-      }
-    ],
-  },
+      },
+      {
+                path: 'profil/:id',
+                component: ProfileComponent,
+                data: {
+                    title: 'Profile',
+                    urls: [
+                        { title: 'Dashboard', url: '/dashboards/dashboard1' },
+                        { title: 'Profile' },
+                    ],
+                }
+            }
+        ],
+    },
 ];

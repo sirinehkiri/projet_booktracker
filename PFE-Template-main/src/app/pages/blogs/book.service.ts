@@ -293,16 +293,7 @@ export class BookService {
     );
   }
 
-  // =====================================================
-  // RECOMMENDATIONS
-  // =====================================================
 
-  getRecommendations(): Observable<Book[]> {
-    return this.http.get<Book[]>(
-      `${this.apiUrl}/recommendations`,
-      this.getHeaders()
-    );
-  }
 
 voteQuote(id: number) {
 
@@ -341,5 +332,16 @@ deleteReply(id: number) {
     `http://localhost:8081/replies/${id}` ,this.getHeaders()
   );
 }
-  
+  // =====================================================
+// SMART RECOMMENDATIONS (Preferences + Social)
+// =====================================================
+
+getRecommendations(): Observable<Book[]> {
+  return this.http.get<Book[]>(
+    `${this.apiUrl}/recommendations/smart`,
+    this.getHeaders()
+  );
 }
+}
+
+

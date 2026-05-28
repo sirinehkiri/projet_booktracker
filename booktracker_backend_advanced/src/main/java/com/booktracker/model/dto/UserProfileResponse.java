@@ -9,8 +9,6 @@ public class UserProfileResponse {
     private String email;
     private String image;
 
-    private long followersCount;
-    private long followingCount;
     private long friendsCount;
     private long readBooksCount;
 
@@ -54,22 +52,6 @@ public class UserProfileResponse {
         this.image = image;
     }
 
-    public long getFollowersCount() {
-        return followersCount;
-    }
-
-    public void setFollowersCount(long followersCount) {
-        this.followersCount = followersCount;
-    }
-
-    public long getFollowingCount() {
-        return followingCount;
-    }
-
-    public void setFollowingCount(long followingCount) {
-        this.followingCount = followingCount;
-    }
-
     public long getFriendsCount() {
         return friendsCount;
     }
@@ -90,9 +72,7 @@ public class UserProfileResponse {
         return readBooks;
     }
 
-    public void setReadBooks(
-            List<BookSummaryDto> readBooks
-    ) {
+    public void setReadBooks(List<BookSummaryDto> readBooks) {
         this.readBooks = readBooks;
     }
 
@@ -100,9 +80,7 @@ public class UserProfileResponse {
         return reviews;
     }
 
-    public void setReviews(
-            List<ReviewSummaryDto> reviews
-    ) {
+    public void setReviews(List<ReviewSummaryDto> reviews) {
         this.reviews = reviews;
     }
 
@@ -110,9 +88,7 @@ public class UserProfileResponse {
         return friendRecommendations;
     }
 
-    public void setFriendRecommendations(
-            List<BookSummaryDto> friendRecommendations
-    ) {
+    public void setFriendRecommendations(List<BookSummaryDto> friendRecommendations) {
         this.friendRecommendations = friendRecommendations;
     }
 }

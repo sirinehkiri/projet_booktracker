@@ -40,8 +40,7 @@ public class UserProfileService {
                         new RuntimeException("User not found")
                 );
 
-        UserProfileResponse response =
-                new UserProfileResponse();
+        UserProfileResponse response = new UserProfileResponse();
 
         response.setId(user.getId());
         response.setUsername(user.getUsername());
@@ -52,23 +51,7 @@ public class UserProfileService {
         // 1. STATS
         // =====================================================
 
-        // Followers
-        response.setFollowersCount(
-                followRequestRepository
-                        .countByReceiverIdAndStatus(
-                                userId, "ACCEPTED"
-                        )
-        );
-
-        // Following -
-        response.setFollowingCount(
-                followRequestRepository
-                        .countBySenderIdAndStatus(
-                                userId, "ACCEPTED"
-                        )
-        );
-
-        // ✅ FRIENDS -
+        // ✅ FRIENDS only
         response.setFriendsCount(
                 followRequestRepository
                         .countFriendsByUserId(userId)
@@ -111,26 +94,17 @@ public class UserProfileService {
 
         List<Review> reviews =
                 reviewRepository
-                        .findByUserIdOrderByDateDesc(
-                                userId
-                        );
+                        .findByUserIdOrderByDateDesc(userId);
 
         response.setReviews(
                 reviews.stream()
                         .map(r -> {
-                            ReviewSummaryDto dto =
-                                    new ReviewSummaryDto();
+                            ReviewSummaryDto dto = new ReviewSummaryDto();
 
                             dto.setId(r.getId());
-                            dto.setBookId(
-                                    r.getBook().getId()
-                            );
-                            dto.setBookTitle(
-                                    r.getBook().getTitle()
-                            );
-                            dto.setBookPic(
-                                    r.getBook().getPic()
-                            );
+                            dto.setBookId(r.getBook().getId());
+                            dto.setBookTitle(r.getBook().getTitle());
+                            dto.setBookPic(r.getBook().getPic());
                             dto.setRating(r.getRating());
                             dto.setComment(r.getComment());
                             dto.setDate(r.getDate());
@@ -148,8 +122,7 @@ public class UserProfileService {
                 followRequestRepository
                         .findFollowingIdsByUserId(userId);
 
-        if (friendsIds != null &&
-                !friendsIds.isEmpty()) {
+        if (friendsIds != null && !friendsIds.isEmpty()) {
 
             List<Review> friendsTopReviews =
                     reviewRepository
@@ -170,14 +143,10 @@ public class UserProfileService {
                             .limit(10)
                             .collect(Collectors.toList());
 
-            response.setFriendRecommendations(
-                    recommendations
-            );
+            response.setFriendRecommendations(recommendations);
 
         } else {
-            response.setFriendRecommendations(
-                    new ArrayList<>()
-            );
+            response.setFriendRecommendations(new ArrayList<>());
         }
 
         return response;

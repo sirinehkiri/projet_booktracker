@@ -135,7 +135,7 @@ export class AppBlogsComponent implements OnInit {
   }
 
   // =====================================================
-  // ✅ LOAD RECOMMENDATIONS
+  // LOAD RECOMMENDATIONS
   // =====================================================
 
   loadRecommendations(): void {
@@ -144,10 +144,7 @@ export class AppBlogsComponent implements OnInit {
         this.recommendedBooks = data || [];
       },
       error: (err: any) =>
-        console.error(
-          'Error loading recommendations',
-          err
-        )
+        console.error('Error loading recommendations', err)
     });
   }
 
@@ -163,6 +160,45 @@ export class AppBlogsComponent implements OnInit {
     this.searched = false;
     this.keyword = '';
     this.loading = false;
+  }
+
+  // =====================================================
+  // SCROLL TO SECTION
+  // =====================================================
+
+  scrollToSection(
+    sectionId: string,
+    tab: 'all' | 'trending' | 'recent' | 'genre' | 'recommended'
+  ): void {
+    this.activeTab = tab;
+
+    setTimeout(() => {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }, 100);
+  }
+
+  // =====================================================
+  // SCROLL HORIZONTAL
+  // =====================================================
+
+  scrollLeft(rowId: string): void {
+    const row = document.getElementById(rowId);
+    if (row) {
+      row.scrollBy({ left: -400, behavior: 'smooth' });
+    }
+  }
+
+  scrollRight(rowId: string): void {
+    const row = document.getElementById(rowId);
+    if (row) {
+      row.scrollBy({ left: 400, behavior: 'smooth' });
+    }
   }
 
   // =====================================================
@@ -183,10 +219,7 @@ export class AppBlogsComponent implements OnInit {
           this.loading = false;
         },
         error: (err: any) => {
-          console.error(
-            'Error loading genre',
-            err
-          );
+          console.error('Error loading genre', err);
           this.loading = false;
         }
       });
@@ -239,10 +272,7 @@ export class AppBlogsComponent implements OnInit {
         this.searched = true;
       },
       error: (err: any) => {
-        console.error(
-          'Advanced search error',
-          err
-        );
+        console.error('Advanced search error', err);
         this.loading = false;
         this.searched = true;
       }
@@ -267,15 +297,11 @@ export class AppBlogsComponent implements OnInit {
   // =====================================================
 
   goToDetail(book: Book): void {
-    this.router.navigate(
-      ['apps/blog/detail', book.id]
-    );
+    this.router.navigate(['apps/blog/detail', book.id]);
   }
 
   editBook(id: number): void {
-    this.router.navigate(
-      ['/admin/edit-book', id]
-    );
+    this.router.navigate(['/admin/edit-book', id]);
   }
 
   deleteBook(id: number): void {
@@ -295,5 +321,4 @@ export class AppBlogsComponent implements OnInit {
     this.router.navigate(['/admin/add-book']);
   }
 
-  
 }

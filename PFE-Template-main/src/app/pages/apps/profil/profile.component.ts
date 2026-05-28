@@ -28,9 +28,6 @@ export class ProfileComponent implements OnInit {
   profile: any = null;
   isLoading = true;
 
-  recommendations: any[] = [];
-  loadingRecommendations = false;
-
   currentUserId!: number;
 
   constructor(
@@ -48,11 +45,7 @@ export class ProfileComponent implements OnInit {
 
       if (id) {
         this.currentUserId = +id;
-
         this.loadProfile(this.currentUserId);
-        this.loadRecommendations(
-            this.currentUserId
-        );
       }
     });
   }
@@ -74,40 +67,8 @@ export class ProfileComponent implements OnInit {
             console.log('PROFILE:', this.profile);
           },
           error: (err) => {
-            console.error(
-                'Erreur chargement profil',
-                err
-            );
+            console.error('Erreur chargement profil', err);
             this.isLoading = false;
-          }
-        });
-  }
-
-  // =====================================================
-  // LOAD RECOMMENDATIONS
-  // =====================================================
-
-  loadRecommendations(userId: number): void {
-    this.loadingRecommendations = true;
-
-    this.profileService
-        .getRecommendations(userId)
-        .subscribe({
-          next: (data: any[]) => {
-            this.recommendations = data || [];
-            this.loadingRecommendations = false;
-
-            console.log(
-                'RECOMMENDATIONS:',
-                this.recommendations
-            );
-          },
-          error: (err) => {
-            console.error(
-                'Error recommendations',
-                err
-            );
-            this.loadingRecommendations = false;
           }
         });
   }
@@ -130,9 +91,25 @@ export class ProfileComponent implements OnInit {
 
   getContactInitial(): string {
     return this.profile?.username
-      ? this.profile.username
-          .charAt(0)
-          .toUpperCase()
+      ? this.profile.username.charAt(0).toUpperCase()
+      : 'U';
+  }
+
+  // =====================================================
+  // FRIEND IMAGE
+  // =====================================================
+
+  getFriendImage(image: string): string {
+    return `http://localhost:8081/uploads/${image}`;
+  }
+
+  // =====================================================
+  // FRIEND INITIAL
+  // =====================================================
+
+  getFriendInitial(username: string): string {
+    return username
+      ? username.charAt(0).toUpperCase()
       : 'U';
   }
 }

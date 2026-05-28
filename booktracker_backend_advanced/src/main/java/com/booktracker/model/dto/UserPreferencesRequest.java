@@ -8,6 +8,4 @@ public class UserPreferencesRequest {
     private List<String> preferredGenres;
     private List<String> preferredLanguages;
     private List<String> favoriteAuthors;
-    private Integer monthlyReadingGoal;
-    private Boolean socialRecommendations;
 }

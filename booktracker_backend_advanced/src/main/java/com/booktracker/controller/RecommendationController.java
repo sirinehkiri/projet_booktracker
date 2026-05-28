@@ -46,7 +46,7 @@ public class RecommendationController {
         return ResponseEntity.ok(recommendationService.getRecommendations(user));
     }
 
-    // 🆕 Recommandations personnalisées (genres + auteurs du user)
+    // 🆕 Recommandations personnalisées
     @GetMapping("/user/{userParam}/personalized")
     public ResponseEntity<List<Map<String, Object>>> getPersonalizedRecommendations(
             @PathVariable String userParam) {
@@ -54,10 +54,7 @@ public class RecommendationController {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        System.out.println("🎯 Generating personalized recommendations for user: " + userId);
-
         List<Book> books = recommendationService.getRecommendations(user);
-        System.out.println("✅ Returning " + books.size() + " personalized recommendations");
 
         List<Map<String, Object>> result = books.stream().map(book -> {
             Map<String, Object> bookMap = new HashMap<>();
@@ -78,12 +75,23 @@ public class RecommendationController {
         return ResponseEntity.ok(result);
     }
 
-    // 🆕 Recommandations sociales (basées sur avis des autres users)
+    // 🆕 Recommandations sociales
     @GetMapping("/user/{userParam}/social")
     public ResponseEntity<List<Map<String, Object>>> getSocialRecommendations(
             @PathVariable String userParam) {
         Long userId = resolveUserId(userParam);
-        System.out.println("👥 Generating social recommendations for user: " + userId);
         return ResponseEntity.ok(recommendationService.getSocialRecommendations(userId));
+    }
+
+    // ✨ SMART recommendations (Preferences + Social) - For You
+    @GetMapping("/smart")
+    public ResponseEntity<List<Map<String, Object>>> getSmartFromAuth(
+            Authentication authentication
+    ) {
+        User user = (User) authentication.getPrincipal();
+        System.out.println("✨ Smart recommendations for: " + user.getUsername());
+        return ResponseEntity.ok(
+                recommendationService.getSmartRecommendations(user.getId())
+        );
     }
 }

@@ -13,9 +13,6 @@ export class ProfileService {
   private apiUrl =
       'http://localhost:8081/api/profile';
 
-  private booksApiUrl =
-      'http://localhost:8081/books';
-
   constructor(private http: HttpClient) {}
 
   private getHeaders() {
@@ -35,19 +32,6 @@ export class ProfileService {
   getProfile(userId: number): Observable<any> {
     return this.http.get<any>(
       `${this.apiUrl}/${userId}`,
-      this.getHeaders()
-    );
-  }
-
-  // =====================================================
-  // GET RECOMMENDATIONS BY USER ID
-  // =====================================================
-
-  getRecommendations(
-    userId: number
-  ): Observable<any[]> {
-    return this.http.get<any[]>(
-      `${this.booksApiUrl}/recommendations/${userId}`,
       this.getHeaders()
     );
   }

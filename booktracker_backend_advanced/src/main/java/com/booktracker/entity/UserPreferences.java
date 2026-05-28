@@ -45,12 +45,6 @@ public class UserPreferences {
     @Column(name = "author")
     private List<String> favoriteAuthors = new ArrayList<>();
 
-    private Integer monthlyReadingGoal = 0;
-
-    // 🆕 Toggle pour les recommandations basées sur les avis des autres
-    @Column(nullable = false)
-    private Boolean socialRecommendations = false;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 

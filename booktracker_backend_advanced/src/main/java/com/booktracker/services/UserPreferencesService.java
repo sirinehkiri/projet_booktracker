@@ -47,12 +47,6 @@ public class UserPreferencesService {
         if (request.getFavoriteAuthors() != null) {
             prefs.setFavoriteAuthors(request.getFavoriteAuthors());
         }
-        if (request.getMonthlyReadingGoal() != null) {
-            prefs.setMonthlyReadingGoal(request.getMonthlyReadingGoal());
-        }
-        if (request.getSocialRecommendations() != null) {
-            prefs.setSocialRecommendations(request.getSocialRecommendations());
-        }
 
         prefs.setUpdatedAt(LocalDateTime.now());
 
@@ -71,8 +65,6 @@ public class UserPreferencesService {
         prefs.setPreferredGenres(new ArrayList<>());
         prefs.setPreferredLanguages(new ArrayList<>());
         prefs.setFavoriteAuthors(new ArrayList<>());
-        prefs.setMonthlyReadingGoal(0);
-        prefs.setSocialRecommendations(false);
 
         return prefsRepo.save(prefs);
     }
@@ -83,8 +75,6 @@ public class UserPreferencesService {
                 .preferredGenres(prefs.getPreferredGenres())
                 .preferredLanguages(prefs.getPreferredLanguages())
                 .favoriteAuthors(prefs.getFavoriteAuthors())
-                .monthlyReadingGoal(prefs.getMonthlyReadingGoal())
-                .socialRecommendations(prefs.getSocialRecommendations())
                 .build();
     }
 }

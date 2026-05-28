@@ -23,7 +23,6 @@
           <!-- AVATAR -->
           <div class="avatar-wrapper">
 
-            <!-- Si image existe -->
             <img
               *ngIf="getContactImage(); else initialBlock"
               [src]="getContactImage()!"
@@ -33,7 +32,6 @@
               alt="profile image"
             />
 
-            <!-- Sinon afficher initial -->
             <ng-template #initialBlock>
               <div
                 class="
@@ -82,7 +80,6 @@
             <!-- STATS -->
             <div class="d-flex gap-4 stats-container">
 
-              <!-- ✅ FRIENDS -->
               <div class="stat-box">
                 <span class="stat-number">
                   {{ profile.friendsCount || 0 }}
@@ -92,11 +89,8 @@
                 </span>
               </div>
 
-              <!-- BOOKS READ -->
               <div class="stat-box">
-                <span
-                  class="stat-number text-primary"
-                >
+                <span class="stat-number text-primary">
                   {{ profile.readBooksCount || 0 }}
                 </span>
                 <span class="stat-label">
@@ -307,10 +301,10 @@
           </mat-tab>
 
           <!-- ============================================ -->
-          <!-- TAB 3: RECOMMENDATIONS -->
+          <!-- TAB 3: FRIENDS -->
           <!-- ============================================ -->
 
-          
+         *
 
         </mat-tab-group>
       </mat-card>
