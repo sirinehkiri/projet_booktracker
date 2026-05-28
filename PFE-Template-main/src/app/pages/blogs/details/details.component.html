@@ -10,11 +10,12 @@
   <div class="left card">
 
     <img
-      [src]="book.pic"
-      loading="lazy"
-      (error)="book.pic='assets/no-book.png'"
-      alt="Book">
-
+        class="book-cover"
+        [src]="book.pic"
+        loading="lazy"
+        (error)="book.pic='assets/no-book.png'"
+        alt="Book">
+<br>
     <!-- STATUS -->
     <div class="status-box">
 
@@ -25,7 +26,7 @@
         {{ getStatusLabel(currentStatus) }}
 
       </button>
-
+      
     </div>
 
     <!-- PROGRESS -->
@@ -562,6 +563,52 @@
       </button>
 
     </div>
+
+  </div>
+
+</div>
+
+
+<!-- STATUS MODAL -->
+<div
+  class="status-modal-backdrop"
+  *ngIf="showStatusModal">
+
+  <div class="status-modal">
+
+    <h3>Change Status</h3>
+
+    <button
+      class="status-option"
+      (click)="setStatus('WANT_TO_READ')">
+
+      Want to Read
+
+    </button>
+
+    <button
+      class="status-option"
+      (click)="setStatus('READING')">
+
+      Currently Reading
+
+    </button>
+
+    <button
+      class="status-option"
+      (click)="setStatus('READ')">
+
+      Read
+
+    </button>
+
+    <button
+      class="close-btn"
+      (click)="closeStatusModal()">
+
+      Cancel
+
+    </button>
 
   </div>
 
