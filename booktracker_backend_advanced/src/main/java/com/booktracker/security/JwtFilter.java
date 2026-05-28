@@ -37,28 +37,64 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        try {
 
-            String token = authHeader.substring(7);
-            String username = JwtUtil.extractUsername(token);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                String token = authHeader.substring(7);
 
-                if (JwtUtil.validateToken(token, username)) {
+                String username = JwtUtil.extractUsername(token);
 
-                    User user = userRepository.findByUsername(username).orElse(null);
+                if (username != null &&
+                        SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                    if (user != null && user.isEmailVerified()) {
+                    if (JwtUtil.validateToken(token, username)) {
 
-                        var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole()));
+                        User user = userRepository.findByUsername(username).orElse(null);
 
-                        var authToken = new UsernamePasswordAuthenticationToken(user, null, authorities);
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
+                        if (user != null && user.isEmailVerified()) {
+
+                            var authorities = List.of(
+                                    new SimpleGrantedAuthority("ROLE_" + user.getRole())
+                            );
+
+                            var authToken =
+                                    new UsernamePasswordAuthenticationToken(
+                                            user,
+                                            null,
+                                            authorities
+                                    );
+
+                            SecurityContextHolder.getContext()
+                                    .setAuthentication(authToken);
+                        }
                     }
                 }
             }
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+
+            System.out.println("TOKEN EXPIRED FILTER");
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            response.getWriter().write(
+                    "{\"error\":\"TOKEN_EXPIRED\"}"
+            );
+
+        } catch (Exception e) {
+
+            System.out.println("TOKEN INVALID");
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            response.getWriter().write(
+                    "{\"error\":\"TOKEN_INVALID\"}"
+            );
+        }
     }
 }

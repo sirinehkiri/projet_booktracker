@@ -34,13 +34,26 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 
 import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
+import {
+  HTTP_INTERCEPTORS
+} from '@angular/common/http';
+
+import {
+  AuthInterceptor
+} from './interceptors/auth.interceptor';
+
 export function HttpLoaderFactory(http: HttpClient): any {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
 @NgModule({
    providers: [
-    provideCharts(withDefaultRegisterables())
+    provideCharts(withDefaultRegisterables()),
+    {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+    }
   ],
   declarations: [
     AppComponent, 
