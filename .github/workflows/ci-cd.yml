@@ -1,0 +1,94 @@
+name: CI/CD BookTracker
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-backend:
+    name: 🔧 Build Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: ☕ Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: 📦 Cache Maven
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+
+      - name: 🏗️ Build Maven
+        run: |
+          cd booktracker_backend_advanced
+          mvn clean package -DskipTests
+
+      - name: 🔐 Login Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 🐳 Build & Push backend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./booktracker_backend_advanced
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/booktracker-backend:latest
+
+  build-frontend:
+    name: 🎨 Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🟢 Setup Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: 📦 Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: 🏗️ Build Angular
+        run: |
+          cd PFE-Template-main
+          npm install --legacy-peer-deps
+          npm run build --legacy-peer-deps
+
+      - name: 🔐 Login Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 🐳 Build & Push frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: ./PFE-Template-main
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/booktracker-frontend:latest
+
+  notify:
+    name: 📢 Résumé
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend]
+    if: always()
+
+    steps:
+      - name: ✅ Résultat pipeline
+        run: |
+          echo "Backend  : ${{ needs.build-backend.result }}"
+          echo "Frontend : ${{ needs.build-frontend.result }}"
