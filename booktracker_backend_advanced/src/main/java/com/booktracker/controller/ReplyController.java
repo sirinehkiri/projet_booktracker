@@ -13,7 +13,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/replies")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost")
 public class ReplyController {
 
     private final ReplyService replyService;

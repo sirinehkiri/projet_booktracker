@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booktracker-backend
+  namespace: booktracker          # dans notre namespace
+spec:
+  replicas: 1                     # 1 instance du backend
+  selector:
+    matchLabels:
+      app: backend                # ce Deployment gère les pods avec ce label
+  template:
+    metadata:
+      labels:
+        app: backend              # label appliqué à chaque pod créé
+    spec:
+      containers:
+      - name: backend
+        image: booktracker-backend:latest
+        imagePullPolicy: Never    # NE PAS chercher sur Docker Hub → utiliser l'image locale Minikube
+        ports:
+        - containerPort: 8081    # port exposé par Spring Boot
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        resources:
+          requests:
+            memory: "512Mi"       # mémoire minimum garantie
+            cpu: "250m"           # 0.25 CPU minimum garanti
+          limits:
+            memory: "1Gi"         # mémoire maximum autorisée
+            cpu: "500m"           # 0.5 CPU maximum autorisé

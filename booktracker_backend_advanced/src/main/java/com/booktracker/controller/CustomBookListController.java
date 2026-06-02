@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/book-lists")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost", allowCredentials = "true")
 public class CustomBookListController {
 
     private final CustomBookListService listService;
