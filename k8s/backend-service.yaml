@@ -5,7 +5,7 @@ metadata:
   namespace: booktracker
 spec:
   selector:
-    app: booktracker-backend
+    app: backend
   type: NodePort
   ports:
     - port: 8081
