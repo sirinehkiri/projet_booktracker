@@ -4,11 +4,16 @@ on:
   push:
     branches: [ main ]
 
+env:
+  AWS_REGION: us-east-1
+
 jobs:
+  # ============================================================
+  # ÉTAPE 1 : BUILD BACKEND
+  # ============================================================
   build-backend:
     name: 🔧 Build Backend
     runs-on: ubuntu-latest
-
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v3
@@ -43,10 +48,12 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/booktracker-backend:latest
 
+  # ============================================================
+  # ÉTAPE 2 : BUILD FRONTEND
+  # ============================================================
   build-frontend:
     name: 🎨 Build Frontend
     runs-on: ubuntu-latest
-
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v3
@@ -81,14 +88,190 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/booktracker-frontend:latest
 
-  notify:
-    name: 📢 Résumé
+  # ============================================================
+  # ÉTAPE 3 : TERRAFORM — Provisionner l'infrastructure AWS
+  # ============================================================
+  terraform:
+    name: 🏗️ Terraform Infrastructure
     runs-on: ubuntu-latest
     needs: [build-backend, build-frontend]
-    if: always()
+    outputs:
+      master_ip: ${{ steps.tf_output.outputs.master_ip }}
+      worker_ip: ${{ steps.tf_output.outputs.worker_ip }}
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
 
+      - name: 🔧 Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+          terraform_wrapper: false
+
+      - name: 🔐 Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: 🔑 Créer la clé SSH pour AWS
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/labsuser.pem
+          chmod 600 ~/.ssh/labsuser.pem
+          ssh-keygen -y -f ~/.ssh/labsuser.pem > ~/.ssh/labsuser.pub
+
+      - name: 📦 Terraform Init
+        run: |
+          cd terraform
+          terraform init
+
+      - name: 📋 Terraform Plan
+        run: |
+          cd terraform
+          terraform plan -out=tfplan
+
+      - name: 🚀 Terraform Apply
+        run: |
+          cd terraform
+          terraform apply -auto-approve tfplan
+
+      - name: 📤 Récupérer les outputs
+        id: tf_output
+        run: |
+          cd terraform
+          echo "master_ip=$(terraform output -raw master_ip)" >> $GITHUB_OUTPUT
+          echo "worker_ip=$(terraform output -raw worker_ip)" >> $GITHUB_OUTPUT
+          echo "Master IP: $(terraform output -raw master_ip)"
+          echo "Worker IP: $(terraform output -raw worker_ip)"
+
+  # ============================================================
+  # ÉTAPE 4 : ANSIBLE — Installer K3s sur les instances
+  # ============================================================
+  ansible:
+    name: ⚙️ Ansible Configuration K3s
+    runs-on: ubuntu-latest
+    needs: [terraform]
+    env:
+      MASTER_IP: ${{ needs.terraform.outputs.master_ip }}
+      WORKER_IP: ${{ needs.terraform.outputs.worker_ip }}
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔧 Installer Ansible
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ansible
+
+      - name: 🔑 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/labsuser.pem
+          chmod 600 ~/.ssh/labsuser.pem
+          ssh-keyscan -H $MASTER_IP >> ~/.ssh/known_hosts
+          ssh-keyscan -H $WORKER_IP >> ~/.ssh/known_hosts
+
+      - name: ⏳ Attendre que les instances soient prêtes
+        run: |
+          echo "Attente démarrage instances..."
+          for i in $(seq 1 20); do
+            if ssh -i ~/.ssh/labsuser.pem -o StrictHostKeyChecking=no ubuntu@$MASTER_IP "echo ok" 2>/dev/null; then
+              echo "Master prêt !"
+              break
+            fi
+            echo "Tentative $i/20..."
+            sleep 15
+          done
+
+      - name: 📋 Générer inventory Ansible
+        run: |
+          cat > ansible/inventory.ini << EOF
+          [master]
+          $MASTER_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/labsuser.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+          [workers]
+          $WORKER_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/labsuser.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+          [all:vars]
+          ansible_python_interpreter=/usr/bin/python3
+          EOF
+
+      - name: 🚀 Lancer le playbook Ansible
+        run: |
+          cd ansible
+          ansible-playbook -i inventory.ini playbook.yml
+
+      - name: ✅ Vérifier le cluster
+        run: |
+          ssh -i ~/.ssh/labsuser.pem ubuntu@$MASTER_IP "sudo k3s kubectl get nodes"
+
+  # ============================================================
+  # ÉTAPE 5 : DEPLOY — Déployer BookTracker sur K3s
+  # ============================================================
+  deploy:
+    name: 🚀 Deploy BookTracker
+    runs-on: ubuntu-latest
+    needs: [ansible, terraform]
+    env:
+      MASTER_IP: ${{ needs.terraform.outputs.master_ip }}
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🔑 Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/labsuser.pem
+          chmod 600 ~/.ssh/labsuser.pem
+          ssh-keyscan -H $MASTER_IP >> ~/.ssh/known_hosts
+
+      - name: 📋 Copier les manifests K8s
+        run: |
+          ssh -i ~/.ssh/labsuser.pem ubuntu@$MASTER_IP "mkdir -p ~/k8s"
+          scp -i ~/.ssh/labsuser.pem k8s/*.yaml ubuntu@$MASTER_IP:~/k8s/
+
+      - name: 🚀 Déployer sur le cluster
+        run: |
+          ssh -i ~/.ssh/labsuser.pem ubuntu@$MASTER_IP "
+            sudo k3s kubectl apply -f ~/k8s/
+            sleep 3
+            sudo k3s kubectl apply -f ~/k8s/
+            sudo k3s kubectl rollout restart deployment/booktracker-backend -n booktracker
+            sudo k3s kubectl rollout restart deployment/booktracker-frontend -n booktracker
+            sudo k3s kubectl rollout status deployment/booktracker-backend -n booktracker --timeout=180s
+            sudo k3s kubectl rollout status deployment/booktracker-frontend -n booktracker --timeout=120s
+          "
+
+      - name: ✅ Vérifier le déploiement
+        run: |
+          ssh -i ~/.ssh/labsuser.pem ubuntu@$MASTER_IP "
+            echo '=== Pods ==='
+            sudo k3s kubectl get pods -n booktracker
+            echo '=== Services ==='
+            sudo k3s kubectl get svc -n booktracker
+          "
+          echo "🌐 App disponible sur : http://$MASTER_IP:30080"
+
+  # ============================================================
+  # ÉTAPE 6 : RÉSUMÉ
+  # ============================================================
+  notify:
+    name: 📢 Résumé Pipeline
+    runs-on: ubuntu-latest
+    needs: [build-backend, build-frontend, terraform, ansible, deploy]
+    if: always()
     steps:
       - name: ✅ Résultat pipeline
         run: |
-          echo "Backend  : ${{ needs.build-backend.result }}"
-          echo "Frontend : ${{ needs.build-frontend.result }}"
+          echo "=================================="
+          echo "  RÉSUMÉ CI/CD BOOKTRACKER"
+          echo "=================================="
+          echo "🔧 Build Backend  : ${{ needs.build-backend.result }}"
+          echo "🎨 Build Frontend : ${{ needs.build-frontend.result }}"
+          echo "🏗️  Terraform      : ${{ needs.terraform.result }}"
+          echo "⚙️  Ansible        : ${{ needs.ansible.result }}"
+          echo "🚀 Deploy         : ${{ needs.deploy.result }}"
+          echo "=================================="
