@@ -1,37 +1,26 @@
 ---
-# PLAY 1 : Docker + Kubernetes sur toutes les VMs
-- name: Configuration commune
-  hosts: all
-  become: yes
-  roles:
-    - docker
-    - kubernetes
-
-# PLAY 2 : Initialiser le master
-- name: Initialiser master Kubernetes
+# PLAY 1 : Installer K3s sur le Master
+- name: Installer K3s Master
   hosts: master
   become: yes
   tasks:
-    - name: Vérifier si le cluster est déjà initialisé
-      stat:
-        path: /etc/kubernetes/admin.conf
-      register: kubeadm_init
+    - name: Installer K3s
+      shell: curl -sfL https://get.k3s.io | sh -
+      args:
+        creates: /usr/local/bin/k3s
 
-    - name: Reset kubeadm si nécessaire
-      command: kubeadm reset -f
-      when: not kubeadm_init.stat.exists
+    - name: Attendre que K3s soit prêt
+      wait_for:
+        path: /var/lib/rancher/k3s/server/node-token
+        timeout: 120
 
-    - name: Récupérer l IP privée
-      command: hostname -I
-      register: private_ip
+    - name: Récupérer le token K3s
+      command: cat /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
 
-    - name: Initialiser le cluster
-      command: >
-        kubeadm init
-        --apiserver-advertise-address={{ private_ip.stdout.split()[0] }}
-        --apiserver-cert-extra-sans={{ ansible_host }}
-        --pod-network-cidr=10.244.0.0/16
-      when: not kubeadm_init.stat.exists
+    - name: Sauvegarder le token
+      set_fact:
+        k3s_node_token: "{{ k3s_token.stdout }}"
 
     - name: Créer dossier .kube pour ubuntu
       file:
@@ -39,49 +28,44 @@
         state: directory
         owner: ubuntu
 
-    - name: Copier config kubectl
+    - name: Copier kubeconfig
       copy:
-        src: /etc/kubernetes/admin.conf
+        src: /etc/rancher/k3s/k3s.yaml
         dest: /home/ubuntu/.kube/config
         remote_src: yes
         owner: ubuntu
+        mode: '0644'
 
-    - name: Attendre que l API server soit prêt
-      wait_for:
-        host: "{{ private_ip.stdout.split()[0] }}"
-        port: 6443
-        delay: 20
-        timeout: 180
-
-    - name: Installer réseau Flannel
-      command: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
-      become_user: ubuntu
-      environment:
-        KUBECONFIG: /home/ubuntu/.kube/config
-      when: not kubeadm_init.stat.exists
-
-    - name: Générer et sauvegarder join command sur master
-      shell: kubeadm token create --print-join-command > /tmp/join_command.sh
-      args:
-        executable: /bin/bash
-
-    - name: Récupérer kubeconfig
-      fetch:
-        src: /home/ubuntu/.kube/config
-        dest: /tmp/kubeconfig
-        flat: yes
-
-# PLAY 3 : Worker rejoint le cluster
-- name: Joindre le worker
+# PLAY 2 : Installer K3s Agent sur le Worker
+- name: Installer K3s Worker
   hosts: workers
   become: yes
   tasks:
-    - name: Récupérer join command depuis master
-      shell: cat /tmp/join_command.sh
-      delegate_to: "{{ groups['master'][0] }}"
-      register: join_command_raw
-
-    - name: Rejoindre le cluster
-      command: "{{ join_command_raw.stdout }}"
+    - name: Installer K3s agent
+      shell: |
+        curl -sfL https://get.k3s.io | \
+        K3S_URL=https://{{ hostvars[groups['master'][0]]['ansible_host'] }}:6443 \
+        K3S_TOKEN={{ hostvars[groups['master'][0]]['k3s_node_token'] }} \
+        sh -
       args:
-        creates: /etc/kubernetes/kubelet.conf
+        creates: /usr/local/bin/k3s
+
+# PLAY 3 : Vérifier le cluster
+- name: Vérifier le cluster K3s
+  hosts: master
+  become: yes
+  tasks:
+    - name: Attendre que les nodes soient prêts
+      shell: k3s kubectl get nodes | grep -c Ready
+      register: ready_nodes
+      retries: 10
+      delay: 15
+      until: ready_nodes.stdout | int >= 2
+
+    - name: Afficher les nodes
+      command: k3s kubectl get nodes
+      register: nodes
+
+    - name: Résultat
+      debug:
+        msg: "{{ nodes.stdout }}"
