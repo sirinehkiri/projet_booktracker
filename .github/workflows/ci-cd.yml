@@ -128,6 +128,22 @@ jobs:
           cd terraform
           terraform init
 
+      - name: 🔄 Import ressources existantes
+        run: |
+          cd terraform
+          # Import key pair si elle existe déjà
+          aws ec2 describe-key-pairs --key-names booktracker-key 2>/dev/null && \
+            terraform import aws_key_pair.booktracker_key booktracker-key || true
+
+          # Import security group si il existe déjà
+          SG_ID=$(aws ec2 describe-security-groups \
+            --filters Name=group-name,Values=booktracker-sg \
+            --query 'SecurityGroups[0].GroupId' \
+            --output text 2>/dev/null || echo "")
+          if [ ! -z "$SG_ID" ] && [ "$SG_ID" != "None" ]; then
+            terraform import aws_security_group.booktracker_sg $SG_ID || true
+          fi
+
       - name: 📋 Terraform Plan
         run: |
           cd terraform
