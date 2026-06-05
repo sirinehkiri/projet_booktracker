@@ -15,58 +15,63 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# Clé SSH pour accéder aux instances
+# Récupérer automatiquement la dernière AMI Ubuntu 22.04
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical officiel
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
+# Clé SSH
 resource "aws_key_pair" "booktracker_key" {
   key_name   = "booktracker-key"
   public_key = file("~/.ssh/labsuser.pub")
 }
 
-# Security Group — règles réseau
+# Security Group
 resource "aws_security_group" "booktracker_sg" {
   name        = "booktracker-sg"
   description = "Security group pour BookTracker K8s"
 
-  # SSH
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  # Kubernetes API
   ingress {
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  # Frontend app
   ingress {
     from_port   = 30080
     to_port     = 30080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  # Backend API
   ingress {
     from_port   = 30081
     to_port     = 30081
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  # Communication interne entre noeuds
   ingress {
     from_port = 0
     to_port   = 0
     protocol  = "-1"
     self      = true
   }
-
-  # Tout le trafic sortant autorisé
   egress {
     from_port   = 0
     to_port     = 0
@@ -77,8 +82,8 @@ resource "aws_security_group" "booktracker_sg" {
 
 # Instance EC2 Master
 resource "aws_instance" "master" {
-  ami                    = "ami-0c7217cdde317cfec" # Ubuntu 22.04 us-east-1
-  instance_type          = "t2.large"              # 2 CPU, 4GB RAM
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = "t2.large"
   key_name               = aws_key_pair.booktracker_key.key_name
   vpc_security_group_ids = [aws_security_group.booktracker_sg.id]
 
@@ -93,17 +98,21 @@ resource "aws_instance" "master" {
 
 # Instance EC2 Worker
 resource "aws_instance" "worker" {
-  ami                    = "ami-0c7217cdde317cfec"
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.medium"
   key_name               = aws_key_pair.booktracker_key.key_name
   vpc_security_group_ids = [aws_security_group.booktracker_sg.id]
+
+  root_block_device {
+    volume_size = 15
+  }
 
   tags = {
     Name = "k8s-worker"
   }
 }
 
-# Génère l'inventory Ansible avec les IPs publiques AWS
+# Inventory Ansible
 resource "local_file" "ansible_inventory" {
   filename = "../ansible/inventory.ini"
   content  = <<-EOT
@@ -119,11 +128,9 @@ resource "local_file" "ansible_inventory" {
 output "master_ip" {
   value = aws_instance.master.public_ip
 }
-
 output "worker_ip" {
   value = aws_instance.worker.public_ip
 }
-
 output "app_url" {
   value = "http://${aws_instance.master.public_ip}:30080"
 }
