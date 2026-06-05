@@ -18,7 +18,6 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/quotes")
-@CrossOrigin(origins = "http://localhost")
 public class QuoteController {
 
     @Autowired

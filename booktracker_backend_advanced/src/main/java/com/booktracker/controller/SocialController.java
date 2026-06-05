@@ -15,7 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/social")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost")
 public class SocialController {
 
     private final SocialService socialService;

@@ -15,7 +15,6 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/reviews")
-@CrossOrigin(origins = "http://localhost")
 public class ReviewController {
 
  @Autowired

@@ -20,7 +20,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/votes")
-@CrossOrigin(origins = "http://localhost")
 public class ReviewVoteController {
 
     @Autowired

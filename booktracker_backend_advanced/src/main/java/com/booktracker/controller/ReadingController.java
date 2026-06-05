@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/reading")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost")
 public class ReadingController {
 
     private final ReadingService readingservice;

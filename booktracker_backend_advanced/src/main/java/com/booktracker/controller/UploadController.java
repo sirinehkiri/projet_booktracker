@@ -17,7 +17,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/upload")
-@CrossOrigin(origins = "http://localhost")
 public class UploadController {
 
     @PostMapping("/image")
