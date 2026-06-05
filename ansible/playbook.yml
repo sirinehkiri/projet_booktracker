@@ -1,5 +1,13 @@
 ---
-# PLAY 1 : Installer K3s sur le Master
+# PLAY 1 : Préparer toutes les VMs
+- name: Configuration commune
+  hosts: all
+  become: yes
+  roles:
+    - docker
+    - kubernetes
+
+# PLAY 2 : Installer K3s Master
 - name: Installer K3s Master
   hosts: master
   become: yes
@@ -36,7 +44,7 @@
         owner: ubuntu
         mode: '0644'
 
-# PLAY 2 : Installer K3s Agent sur le Worker
+# PLAY 3 : Installer K3s Worker
 - name: Installer K3s Worker
   hosts: workers
   become: yes
@@ -50,7 +58,7 @@
       args:
         creates: /usr/local/bin/k3s
 
-# PLAY 3 : Vérifier le cluster
+# PLAY 4 : Vérifier le cluster
 - name: Vérifier le cluster K3s
   hosts: master
   become: yes
