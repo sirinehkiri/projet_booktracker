@@ -666,7 +666,7 @@ getUserProfileImage(user: any): string | null {
 
   if (user?.image) {
 
-    return `http://localhost:8081/uploads/${user.image}`;
+    return `/uploads/${user.image}`;
   }
 
   return null;

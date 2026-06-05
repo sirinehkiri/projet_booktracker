@@ -7,7 +7,7 @@ import { ReadingGoal } from './reading-goal';
 })
 export class ReadingGoalService {
 
-  private api = 'http://localhost:8081/api/goals';
+  private api = '/api/goals';
 
   constructor(private http: HttpClient,) {}
   private getHeaders(){

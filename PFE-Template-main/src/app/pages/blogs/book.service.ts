@@ -8,7 +8,7 @@ import { Book } from './book.model';
 })
 export class BookService {
 
-  private apiUrl = "http://localhost:8081/books";
+  private apiUrl = "/books";
 
   constructor(private http: HttpClient) {}
 
@@ -49,7 +49,7 @@ export class BookService {
 
   uploadImage(data: any) {
     return this.http.post<any>(
-      "http://localhost:8081/upload/image",
+      "/upload/image",
       data
     );
   }
@@ -60,7 +60,7 @@ export class BookService {
 
   addBook(data: any) {
     return this.http.post(
-      "http://localhost:8081/books",
+      "/books",
       data,
       this.getHeaders()
     );
@@ -95,7 +95,7 @@ export class BookService {
 
   addRating(bookId: number, data: any) {
     return this.http.post(
-      `http://localhost:8081/reviews/${bookId}/rating`,
+      `/reviews/${bookId}/rating`,
       data,
       this.getHeaders()
     );
@@ -107,7 +107,7 @@ export class BookService {
 
   addReview(bookId: number, data: any) {
     return this.http.post(
-      `http://localhost:8081/reviews/${bookId}`,
+      `/reviews/${bookId}`,
       data,
       this.getHeaders()
     );
@@ -119,7 +119,7 @@ export class BookService {
 
   addQuote(bookId: number, data: any) {
     return this.http.post(
-      `http://localhost:8081/quotes/${bookId}`,
+      `/quotes/${bookId}`,
       data,
       this.getHeaders()
     );
@@ -131,7 +131,7 @@ export class BookService {
 
   voteReview(reviewId: number) {
     return this.http.post(
-      `http://localhost:8081/votes/${reviewId}`,
+      `/votes/${reviewId}`,
       {},
       this.getHeaders()
     );
@@ -143,7 +143,7 @@ export class BookService {
 
   getMyReview(bookId: number) {
     return this.http.get(
-      `http://localhost:8081/reviews/${bookId}/my`,
+      `/reviews/${bookId}/my`,
       this.getHeaders()
     );
   }
@@ -154,7 +154,7 @@ export class BookService {
 
   deleteReview(id: number) {
     return this.http.delete(
-      `http://localhost:8081/reviews/${id}`
+      `/reviews/${id}`
     );
   }
 
@@ -164,7 +164,7 @@ export class BookService {
 
   setStatus(bookId: number, status: string) {
     return this.http.post(
-      `http://localhost:8081/api/userbooks/status?bookId=${bookId}&status=${status}`,
+      `/api/userbooks/status?bookId=${bookId}&status=${status}`,
       {},
       this.getHeaders()
     );
@@ -176,7 +176,7 @@ export class BookService {
 
   getUserStatus(bookId: number) {
     return this.http.get<string>(
-      `http://localhost:8081/api/userbooks/status?bookId=${bookId}`,
+      `/api/userbooks/status?bookId=${bookId}`,
       this.getHeaders()
     );
   }
@@ -187,7 +187,7 @@ export class BookService {
 
   getUserBook(bookId: number) {
     return this.http.get(
-      `http://localhost:8081/api/userbooks/book/${bookId}`,
+      `/api/userbooks/book/${bookId}`,
       this.getHeaders()
     );
   }
@@ -198,7 +198,7 @@ export class BookService {
 
   updateProgress(data: any) {
     return this.http.post(
-      'http://localhost:8081/reading/progress',
+      '/reading/progress',
       data,
       this.getHeaders()
     );
@@ -298,7 +298,7 @@ export class BookService {
 voteQuote(id: number) {
 
   return this.http.post(
-    `http://localhost:8081/quotes/${id}/vote`,
+    `/quotes/${id}/vote`,
     {},this.getHeaders()
   );
 }
@@ -306,7 +306,7 @@ voteQuote(id: number) {
 updateQuote(id: number, payload: any) {
 
   return this.http.put(
-    `http://localhost:8081/quotes/${id}`,
+    `/quotes/${id}`,
     payload,this.getHeaders()
   );
 }
@@ -314,14 +314,14 @@ updateQuote(id: number, payload: any) {
 deleteQuote(id: number) {
 
   return this.http.delete(
-    `http://localhost:8081/quotes/${id}`,
+    `/quotes/${id}`,
     this.getHeaders()
   );
 }
 addReply(reviewId: number, payload: any) {
 
   return this.http.post(
-    `http://localhost:8081/replies/${reviewId}`,
+    `/replies/${reviewId}`,
     payload,this.getHeaders()
   );
 }
@@ -329,7 +329,7 @@ addReply(reviewId: number, payload: any) {
 deleteReply(id: number) {
 
   return this.http.delete(
-    `http://localhost:8081/replies/${id}` ,this.getHeaders()
+    `/replies/${id}` ,this.getHeaders()
   );
 }
   // =====================================================

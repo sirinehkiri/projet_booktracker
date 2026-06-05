@@ -1,0 +1,87 @@
+---
+# PLAY 1 : Docker + Kubernetes sur toutes les VMs
+- name: Configuration commune
+  hosts: all
+  become: yes
+  roles:
+    - docker
+    - kubernetes
+
+# PLAY 2 : Initialiser le master
+- name: Initialiser master Kubernetes
+  hosts: master
+  become: yes
+  tasks:
+    - name: Vérifier si le cluster est déjà initialisé
+      stat:
+        path: /etc/kubernetes/admin.conf
+      register: kubeadm_init
+
+    - name: Reset kubeadm si nécessaire
+      command: kubeadm reset -f
+      when: not kubeadm_init.stat.exists
+
+    - name: Récupérer l IP privée
+      command: hostname -I
+      register: private_ip
+
+    - name: Initialiser le cluster
+      command: >
+        kubeadm init
+        --apiserver-advertise-address={{ private_ip.stdout.split()[0] }}
+        --apiserver-cert-extra-sans={{ ansible_host }}
+        --pod-network-cidr=10.244.0.0/16
+      when: not kubeadm_init.stat.exists
+
+    - name: Créer dossier .kube pour ubuntu
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        owner: ubuntu
+
+    - name: Copier config kubectl
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/ubuntu/.kube/config
+        remote_src: yes
+        owner: ubuntu
+
+    - name: Attendre que l API server soit prêt
+      wait_for:
+        host: "{{ private_ip.stdout.split()[0] }}"
+        port: 6443
+        delay: 20
+        timeout: 180
+
+    - name: Installer réseau Flannel
+      command: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+      become_user: ubuntu
+      environment:
+        KUBECONFIG: /home/ubuntu/.kube/config
+      when: not kubeadm_init.stat.exists
+
+    - name: Générer et sauvegarder join command sur master
+      shell: kubeadm token create --print-join-command > /tmp/join_command.sh
+      args:
+        executable: /bin/bash
+
+    - name: Récupérer kubeconfig
+      fetch:
+        src: /home/ubuntu/.kube/config
+        dest: /tmp/kubeconfig
+        flat: yes
+
+# PLAY 3 : Worker rejoint le cluster
+- name: Joindre le worker
+  hosts: workers
+  become: yes
+  tasks:
+    - name: Récupérer join command depuis master
+      shell: cat /tmp/join_command.sh
+      delegate_to: "{{ groups['master'][0] }}"
+      register: join_command_raw
+
+    - name: Rejoindre le cluster
+      command: "{{ join_command_raw.stdout }}"
+      args:
+        creates: /etc/kubernetes/kubelet.conf

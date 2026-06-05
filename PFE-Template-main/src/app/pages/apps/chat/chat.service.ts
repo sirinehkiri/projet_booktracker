@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, Subscription, interval } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class ChatService {
   
-  private apiUrl = 'http://localhost:8081/api/chat';
+  private apiUrl = '/api/chat';
 
   private unreadCountSubject = new BehaviorSubject<number>(0);
   unreadCount$ = this.unreadCountSubject.asObservable();

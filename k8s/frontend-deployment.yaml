@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: booktracker-frontend:latest
-        imagePullPolicy: Never
+        image: sirineehkiri/booktracker-frontend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 80       # Nginx écoute sur le port 80
         resources:

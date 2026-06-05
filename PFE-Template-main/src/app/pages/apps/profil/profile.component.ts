@@ -79,7 +79,7 @@ export class ProfileComponent implements OnInit {
 
   getContactImage(): string | null {
     if (this.profile?.image) {
-      return `http://localhost:8081/uploads/${this.profile.image}`;
+      return `/uploads/${this.profile.image}`;
     }
 
     return null;
@@ -100,7 +100,7 @@ export class ProfileComponent implements OnInit {
   // =====================================================
 
   getFriendImage(image: string): string {
-    return `http://localhost:8081/uploads/${image}`;
+    return `/uploads/${image}`;
   }
 
   // =====================================================

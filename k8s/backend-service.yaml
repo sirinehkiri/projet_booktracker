@@ -5,9 +5,9 @@ metadata:
   namespace: booktracker
 spec:
   selector:
-    app: backend                  # cible les pods avec le label app=backend
+    app: booktracker-backend
+  type: NodePort
   ports:
-  - protocol: TCP
-    port: 8081                    # port du Service (interne au cluster)
-    targetPort: 8081              # port du container Spring Boot
-  type: ClusterIP                 # accessible uniquement à l'intérieur du cluster
+    - port: 8081
+      targetPort: 8081
+      nodePort: 30081

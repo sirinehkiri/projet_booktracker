@@ -8,7 +8,7 @@ import { BehaviorSubject, interval } from 'rxjs';
 export class NotificationService {
 
   private api =
-    'http://localhost:8081/api/notifications';
+    '/api/notifications';
 
   notifications$ =
     new BehaviorSubject<any[]>([]);

@@ -1,0 +1,23 @@
+---
+- name: Mettre à jour apt
+  apt:
+    update_cache: yes
+
+- name: Installer Docker
+  apt:
+    name:
+      - docker.io
+    state: present
+
+- name: Démarrer Docker manuellement
+  command: dockerd &
+  async: 10
+  poll: 0
+  ignore_errors: yes
+
+- name: Ajouter vagrant au groupe docker
+  user:
+    name: root
+    groups: docker
+    append: yes
+  ignore_errors: yes

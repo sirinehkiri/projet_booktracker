@@ -9,7 +9,7 @@ import { UserBook } from '../pages/apps/ticketlist/ticket';
 export class UserBookService {
 
   private apiUrl =
-    'http://localhost:8081/api/userbooks';
+    '/api/userbooks';
 
   constructor(private http: HttpClient) {}
 

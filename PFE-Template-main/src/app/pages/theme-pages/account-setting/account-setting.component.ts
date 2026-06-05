@@ -224,7 +224,7 @@ implements OnInit {
 
     this.http.put(
 
-      'http://localhost:8081/api/users/profile',
+      '/api/users/profile',
 
       formData,
 
@@ -294,7 +294,7 @@ implements OnInit {
 
     if (this.user?.image) {
 
-      return `http://localhost:8081/uploads/${this.user.image}`;
+      return `/uploads/${this.user.image}`;
     }
 
     return '/assets/images/profile/user-1.jpg';
@@ -312,7 +312,7 @@ implements OnInit {
 
   this.http.put(
 
-    'http://localhost:8081/api/users/change-password',
+    '/api/users/change-password',
 
     this.passwordForm.value,
 

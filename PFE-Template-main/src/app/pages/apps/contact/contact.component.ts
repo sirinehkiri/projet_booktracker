@@ -193,7 +193,7 @@ export class AppContactComponent implements OnInit {
 
   getContactImage(contact: any): string | null {
     if (contact?.image) {
-      return `http://localhost:8081/uploads/${contact.image}`;
+      return `/uploads/${contact.image}`;
     }
 
     return null;
@@ -378,7 +378,7 @@ export class AppContactDialogContentComponent implements OnInit {
 
   getContactImage(user: any): string | null {
     if (user?.image) {
-      return `http://localhost:8081/uploads/${user.image}`;
+      return `/uploads/${user.image}`;
     }
 
     return null;

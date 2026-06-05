@@ -2,30 +2,43 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: booktracker-backend
-  namespace: booktracker          # dans notre namespace
+  namespace: booktracker
 spec:
-  replicas: 1                     # 1 instance du backend
+  replicas: 1
   selector:
     matchLabels:
-      app: backend                # ce Deployment gère les pods avec ce label
+      app: backend
   template:
     metadata:
       labels:
-        app: backend              # label appliqué à chaque pod créé
+        app: backend
     spec:
+      initContainers:
+      - name: wait-for-mysql
+        image: busybox
+        command:
+        - sh
+        - -c
+        - until nc -z db 3306; do echo "Waiting for MySQL..."; sleep 5; done
       containers:
       - name: backend
-        image: booktracker-backend:latest
-        imagePullPolicy: Never    # NE PAS chercher sur Docker Hub → utiliser l'image locale Minikube
+        image: sirineehkiri/booktracker-backend:latest
+        imagePullPolicy: Always
         ports:
-        - containerPort: 8081    # port exposé par Spring Boot
+        - containerPort: 8081
         env:
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:mysql://db:3306/booktracker?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "root"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: "root"
         - name: SPRING_PROFILES_ACTIVE
           value: "prod"
         resources:
           requests:
-            memory: "512Mi"       # mémoire minimum garantie
-            cpu: "250m"           # 0.25 CPU minimum garanti
+            memory: "512Mi"
+            cpu: "250m"
           limits:
-            memory: "1Gi"         # mémoire maximum autorisée
-            cpu: "500m"           # 0.5 CPU maximum autorisé
+            memory: "1Gi"
+            cpu: "500m"

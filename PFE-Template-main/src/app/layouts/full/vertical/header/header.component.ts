@@ -313,7 +313,7 @@ implements OnInit, OnDestroy {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   if (user.image) {
-    return `http://localhost:8081/uploads/${user.image}`;
+    return `/uploads/${user.image}`;
   }
 
   return null;

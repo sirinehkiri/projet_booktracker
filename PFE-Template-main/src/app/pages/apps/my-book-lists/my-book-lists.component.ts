@@ -151,7 +151,7 @@ export class MyBookListsComponent implements OnInit {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     });
-    this.http.get<any[]>('http://localhost:8081/books', { headers }).subscribe({
+    this.http.get<any[]>('/books', { headers }).subscribe({
       next: (books) => {
         console.log('📚 All books:', books.length);
         this.allBooks = books;
@@ -285,9 +285,9 @@ export class MyBookListsComponent implements OnInit {
     if (!book || !book.pic) return null;
     let pic = book.pic.trim();
     if (pic.startsWith('http://') || pic.startsWith('https://')) return pic;
-    if (pic.startsWith('/uploads/')) return `http://localhost:8081${pic}`;
-    if (pic.startsWith('uploads/')) return `http://localhost:8081/${pic}`;
-    return `http://localhost:8081/uploads/${pic}`;
+    if (pic.startsWith('/uploads/')) return `${pic}`;
+    if (pic.startsWith('uploads/')) return `/${pic}`;
+    return `/uploads/${pic}`;
   }
 
   onImageError(event: any): void {
